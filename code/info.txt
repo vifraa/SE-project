@@ -1,1 +1,0 @@
-File only needed to keep folder structure. Remove when any other file is created in the directory.
