@@ -16,7 +16,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="8dp"
-        android:drawableLeft="@drawable/googleLogo"
+        android:drawableLeft="@drawable/googlelogo"
         android:text="Log in with Google"
         android:textAllCaps="false"
         android:textAppearance="@android:style/TextAppearance.DeviceDefault"
