@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Split</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="default_info_title">Default Location</string>
+
+
+    <!-- finding address -->
+    <string name="service_not_available">Service not availeble</string>
+    <string name="invalid_lat_long_used">Longitude and latitude are invalid</string>
+    <string name="no_address_found">No adress found</string>
+    <string name="where">Where do you want to go?</string>
 </resources>
