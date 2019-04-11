@@ -68,9 +68,9 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Called when user answered the request permission prompt
-     * @param requestCode 
+     * @param requestCode
      * @param permissions the permissions you have asked for
-     * @param grantResults
+     * @param grantResults the results
      */
     @Override
     public void onRequestPermissionsResult(int requestCode,
