@@ -1,7 +1,6 @@
 package com.chalmers.gyarados.split;
 
 import android.app.IntentService;
-import android.app.Service;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -9,15 +8,22 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.text.TextUtils;
-import android.util.Log;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * An intent service used to get the address from a background thread
+ */
 public class FetchAddressIntentService extends IntentService {
-    protected ResultReceiver receiver;
+
+    /**
+     * The object that we will return the address to
+     */
+    private ResultReceiver receiver;
 
     public FetchAddressIntentService() {
         super("GeocodeIntentService");
@@ -27,20 +33,25 @@ public class FetchAddressIntentService extends IntentService {
         super(name);
     }
 
+    /**
+     *
+     * @param intent
+     */
     @Override
     protected void onHandleIntent(Intent intent) {
+        //The locale object ensures that the resulting address is localized to the user's geographic region
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+
         if (intent == null) {
             return;
         }
-        receiver = intent.getParcelableExtra(Constants.RECEIVER);
+
         String errorMessage = "";
 
-        // Get the location passed to this service through an extra.
+        // Get the location and receiver passed to this service through an extra.
         Location location = intent.getParcelableExtra(
                 Constants.LOCATION_DATA_EXTRA);
-
-        // ...
+        receiver = intent.getParcelableExtra(Constants.RECEIVER);
 
         List<Address> addresses = null;
 
@@ -67,7 +78,7 @@ public class FetchAddressIntentService extends IntentService {
             deliverResultToReceiver(Constants.FAILURE_RESULT, errorMessage);
         } else {
             Address address = addresses.get(0);
-            ArrayList<String> addressFragments = new ArrayList<String>();
+            ArrayList<String> addressFragments = new ArrayList<>();
 
             // Fetch the address lines using getAddressLine,
             // join them, and send them to the thread.

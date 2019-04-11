@@ -1,10 +1,7 @@
 package com.chalmers.gyarados.split;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,8 +14,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
 
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
@@ -30,69 +25,66 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.model.PlaceLikelihood;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
-import com.google.android.libraries.places.api.net.PlacesClient;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
-import java.util.Locale;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
+/**
+ * The main activity of the app
+ */
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private AddressResultReceiver resultReceiver;
+    //Constants
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final int DEFAULT_ZOOM = 15;
-    private FusedLocationProviderClient fusedLocationClient; //Used to get last known position
-    private Geocoder geocoder; //Used to get location from longitude and latitude
 
 
-    private boolean mLocationPermissionGranted; //true if user has given location permission, false otherwise
+    private AddressResultReceiver resultReceiver;
 
-    private TextView currentPositionTextView; //Textview to show the current location
-
-    //private GeoDataClient geoDataClient;
-
-    private PlacesClient placesClient;
-
+    /**
+     * Used to get last known position
+     */
+    private FusedLocationProviderClient fusedLocationClient;
+    /**
+     * Our map
+     */
     private GoogleMap mMap;
+
+    /**
+     * The last known location
+     */
     private Location mLastKnownLocation;
+
+    /**
+     * The default location, right now Sidney
+     */
     private LatLng mDefaultLocation = new LatLng(-33.8523341, 151.2106085);
 
+    /**
+     * True if user has given location permission, false otherwise
+     */
+    private boolean mLocationPermissionGranted;
 
-    // Used for selecting the current place.
-    private static final int M_MAX_ENTRIES = 5;
-    private String[] mLikelyPlaceNames;
-    private String[] mLikelyPlaceAddresses;
-    private String[] mLikelyPlaceAttributions;
-    private LatLng[] mLikelyPlaceLatLngs;
+
+
+    //UI
+    private TextView currentPositionTextView; //Textview to show the current location
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_view);
-        resultReceiver=new AddressResultReceiver(new Handler());
-        geocoder = new Geocoder(this, Locale.getDefault());
-        currentPositionTextView = findViewById(R.id.currentPositionTextView);
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        //geoDataClient = Places.getGeoDataClient(this);
-        Places.initialize(getApplicationContext(), String.valueOf(R.string.google_maps_key));
-        placesClient = Places.createClient(this);
 
-        //getLocationPermission();
-        //updateLocation();
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        resultReceiver=new AddressResultReceiver(new Handler());
+
+        //UI
+        currentPositionTextView = findViewById(R.id.currentPositionTextView);
+
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -144,8 +136,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-
-
+    /**
+     * Called when the map is ready.
+     * Tries to get the permission that is needed and updates the map and the current position text field.
+     * @param googleMap
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -156,16 +151,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         getDeviceLocation();
 
-        //startIntentService();
 
     }
 
-
+    /**
+     * Get the best and most recent location of the device, which may be null in rare
+     * cases when a location is not available.
+     */
     private void getDeviceLocation() {
-        /*
-         * Get the best and most recent location of the device, which may be null in rare
-         * cases when a location is not available.
-         */
+
         try {
             if (mLocationPermissionGranted) {
                 Task locationResult = fusedLocationClient.getLastLocation();
@@ -178,15 +172,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(mLastKnownLocation.getLatitude(),
                                             mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-                            startIntentService();
+
 
                         } else {
-                            //Log.d(TAG, "Current location is null. Using defaults.");
-                            //Log.e(TAG, "Exception: %s", task.getException());
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
                             mMap.getUiSettings().setMyLocationButtonEnabled(false);
 
                         }
+                        StartAddressIntentService();
                     }
                 });
             }
@@ -195,6 +188,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    /**
+     *
+     */
     private void updateLocationUI() {
         if(mMap == null) {
             return;
@@ -214,14 +210,28 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    protected void startIntentService() {
+    /**
+     * Starts the intent service that tries to get the address based on our current location.
+     */
+    private void StartAddressIntentService() {
+        if(mLastKnownLocation!=null){
         Intent intent = new Intent(this, FetchAddressIntentService.class);
         intent.putExtra(Constants.RECEIVER, resultReceiver);
         intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLastKnownLocation);
         startService(intent);
+        }else{
+            setAddress(getString(R.string.no_address_found));
+        }
     }
 
-    class AddressResultReceiver extends ResultReceiver {
+    private void setAddress(String address) {
+        currentPositionTextView.setText(address);
+    }
+
+    /**
+     * Receives the results of the address intent service
+     */
+    private class AddressResultReceiver extends ResultReceiver {
 
         private String addressOutput;
 
@@ -248,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         private void displayAddressOutput() {
-            currentPositionTextView.setText(addressOutput);
+            setAddress(addressOutput);
         }
 
 
