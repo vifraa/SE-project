@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         geocoder = new Geocoder(this, Locale.getDefault());
         positionTextView = findViewById(R.id.latitudeTextView);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        
+
         getLocationPermission();
         updateLocation();
     }
