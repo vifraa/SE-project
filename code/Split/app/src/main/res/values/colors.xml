@@ -8,4 +8,6 @@
     <color name="secondaryText">#686868</color>
     <color name="red">#FF5252</color>
     <color name="blue">#5E9EFF</color>
+    <color name="green">#8BC34A</color>
+    <color name="purple">#9C27B0</color>
 </resources>
