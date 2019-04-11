@@ -16,7 +16,6 @@ public class LoginActivity extends AppCompatActivity {
         final Button login = findViewById(R.id.googleLogInButton);
         final Button fbLogin = findViewById(R.id.facebookButton);
 
-
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
