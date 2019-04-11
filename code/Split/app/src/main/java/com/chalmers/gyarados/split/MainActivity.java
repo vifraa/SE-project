@@ -18,8 +18,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
