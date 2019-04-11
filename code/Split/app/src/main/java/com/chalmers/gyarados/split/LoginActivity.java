@@ -14,7 +14,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.login_view);
 
         final Button login = findViewById(R.id.googleLogInButton);
-        final Button fbLogin = findViewById(R.id.facebook_button);
+        final Button fbLogin = findViewById(R.id.facebookButton);
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -24,7 +24,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        login.setOnClickListener(new View.OnClickListener() {
+        fbLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);

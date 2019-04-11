@@ -21,8 +21,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
@@ -81,9 +81,9 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Called when user answered the request permission prompt
-     * @param requestCode 
+     * @param requestCode
      * @param permissions the permissions you have asked for
-     * @param grantResults
+     * @param grantResults the results
      */
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -126,6 +126,9 @@ public class MainActivity extends AppCompatActivity {
                                     String error = "Couldn't find your address";
                                     positionTextView.setText(error);
                                 }
+                            }else{
+                                String error = "Couldn't find your address";
+                                positionTextView.setText(error);
                             }
                         }
                     });
