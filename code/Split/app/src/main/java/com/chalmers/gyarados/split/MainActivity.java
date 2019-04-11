@@ -113,6 +113,9 @@ public class MainActivity extends AppCompatActivity {
                                     String error = "Couldn't find your address";
                                     positionTextView.setText(error);
                                 }
+                            }else{
+                                String error = "Couldn't find your address";
+                                positionTextView.setText(error);
                             }
                         }
                     });
