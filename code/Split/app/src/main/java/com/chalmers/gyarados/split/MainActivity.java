@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         geocoder = new Geocoder(this, Locale.getDefault());
         positionTextView = findViewById(R.id.latitudeTextView);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        
+
         getLocationPermission();
         updateLocation();
     }
@@ -68,8 +68,8 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Called when user answered the request permission prompt
-     * @param requestCode
-     * @param permissions
+     * @param requestCode 
+     * @param permissions the permissions you have asked for
      * @param grantResults
      */
     @Override
