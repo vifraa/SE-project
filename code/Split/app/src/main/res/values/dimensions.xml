@@ -1,2 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <dimensions name="font_size_small">10sp</dimensions>
+    <dimensions name="font_size_medium">18sp</dimensions>
+    <dimensions name="font_size_large">36sp</dimensions>
+</resources>
