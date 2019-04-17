@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 public class ChatMessage {
 
     private @Id String messageId;
+    private String groupid;
     private MessageType type;
     private String content;
     private String sender;
@@ -59,6 +60,14 @@ public class ChatMessage {
 
     public String getMessageId() {
         return messageId;
+    }
+
+    public String getGroupid() {
+        return groupid;
+    }
+
+    public void setGroupid(String groupid) {
+        this.groupid = groupid;
     }
 
     public void setMessageId(String messageId) {

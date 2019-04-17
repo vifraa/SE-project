@@ -4,6 +4,7 @@ import gyarados.splitbackend.WebSocketEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -28,9 +29,10 @@ public class ChatController {
      * @param chatMessage The specified chat message to send.
      * @return The ChatMessage that are being sent.
      */
-    @MessageMapping("/chat.sendMessage")
-    @SendTo("/topic/public")
-    public ChatMessage sendMessage(@Payload ChatMessage chatMessage){
+    @MessageMapping("/chat/{groupId}/sendMessage")
+    @SendTo("/topic/{groupId}")
+    public ChatMessage sendMessage(@DestinationVariable String groupId, @Payload ChatMessage chatMessage){
+        chatMessage.setGroupid(groupId);
         chatMessageService.add(chatMessage);
         logger.info("Message sent: " + chatMessage.toString());
         return chatMessage;
@@ -44,9 +46,10 @@ public class ChatController {
      * @param headerAccessor object to work with message headers.
      * @return The ChatMessage that are being sent.
      */
-    @MessageMapping("/chat.addUser")
-    @SendTo("/topic/public")
-    public ChatMessage addUser(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor){
+    @MessageMapping("/chat/{groupId}/addUser")
+    @SendTo("/topic/{groupId}")
+    public ChatMessage addUser(@DestinationVariable String groupId, @Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor){
+        chatMessage.setGroupid(groupId);
         chatMessageService.add(chatMessage);
         logger.info("User added: " + chatMessage.toString());
         headerAccessor.getSessionAttributes().put("sender", chatMessage.getSender());
