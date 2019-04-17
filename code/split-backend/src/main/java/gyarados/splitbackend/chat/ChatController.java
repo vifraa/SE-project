@@ -10,14 +10,24 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
+/**
+ * ChatController provides the endpoints for the chat parts of the application.
+ */
 @Controller
 public class ChatController {
 
+    // Logger used to log actions in the controller.
     private static final Logger logger = LoggerFactory.getLogger(WebSocketEventListener.class);
 
     @Autowired
     private ChatMessageService chatMessageService;
 
+    /**
+     * sendMessage sends an ChatMessage to all connections that are subscribed to the endpoint
+     * specified in the @SendTo annotation.
+     * @param chatMessage The specified chat message to send.
+     * @return The ChatMessage that are being sent.
+     */
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")
     public ChatMessage sendMessage(@Payload ChatMessage chatMessage){
@@ -26,6 +36,14 @@ public class ChatController {
         return chatMessage;
     }
 
+    /**
+     * addUser sends an ChatMessage to all connections that are subscribed to the endpoint
+     * soecified in the @SendTo annotation. The ChatMessage that is sent is to notify that an
+     * user has joined the channel.
+     * @param chatMessage The message to be sent.
+     * @param headerAccessor object to work with message headers.
+     * @return The ChatMessage that are being sent.
+     */
     @MessageMapping("/chat.addUser")
     @SendTo("/topic/public")
     public ChatMessage addUser(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor){

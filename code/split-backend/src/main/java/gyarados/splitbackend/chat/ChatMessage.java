@@ -3,6 +3,9 @@ package gyarados.splitbackend.chat;
 
 import org.springframework.data.annotation.Id;
 
+/**
+ * ChatMessage is a representation of a message that is sent in chats.
+ */
 public class ChatMessage {
 
     private @Id String messageId;
@@ -11,6 +14,9 @@ public class ChatMessage {
     private String sender;
 
 
+    /**
+     * MessageType is an enum responsible for declaring the type of the message.
+     */
     public enum MessageType {
         CHAT,
         JOIN,
