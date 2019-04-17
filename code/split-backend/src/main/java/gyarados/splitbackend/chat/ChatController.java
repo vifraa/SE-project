@@ -9,6 +9,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
 /**
@@ -22,6 +23,15 @@ public class ChatController {
 
     @Autowired
     private ChatMessageService chatMessageService;
+
+
+    @MessageMapping("/find-group")
+    @SendToUser("/queue/find-group")
+    public String findGroup(ChatMessage message){
+        logger.info("Findgroup called!");
+        return "group13";
+    }
+
 
     /**
      * sendMessage sends an ChatMessage to all connections that are subscribed to the endpoint
@@ -55,6 +65,5 @@ public class ChatController {
         headerAccessor.getSessionAttributes().put("sender", chatMessage.getSender());
         return chatMessage;
     }
-
 
 }
