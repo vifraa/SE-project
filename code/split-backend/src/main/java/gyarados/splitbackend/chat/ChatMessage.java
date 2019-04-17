@@ -1,10 +1,11 @@
-package gyarados.splitbackend.Chat;
+package gyarados.splitbackend.chat;
 
-//import javax.persistence.Entity;
 
-// @Entity
+import org.springframework.data.annotation.Id;
+
 public class ChatMessage {
 
+    private @Id String messageId;
     private MessageType type;
     private String content;
     private String sender;
@@ -48,6 +49,14 @@ public class ChatMessage {
 
     public String getSender() {
         return sender;
+    }
+
+    public String getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
     }
 
 

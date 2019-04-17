@@ -1,6 +1,6 @@
 package gyarados.splitbackend;
 
-import gyarados.splitbackend.Chat.ChatMessage;
+import gyarados.splitbackend.chat.ChatMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
