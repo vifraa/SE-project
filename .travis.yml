@@ -1,0 +1,5 @@
+language: java
+
+before_install:
+  - cd code/split
+#  - cd code/split-be
