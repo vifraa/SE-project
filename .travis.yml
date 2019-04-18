@@ -1,7 +1,14 @@
 language: java
-
+android:
+ components:
+    - platform-tools
+    - tools
+    - build-tools-26.0.2
+    - android-26
+    - extra-android-m2repository
+    
 env:
   - TEST_DIR=./code/Split
   #- TEST_DIR=code/split-be
 
-script: cd $TEST_DIR && gradle test
+script: cd $TEST_DIR && ./gradlew test
