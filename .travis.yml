@@ -1,7 +1,7 @@
 language: java
 
 env:
-  - TEST_DIR=code/split
+  - TEST_DIR=./code/split
   #- TEST_DIR=code/split-be
 
 script: cd $TEST_DIR && gradle test
