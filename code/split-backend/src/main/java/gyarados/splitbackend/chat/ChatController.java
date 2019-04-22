@@ -2,6 +2,8 @@ package gyarados.splitbackend.chat;
 
 import gyarados.splitbackend.group.GroupService;
 import gyarados.splitbackend.WebSocketEventListener;
+import gyarados.splitbackend.user.User;
+import gyarados.splitbackend.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +32,11 @@ public class ChatController {
 
     @MessageMapping("/find-group")
     @SendToUser("/queue/find-group")
-    public String findGroup(ChatMessage message){
+    public String findGroup(User user){
+
 
         String groupId = groupService.FindMatchingGroup();
-        logger.info(message.getSender() + "got matched with group: " + groupId);
+        logger.info(user.getName() + "got matched with group: " + groupId);
 
         return groupId;
     }
