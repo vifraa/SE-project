@@ -1,6 +1,6 @@
 package gyarados.splitbackend.chat;
 
-import gyarados.splitbackend.Group.GroupService;
+import gyarados.splitbackend.group.GroupService;
 import gyarados.splitbackend.WebSocketEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

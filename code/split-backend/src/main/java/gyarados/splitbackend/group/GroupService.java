@@ -1,4 +1,4 @@
-package gyarados.splitbackend.Group;
+package gyarados.splitbackend.group;
 
 import gyarados.splitbackend.chat.ChatMessage;
 import org.springframework.beans.factory.annotation.Autowired;

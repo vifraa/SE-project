@@ -1,4 +1,4 @@
-package gyarados.splitbackend.Group;
+package gyarados.splitbackend.group;
 
 
 import gyarados.splitbackend.chat.ChatMessage;
@@ -58,7 +58,7 @@ public class Group{
 
     @Override
     public String toString() {
-        return "Group{" +
+        return "group{" +
                 "groupId='" + groupId + '\'' +
                 ", direction='" + direction + '\'' +
                 ", messages=" + messages +

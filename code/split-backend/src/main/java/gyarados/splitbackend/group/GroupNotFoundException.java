@@ -1,4 +1,4 @@
-package gyarados.splitbackend.Group;
+package gyarados.splitbackend.group;
 
 /**
  * ChatMessageNotFoundException is an exeption thrown at runtime used when
@@ -7,6 +7,6 @@ package gyarados.splitbackend.Group;
 public class GroupNotFoundException extends RuntimeException {
 
     protected GroupNotFoundException(String id){
-        super("Could not find Group " + id);
+        super("Could not find group " + id);
     }
 }
