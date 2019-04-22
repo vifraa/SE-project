@@ -33,9 +33,7 @@ public class ChatController {
     @MessageMapping("/find-group")
     @SendToUser("/queue/find-group")
     public String findGroup(User user){
-
-
-        String groupId = groupService.FindMatchingGroup();
+        String groupId = groupService.FindMatchingGroup(user.getDestinationLatitude(), user.getDestinationLongitude(),user.getCurrentLatitude(), user.getCurrentLongitude());
         logger.info(user.getName() + "got matched with group: " + groupId);
 
         return groupId;
