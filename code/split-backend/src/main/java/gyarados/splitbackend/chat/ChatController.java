@@ -1,5 +1,6 @@
 package gyarados.splitbackend.chat;
 
+import gyarados.splitbackend.Group.GroupService;
 import gyarados.splitbackend.WebSocketEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,12 +25,17 @@ public class ChatController {
     @Autowired
     private ChatMessageService chatMessageService;
 
+    @Autowired
+    private GroupService groupService;
 
     @MessageMapping("/find-group")
     @SendToUser("/queue/find-group")
     public String findGroup(ChatMessage message){
-        logger.info("Findgroup called!");
-        return "group13";
+
+        String groupId = groupService.FindMatchingGroup();
+        logger.info(message.getSender() + "got matched with group: " + groupId);
+
+        return groupId;
     }
 
 
@@ -44,6 +50,7 @@ public class ChatController {
     public ChatMessage sendMessage(@DestinationVariable String groupId, @Payload ChatMessage chatMessage){
         chatMessage.setGroupid(groupId);
         chatMessageService.add(chatMessage);
+        groupService.addChatMessageToGroup(groupId, chatMessage);
         logger.info("Message sent: " + chatMessage.toString());
         return chatMessage;
     }
@@ -59,6 +66,8 @@ public class ChatController {
     @MessageMapping("/chat/{groupId}/addUser")
     @SendTo("/topic/{groupId}")
     public ChatMessage addUser(@DestinationVariable String groupId, @Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor){
+        groupService.addUserToGroup(groupId, chatMessage.getSender());
+        groupService.addChatMessageToGroup(groupId, chatMessage);
         chatMessage.setGroupid(groupId);
         chatMessageService.add(chatMessage);
         logger.info("User added: " + chatMessage.toString());
