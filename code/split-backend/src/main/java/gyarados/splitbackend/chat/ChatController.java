@@ -3,7 +3,6 @@ package gyarados.splitbackend.chat;
 import gyarados.splitbackend.group.GroupService;
 import gyarados.splitbackend.WebSocketEventListener;
 import gyarados.splitbackend.user.User;
-import gyarados.splitbackend.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,16 +23,26 @@ public class ChatController {
     // Logger used to log actions in the controller.
     private static final Logger logger = LoggerFactory.getLogger(WebSocketEventListener.class);
 
+    // Service to work with chatMessages.
     @Autowired
     private ChatMessageService chatMessageService;
 
+
+    // Service to work with groups.
     @Autowired
     private GroupService groupService;
 
+
+    /**
+     * findGroup returns an string containing the groupID of the group the user should join. It returns only to the
+     * user that sent the initial request.
+     * @param user The user that sent the request
+     * @return GroupID of a group.
+     */
     @MessageMapping("/find-group")
     @SendToUser("/queue/find-group")
     public String findGroup(User user){
-        String groupId = groupService.FindMatchingGroup(user.getDestinationLatitude(), user.getDestinationLongitude(),user.getCurrentLatitude(), user.getCurrentLongitude());
+        String groupId = groupService.findMatchingGroup(user.getDestinationLatitude(), user.getDestinationLongitude(),user.getCurrentLatitude(), user.getCurrentLongitude());
         logger.info(user.getName() + "got matched with group: " + groupId);
 
         return groupId;
@@ -67,7 +76,12 @@ public class ChatController {
     @MessageMapping("/chat/{groupId}/addUser")
     @SendTo("/topic/{groupId}")
     public ChatMessage addUser(@DestinationVariable String groupId, @Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor){
-        groupService.addUserToGroup(groupId, chatMessage.getSender());
+        // TODO fix this logic!!!
+        // Only placeholder to get the application working until a better fix.
+        User user = new User();
+        user.setName(chatMessage.getSender());
+
+        groupService.addUserToGroup(groupId, user);
         groupService.addChatMessageToGroup(groupId, chatMessage);
         chatMessage.setGroupid(groupId);
         chatMessageService.add(chatMessage);

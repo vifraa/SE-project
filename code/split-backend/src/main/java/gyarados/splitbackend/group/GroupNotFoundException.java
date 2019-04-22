@@ -1,8 +1,8 @@
 package gyarados.splitbackend.group;
 
 /**
- * ChatMessageNotFoundException is an exeption thrown at runtime used when
- * querying databases for ChatMessage where the specified id cannot be found in the database.
+ * GroupMessageNotFoundException is an exeption thrown at runtime used when
+ * querying databases for Groups where the specified id cannot be found in the database.
  */
 public class GroupNotFoundException extends RuntimeException {
 

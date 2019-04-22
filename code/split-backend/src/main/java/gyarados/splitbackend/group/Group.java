@@ -2,17 +2,21 @@ package gyarados.splitbackend.group;
 
 
 import gyarados.splitbackend.chat.ChatMessage;
+import gyarados.splitbackend.user.User;
 import org.springframework.data.annotation.Id;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Group contains logic related to a group.
+ */
 public class Group{
 
     private @Id String groupId;
     private String direction;
     private List<ChatMessage> messages;
-    private List<String> users;
+    private List<User> users;
 
 
     public Group(){
@@ -27,7 +31,7 @@ public class Group{
         messages.add(message);
     }
 
-    public void addUser(String user){
+    public void addUser(User user){
         users.add(user);
     }
 
@@ -55,11 +59,11 @@ public class Group{
         this.messages = messages;
     }
 
-    public List<String> getUsers() {
+    public List<User> getUsers() {
         return users;
     }
 
-    public void setUsers(List<String> users) {
+    public void setUsers(List<User> users) {
         this.users = users;
     }
 
