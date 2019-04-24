@@ -17,7 +17,11 @@ import android.widget.TextView;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
-
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -70,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     //UI
     private TextView currentPositionTextView; //Textview to show the current location
 
+    private Button findButton;
 
 
 
@@ -78,6 +83,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_view);
 
+        findButton = (Button) findViewById(R.id.findbutton);
+        findButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,GroupActivity.class);
+                startActivity(intent);
+            }
+        });
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         resultReceiver=new AddressResultReceiver(new Handler());
