@@ -71,8 +71,12 @@ public class GroupActivity extends AppCompatActivity {
      * Where the user can write his messages
      */
     private EditText writtenText;
+    /**
+     * Used th show an loading animation while finding a group
+     */
+    private ViewDialog viewDialog;
 
-    //------------------OTHER------------------------------------
+    //------------------OTHER PROPERTIES------------------------------------
     /**
      * An object that helps us creating messages in json format
      */
@@ -83,8 +87,9 @@ public class GroupActivity extends AppCompatActivity {
 
     //-------------------ANDROID METHODS---------------------------------------------
     /**
-     * The method that creates the activity
-     * @param savedInstanceState no idea
+     * The method that creates the activity.
+     * Properties are created, gui elements are initialized and we try to establish a connection to the websocket.
+     * @param savedInstanceState not used
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +109,9 @@ public class GroupActivity extends AppCompatActivity {
 
         compositeDisposable = new CompositeDisposable();
         jsonHelper=new JSONHelper();
+
+        viewDialog = new ViewDialog(this);
+        showCustomLoadingDialog();
 
 
         //Connecting to server
@@ -127,16 +135,21 @@ public class GroupActivity extends AppCompatActivity {
      * @param messageInJson The new message, in json format
      */
     private void newGroupMessageReceived(String messageInJson) {
+        hideCustomDialogIfNeeded();
         receivedMessages.setText(messageInJson);
     }
 
     //-------------SENDING MESSAGE------------------------------
+    /**
+     * Creates a json string with the given values. The string represents a find group message.
+     * @return a json string
+     */
     private String createFindGroupMessage() {
         return jsonHelper.createFindGroupMessage(NAME,57.684027,11.975490,57.735473, 12.112732);
     }
 
     /**
-     * Creates a json string with the given values
+     * Creates a json string with the given values that represents a chat message
      * @param sender The sender of message
      * @param content The content of the message
      * @param type The type of the message: CHAT, JOIN or LEAVE
@@ -157,14 +170,32 @@ public class GroupActivity extends AppCompatActivity {
             compositeDisposable.add(mStompClient.send(destination, data)
                     .compose(applySchedulers()).subscribe(()
                                     -> Log.d(TAG, "STOMP echo send successfully"),
-                            throwable -> Log.e(TAG, "Error on subscribe topic", throwable)));
+                            throwable -> errorWhileSendingMessage(throwable)));
         }else{
             Log.d(TAG,"Didn't send message since it was null");
         }
 
     }
 
+
+
     //-----------------GUI METHODS----------------------------------
+
+    private void hideCustomDialogIfNeeded() {
+        if(viewDialog.isShowing()){
+            hideCustomLoadingDialog();
+        }
+    }
+
+    public void showCustomLoadingDialog() {
+
+        //..show gif
+        viewDialog.showDialog();
+    }
+
+    public void hideCustomLoadingDialog(){
+        viewDialog.hideDialog();
+    }
     /**
      * Sends a message to the earlier initialized group number.
      * @param message The message that are to be sent to the server
@@ -199,7 +230,8 @@ public class GroupActivity extends AppCompatActivity {
                     sendMessage(CHAT_PREFIX+myGroup+ CHAT_ADD_USER_SUFFIX, createChatMessage(NAME,null,"JOIN"));
 
                 }, throwable -> {
-                    Log.e(TAG, "Error on subscribe topic", throwable);
+                    errorOnSubcribingOnTopic(throwable);
+
                 });
 
         compositeDisposable.add(dispTopic);
@@ -232,13 +264,16 @@ public class GroupActivity extends AppCompatActivity {
                             break;
                     }
                 }, throwable -> {
-                    Log.e(TAG, "Error on subscribe lifestyle", throwable);
+                    errorOnLifeCycle(throwable);
+
                 });
 
         compositeDisposable.add(dispLifecycle);
 
 
     }
+
+
 
 
     /**
@@ -248,7 +283,9 @@ public class GroupActivity extends AppCompatActivity {
     private void createSubscription(String destination){
         Disposable dispTopic = mStompClient.topic(destination)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(tm -> newGroupMessageReceived(tm.getPayload()));
+                .subscribe(tm -> newGroupMessageReceived(tm.getPayload()),
+                        throwable -> errorOnSubcribingOnTopic(throwable));
+
 
         compositeDisposable.add(dispTopic);
     }
@@ -266,7 +303,20 @@ public class GroupActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    //-------------------------ERROR HANDLING
 
+    private void errorWhileSendingMessage(Throwable throwable) {
+        hideCustomDialogIfNeeded();
+        Log.e(TAG, "Error while sending message", throwable);
+    }
+    private void errorOnSubcribingOnTopic(Throwable throwable) {
+        hideCustomDialogIfNeeded();
+        Log.e(TAG, "Error on subscribe topic", throwable);
+    }
+    private void errorOnLifeCycle(Throwable throwable) {
+        hideCustomDialogIfNeeded();
+        Log.e(TAG, "Error on subscribe lifestyle", throwable);
+    }
 
 
 
