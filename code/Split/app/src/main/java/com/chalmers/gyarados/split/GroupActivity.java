@@ -21,20 +21,16 @@ import ua.naiksoftware.stomp.StompClient;
 
 public class GroupActivity extends AppCompatActivity {
 
-
+    //-------------------------WEBSOCKET-ADDRESSES-------------------------
     private static final String ASK_FOR_GROUP_NUMBER = "/ws/find-group";
     private static final String RECEIVE_GROUP_NUMBER = "/user/queue/find-group";
     private static final String CHAT_PREFIX = "/ws/chat/";
     private static final String CHAT_ADD_USER_SUFFIX = "/addUser";
     private static final String CHAT_SEND_MESSAGE_SUFFIX = "/sendMessage";
-    /**
-     * Used for logging
-     */
-    private static final String TAG = "ClientActivity";
-    private static final String NAME = "Viktor";
 
+    //-------------------------CLIENT STUFF-----------------------------
     /**
-     * THe object we use to communicate with the server
+     * The object we use to communicate with the server
      */
     private StompClient mStompClient;
 
@@ -43,17 +39,27 @@ public class GroupActivity extends AppCompatActivity {
      */
     private CompositeDisposable compositeDisposable;
 
+    //-------------CONFIG VALUES---------------------------
+    /**
+     * Used for logging
+     */
+    private static final String TAG = "ClientActivity";
+
+    /**
+     * The users name
+     */
+    private static final String NAME = "Tobias";
+
     /**
      * The group the server gives to me
      */
     private String myGroup;
 
     /**
-     * The ip we eant to connect to, given by activity before
+     * The ip we want to connect to, given by activity before
      */
     private String ip;
 
-    private JSONHelper jsonHelper;
 
     //------------------GUI-------------------------------
 
@@ -65,6 +71,12 @@ public class GroupActivity extends AppCompatActivity {
      * Where the user can write his messages
      */
     private EditText writtenText;
+
+    //------------------OTHER------------------------------------
+    /**
+     * An object that helps us creating messages in json format
+     */
+    private JSONHelper jsonHelper;
 
 
 
@@ -85,7 +97,7 @@ public class GroupActivity extends AppCompatActivity {
         writtenText = findViewById(R.id.writtenText);
         Button sendButton = findViewById(R.id.sendButton);
 
-        sendButton.setOnClickListener(v -> onSend(writtenText.getText().toString()));
+        sendButton.setOnClickListener(v -> onSendButtonPressed(writtenText.getText().toString()));
 
         compositeDisposable = new CompositeDisposable();
         jsonHelper=new JSONHelper();
@@ -113,7 +125,7 @@ public class GroupActivity extends AppCompatActivity {
                     myGroup = topicMessage.getPayload();
 
                     //We want to subscribe on our given group
-                    createGroupNumberTopicListener("/topic/"+myGroup);
+                    createSubscription("/topic/"+myGroup);
                     //We want to join our given group
                     sendMessage(CHAT_PREFIX+myGroup+ CHAT_ADD_USER_SUFFIX,createMessage(NAME,null,"JOIN"));
 
@@ -167,12 +179,20 @@ public class GroupActivity extends AppCompatActivity {
      * Subscribing on the given destination
      * @param destination The destination we are trying to subscribe on
      */
-    private void createGroupNumberTopicListener(String destination){
+    private void createSubscription(String destination){
         Disposable dispTopic = mStompClient.topic(destination)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(tm -> receivedMessages.setText(tm.getPayload()));
+                .subscribe(tm -> newGroupMessageReceived(tm.getPayload()));
 
         compositeDisposable.add(dispTopic);
+    }
+
+    /**
+     * This method is called when the user receives a new message that belongs to the group
+     * @param messageInJson The new message, in json format
+     */
+    private void newGroupMessageReceived(String messageInJson) {
+        receivedMessages.setText(messageInJson);
     }
 
     /**
@@ -210,10 +230,10 @@ public class GroupActivity extends AppCompatActivity {
 
 
     /**
-     * Sends a message to the given group number
+     * Sends a message to the earlier initialized group number.
      * @param message The message that are to be sent to the server
      */
-    public void onSend(String message){
+    public void onSendButtonPressed(String message){
         if(message!=null && !message.isEmpty() && myGroup!=null){
             sendMessage(CHAT_PREFIX+ myGroup+ CHAT_SEND_MESSAGE_SUFFIX,createMessage(NAME,message,"CHAT"));
         }
