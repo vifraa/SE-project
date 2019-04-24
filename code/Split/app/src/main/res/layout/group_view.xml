@@ -65,9 +65,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/googlelogo" />
 
-        tools:layout_editor_absoluteY="0dp" />
 
-        ]]>
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
