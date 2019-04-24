@@ -12,6 +12,7 @@ import android.support.v4.app.ActivityCompat;
 
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -83,11 +84,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_view);
 
-        findButton = (Button) findViewById(R.id.findbutton);
+        findButton = findViewById(R.id.findbutton);
+        EditText ip_address = findViewById(R.id.ip_address);
         findButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this,GroupActivity.class);
+                intent.putExtra("IP",ip_address.getText().toString());
                 startActivity(intent);
             }
         });
