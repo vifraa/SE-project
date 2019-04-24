@@ -70,7 +70,51 @@ public class GroupService {
         return repository.save(group);
     }
 
+    /**
+     * Calculates the distance between two points (x1,y1) and (x2,y2)
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     * @return distance between points
+     */
+    public Double calcDist(Double x1, Double y1, Double x2, Double y2) {
+    		double distance = Math.sqrt(Math.pow(x2-x1, 2)+Math.pow(y2-y1, 2));
+    		return distance;
+    }
 
+    /**
+     * Retrieves the current longitude of a Group
+     */
+    public Double getGroupCurrentLongitude(Group group) {
+    		Double groupLongitude = group.getUsers().get(0).getCurrentLongitude();
+    		return groupLongitude;
+    }
+    
+    /**
+     * Retrieves the current latitude of a Group 
+     */
+    public Double getGroupCurrentLatitude(Group group) {
+    		Double groupLatitude = group.getUsers().get(0).getCurrentLatitude();
+    		return groupLatitude;
+    }
+    
+    /**
+     * Retrieves the destination latitude of a Group 
+     */
+    public Double getGroupDestinationLatitude(Group group) {
+		Double groupLatitude = group.getUsers().get(0).getDestinationLatitude();
+		return groupLatitude;
+    }
+    
+    /**
+     * Retrieves the destination longitude of a Group 
+     */
+    public Double getGroupDestinationLongitude(Group group) {
+		Double groupLatitude = group.getUsers().get(0).getDestinationLatitude();
+		return groupLatitude;
+    }
+    
     /**
      * findMatchingGroup is responsible to return a groupID with a group that is a good choice of a group for the user.
      * If no good group exists, a new one is created and the id of that one returned.
@@ -80,35 +124,43 @@ public class GroupService {
      * @param currentLongitude
      * @return The id of the group.
      */
-    public String findMatchingGroup(Double destLatitude, Double destLongitude, Double currentLatitude, Double currentLongitude){
-
-        /*
+    public Group findMatchingGroup(Double destLatitude, Double destLongitude, Double currentLatitude, Double currentLongitude){
 
         List<Group> allGroups = repository.findAll();
-        List<Group> potentialGroups = new ArrayList<>();
-
-
-        TODO A group needs a calculated position
+        List<Group> potentialGroups = new ArrayList<Group>();
+        Group matchedGroup;
+        /*TODO A group needs a calculated position
         Currently we dont have that, instead you can use the below code to get one users position instead temporarily
         just to get it working.
-        group.getUsers().get(0).getCurrentLatitude
-
-
+        this.currentLongitude = group.getUsers().get(0).getCurrentLongitude
+		*/
+        
+        // 1) List all possible groups within a maximum destination distance from users preferred distance
         for (Group group: allGroups) {
-            // CALCULATE DISTANCE
-
-            // IF GOOD
-            potentialGroups.add(group);
-
-            // ELSE CONTINUE
+            Double groupDestLongitude = getGroupDestinationLongitude(group);
+            Double groupDestLatitude = getGroupDestinationLatitude(group);
+            Double destinationDistance = calcDist(groupDestLatitude, groupDestLongitude, destLatitude, destLongitude);
+			
+            		//Add Exception Handling
+            if(destinationDistance <= 40.0)
+            		potentialGroups.add(group);
         }
-
-
-        // Second loop to calculate if destination is close.
-
-
-        */
-
+        //2) Loop and choose the group with the minimum current distance from users current distance
+        for (Group group: potentialGroups) {
+        		Double groupCurrentLongitude = getGroupCurrentLongitude(group);
+        		Double groupCurrentLatitude = getGroupCurrentLatitude(group);
+        		Double matchedDistance;
+        		Double currentDistance = calcDist(groupCurrentLatitude, groupCurrentLongitude, currentLatitude, currentLongitude);
+        			if(currentDistance < matchedDistance || matchedGroup==null) {
+        			matchedDistance = currentDistance;
+        			matchedGroup = group;	
+        		}
+        		
+        		
+         }
+	
+        return matchedGroup;
+        
         // STEPS
 
         // CALCULATE BOUNDRY FOR USERS POSITION
@@ -121,7 +173,7 @@ public class GroupService {
 
 
         // Current implementation change to above when it is working.
-        List<Group> groups = findAll();
+        /*List<Group> groups = findAll();
 
 
         if(groups.size() > 0){
@@ -129,7 +181,7 @@ public class GroupService {
         }else{
             Group newGroup = new Group();
             Group createdGroup = repository.save(newGroup);
-            return createdGroup.getGroupId();
+            return createdGroup.getGroupId();*/
         }
 
     }
