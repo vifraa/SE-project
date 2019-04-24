@@ -21,38 +21,42 @@ public class GroupService {
 
     /**
      * findById finds and returns an Group that matches the id.
+     *
      * @param id The id of the group we want to find.
      * @return The group.
      * @throws GroupNotFoundException if there is no group with the given id.
      */
-    public Group findById(String id){
+    public Group findById(String id) {
         return repository.findById(id).orElseThrow(() -> new GroupNotFoundException(id));
     }
 
     /**
      * Finds and returns all groups in the collection.
+     *
      * @return The groups.
      */
-    public List<Group> findAll(){
+    public List<Group> findAll() {
         return repository.findAll();
     }
 
     /**
      * Adds a group to the collection.
+     *
      * @param group The group we want to save.
      * @return The created group.
      */
-    public Group add(Group group){
+    public Group add(Group group) {
         return repository.save(group);
     }
 
     /**
      * addUserToGroup adds an user to the group specified by the groupID parameter.
+     *
      * @param groupID The group we want to add the user to.
-     * @param user The user we want to add.
+     * @param user    The user we want to add.
      * @return The group after the operation.
      */
-    public Group addUserToGroup(String groupID, User user){
+    public Group addUserToGroup(String groupID, User user) {
         Group group = repository.findById(groupID).orElseThrow(() -> new GroupNotFoundException(groupID));
         group.addUser(user);
         return repository.save(group);
@@ -60,11 +64,12 @@ public class GroupService {
 
     /**
      * addChatMessageToGroup adds a chatmessage to the group specified by the groupID parameter.
+     *
      * @param groupID The group we want to add the chatmessage to.
      * @param message The message we want to add.
      * @return The group after the operation.
      */
-    public Group addChatMessageToGroup(String groupID, ChatMessage message){
+    public Group addChatMessageToGroup(String groupID, ChatMessage message) {
         Group group = repository.findById(groupID).orElseThrow(() -> new GroupNotFoundException(groupID));
         group.addMessage(message);
         return repository.save(group);
@@ -72,6 +77,7 @@ public class GroupService {
 
     /**
      * Calculates the distance between two points (x1,y1) and (x2,y2)
+     *
      * @param x1
      * @param y1
      * @param x2
@@ -79,52 +85,53 @@ public class GroupService {
      * @return distance between points
      */
     public Double calcDist(Double x1, Double y1, Double x2, Double y2) {
-    		double distance = Math.sqrt(Math.pow(x2-x1, 2)+Math.pow(y2-y1, 2));
-    		return distance;
+        double distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+        return distance;
     }
 
     /**
      * Retrieves the current longitude of a Group
      */
     public Double getGroupCurrentLongitude(Group group) {
-    		Double groupLongitude = group.getUsers().get(0).getCurrentLongitude();
-    		return groupLongitude;
+        Double groupLongitude = group.getUsers().get(0).getCurrentLongitude();
+        return groupLongitude;
     }
-    
+
     /**
-     * Retrieves the current latitude of a Group 
+     * Retrieves the current latitude of a Group
      */
     public Double getGroupCurrentLatitude(Group group) {
-    		Double groupLatitude = group.getUsers().get(0).getCurrentLatitude();
-    		return groupLatitude;
+        Double groupLatitude = group.getUsers().get(0).getCurrentLatitude();
+        return groupLatitude;
     }
-    
+
     /**
-     * Retrieves the destination latitude of a Group 
+     * Retrieves the destination latitude of a Group
      */
     public Double getGroupDestinationLatitude(Group group) {
-		Double groupLatitude = group.getUsers().get(0).getDestinationLatitude();
-		return groupLatitude;
+        Double groupLatitude = group.getUsers().get(0).getDestinationLatitude();
+        return groupLatitude;
     }
-    
+
     /**
-     * Retrieves the destination longitude of a Group 
+     * Retrieves the destination longitude of a Group
      */
     public Double getGroupDestinationLongitude(Group group) {
-		Double groupLatitude = group.getUsers().get(0).getDestinationLatitude();
-		return groupLatitude;
+        Double groupLatitude = group.getUsers().get(0).getDestinationLatitude();
+        return groupLatitude;
     }
-    
+
     /**
      * findMatchingGroup is responsible to return a groupID with a group that is a good choice of a group for the user.
      * If no good group exists, a new one is created and the id of that one returned.
+     *
      * @param destLatitude
      * @param destLongitude
      * @param currentLatitude
      * @param currentLongitude
      * @return The id of the group.
      */
-    public Group findMatchingGroup(Double destLatitude, Double destLongitude, Double currentLatitude, Double currentLongitude){
+    public String findMatchingGroup(Double destLatitude, Double destLongitude, Double currentLatitude, Double currentLongitude) {
 
         List<Group> allGroups = repository.findAll();
         List<Group> potentialGroups = new ArrayList<Group>();
@@ -134,9 +141,9 @@ public class GroupService {
         just to get it working.
         this.currentLongitude = group.getUsers().get(0).getCurrentLongitude
 		*/
-        
+
         // 1) List all possible groups within a maximum destination distance from users preferred distance
-        for (Group group: allGroups) {
+        /*for (Group group: allGroups) {
             Double groupDestLongitude = getGroupDestinationLongitude(group);
             Double groupDestLatitude = getGroupDestinationLatitude(group);
             Double destinationDistance = calcDist(groupDestLatitude, groupDestLongitude, destLatitude, destLongitude);
@@ -171,21 +178,23 @@ public class GroupService {
 
         // ELSE CREATE NEW
 
-
+        */
         // Current implementation change to above when it is working.
-        /*List<Group> groups = findAll();
+        List<Group> groups = findAll();
 
 
-        if(groups.size() > 0){
+        if (groups.size() > 0) {
             return groups.get(0).getGroupId();
-        }else{
+        } else {
             Group newGroup = new Group();
             Group createdGroup = repository.save(newGroup);
-            return createdGroup.getGroupId();*/
+            return createdGroup.getGroupId();
         }
 
     }
-
 }
+
+
+
 
 
