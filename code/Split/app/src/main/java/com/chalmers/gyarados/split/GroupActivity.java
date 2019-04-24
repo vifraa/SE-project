@@ -3,8 +3,8 @@ package com.chalmers.gyarados.split;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 
@@ -81,7 +81,7 @@ public class GroupActivity extends AppCompatActivity {
 
 
 
-
+    //-------------------ANDROID METHODS---------------------------------------------
     /**
      * The method that creates the activity
      * @param savedInstanceState no idea
@@ -91,13 +91,16 @@ public class GroupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.group_view);
 
-        //initializing gui
+        //Retrieving the ip-address given in activity before
         ip=getIntent().getStringExtra("IP");
+
+
+        //initializing gui
         receivedMessages = findViewById(R.id.receivedMessages);
         writtenText = findViewById(R.id.writtenText);
-        Button sendButton = findViewById(R.id.sendButton);
-
+        ImageButton sendButton = findViewById(R.id.sendbutton);
         sendButton.setOnClickListener(v -> onSendButtonPressed(writtenText.getText().toString()));
+
 
         compositeDisposable = new CompositeDisposable();
         jsonHelper=new JSONHelper();
@@ -106,6 +109,72 @@ public class GroupActivity extends AppCompatActivity {
         //Connecting to server
         connectStomp();
     }
+    /**
+     * When the activity is to be destroyed the client will disconnect from the server.
+     * We will also dispose all our current subscriptions.
+     */
+    @Override
+    protected void onDestroy() {
+        mStompClient.disconnect();
+
+        if (compositeDisposable != null) compositeDisposable.dispose();
+        super.onDestroy();
+    }
+
+    //-------------RECEIVING MESSAGE-------------------------------
+    /**
+     * This method is called when the user receives a new message that belongs to the group
+     * @param messageInJson The new message, in json format
+     */
+    private void newGroupMessageReceived(String messageInJson) {
+        receivedMessages.setText(messageInJson);
+    }
+
+    //-------------SENDING MESSAGE------------------------------
+    private String createFindGroupMessage() {
+        return jsonHelper.createFindGroupMessage(NAME,57.684027,11.975490,57.735473, 12.112732);
+    }
+
+    /**
+     * Creates a json string with the given values
+     * @param sender The sender of message
+     * @param content The content of the message
+     * @param type The type of the message: CHAT, JOIN or LEAVE
+     * @return a json string
+     */
+    public String createChatMessage(String sender, String content, String type){
+        return jsonHelper.createChatMessage(sender,content,type);
+    }
+
+
+    /**
+     * Sending the given data to the given destination
+     * @param destination The path we want to send to
+     * @param data The message we want to send
+     */
+    private void sendMessage(String destination, String data){
+        if(data!=null){
+            compositeDisposable.add(mStompClient.send(destination, data)
+                    .compose(applySchedulers()).subscribe(()
+                                    -> Log.d(TAG, "STOMP echo send successfully"),
+                            throwable -> Log.e(TAG, "Error on subscribe topic", throwable)));
+        }else{
+            Log.d(TAG,"Didn't send message since it was null");
+        }
+
+    }
+
+    //-----------------GUI METHODS----------------------------------
+    /**
+     * Sends a message to the earlier initialized group number.
+     * @param message The message that are to be sent to the server
+     */
+    public void onSendButtonPressed(String message){
+        if(message!=null && !message.isEmpty() && myGroup!=null){
+            sendMessage(CHAT_PREFIX+ myGroup+ CHAT_SEND_MESSAGE_SUFFIX, createChatMessage(NAME,message,"CHAT"));
+        }
+    }
+    //-------------WEBSOCKET---------------------------------------
 
     /**
      * Connects to the server.
@@ -127,7 +196,7 @@ public class GroupActivity extends AppCompatActivity {
                     //We want to subscribe on our given group
                     createSubscription("/topic/"+myGroup);
                     //We want to join our given group
-                    sendMessage(CHAT_PREFIX+myGroup+ CHAT_ADD_USER_SUFFIX,createMessage(NAME,null,"JOIN"));
+                    sendMessage(CHAT_PREFIX+myGroup+ CHAT_ADD_USER_SUFFIX, createChatMessage(NAME,null,"JOIN"));
 
                 }, throwable -> {
                     Log.e(TAG, "Error on subscribe topic", throwable);
@@ -171,9 +240,6 @@ public class GroupActivity extends AppCompatActivity {
 
     }
 
-    private String createFindGroupMessage() {
-        return jsonHelper.createFindGroupMessage(NAME,57.684027,11.975490,57.735473, 12.112732);
-    }
 
     /**
      * Subscribing on the given destination
@@ -185,34 +251,6 @@ public class GroupActivity extends AppCompatActivity {
                 .subscribe(tm -> newGroupMessageReceived(tm.getPayload()));
 
         compositeDisposable.add(dispTopic);
-    }
-
-    /**
-     * This method is called when the user receives a new message that belongs to the group
-     * @param messageInJson The new message, in json format
-     */
-    private void newGroupMessageReceived(String messageInJson) {
-        receivedMessages.setText(messageInJson);
-    }
-
-    /**
-     * Sending the given data to the given destination
-     * @param destination The path we want to send to
-     * @param data The message we want to send
-     */
-    private void sendMessage(String destination, String data){
-        if(data!=null){
-            compositeDisposable.add(mStompClient.send(destination, data)
-                    .compose(applySchedulers()).subscribe(()
-                                    -> Log.d(TAG, "STOMP echo send successfully"),
-                            throwable -> Log.e(TAG, "Error on subscribe topic", throwable)));
-
-            //,
-            //throwable -> Log.e(TAG, "Error send STOMP echo", throwable)));
-        }else{
-            Log.d(TAG,"Didn't send message since it was null");
-        }
-
     }
 
     /**
@@ -229,36 +267,9 @@ public class GroupActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * Sends a message to the earlier initialized group number.
-     * @param message The message that are to be sent to the server
-     */
-    public void onSendButtonPressed(String message){
-        if(message!=null && !message.isEmpty() && myGroup!=null){
-            sendMessage(CHAT_PREFIX+ myGroup+ CHAT_SEND_MESSAGE_SUFFIX,createMessage(NAME,message,"CHAT"));
-        }
-    }
 
-    /**
-     * Creates a json string with the given values
-     * @param sender The sender of message
-     * @param content The content of the message
-     * @param type The type of the message: CHAT, JOIN or LEAVE
-     * @return a json string
-     */
-    public String createMessage(String sender,String content, String type){
-        return jsonHelper.createChatMessage(sender,content,type);
-    }
 
-    /**
-     * When the activity is to be destroyed the client will disconnect from the server.
-     * We will also dispose all our current subscriptions.
-     */
-    @Override
-    protected void onDestroy() {
-        mStompClient.disconnect();
 
-        if (compositeDisposable != null) compositeDisposable.dispose();
-        super.onDestroy();
-    }
+
+
 }
