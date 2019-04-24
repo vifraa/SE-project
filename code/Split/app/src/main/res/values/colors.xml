@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="background">#4CAF50</color>
-    <color name="whitex">#F8F8F8</color>
+    <color name="colorBackground">#F8F8F8</color>
     <color name="colorPrimaryDark">#27F8F8F8</color>
     <color name="colorAccent">#A4F8F8F8</color>
     <color name="colorPrimary">#73F19F</color>
@@ -13,4 +13,5 @@
     <color name="pink">#E91E63</color>
     <color name="purple">#9C27B0</color>
     <color name="lightGray">#EBEBEB</color>
+    <color name="white">#FFFFFF</color>
 </resources>
