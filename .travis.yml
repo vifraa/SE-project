@@ -1,4 +1,4 @@
-language: java
+language: android
 android:
  components:
     - platform-tools
@@ -7,6 +7,8 @@ android:
     - android-26
     - extra-android-m2repository
     
+before_install:
+    - yes | sdkmanager "platforms;android-28"
 env:
   - TEST_DIR=./code/Split
   #- TEST_DIR=code/split-be
