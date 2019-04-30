@@ -50,6 +50,11 @@ public class GroupService {
     }
 
     /**
+     * Deletes an group from the collection.
+     * @param group The group to delete.
+     */
+    public void delete(Group group) { repository.delete(group);}
+    /**
      * addUserToGroup adds an user to the group specified by the groupID parameter.
      *
      * @param groupID The group we want to add the user to.
@@ -131,7 +136,7 @@ public class GroupService {
      * @param currentLongitude
      * @return The id of the group.
      */
-    public String findMatchingGroup(Double destLatitude, Double destLongitude, Double currentLatitude, Double currentLongitude) {
+    public Group findMatchingGroup(Double destLatitude, Double destLongitude, Double currentLatitude, Double currentLongitude) {
 
         List<Group> allGroups = repository.findAll();
         List<Group> potentialGroups = new ArrayList<Group>();
@@ -184,11 +189,11 @@ public class GroupService {
 
 
         if (groups.size() > 0) {
-            return groups.get(0).getGroupId();
+            return groups.get(0);
         } else {
             Group newGroup = new Group();
             Group createdGroup = repository.save(newGroup);
-            return createdGroup.getGroupId();
+            return createdGroup;
         }
 
     }

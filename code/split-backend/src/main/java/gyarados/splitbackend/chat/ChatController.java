@@ -1,5 +1,6 @@
 package gyarados.splitbackend.chat;
 
+import gyarados.splitbackend.group.Group;
 import gyarados.splitbackend.group.GroupService;
 import gyarados.splitbackend.WebSocketEventListener;
 import gyarados.splitbackend.user.User;
@@ -41,11 +42,11 @@ public class ChatController {
      */
     @MessageMapping("/find-group")
     @SendToUser("/queue/find-group")
-    public String findGroup(User user){
-        String groupId = groupService.findMatchingGroup(user.getDestinationLatitude(), user.getDestinationLongitude(),user.getCurrentLatitude(), user.getCurrentLongitude());
-        logger.info(user.getName() + "got matched with group: " + groupId);
+    public Group findGroup(User user){
+        Group group = groupService.findMatchingGroup(user.getDestinationLatitude(), user.getDestinationLongitude(),user.getCurrentLatitude(), user.getCurrentLongitude());
+        logger.info(user.getName() + "got matched with group: " + group.getGroupId());
 
-        return groupId;
+        return group;
     }
 
 
