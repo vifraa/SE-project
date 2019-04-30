@@ -10,6 +10,9 @@ language: java
     
 #before_install:
 #    - yes | sdkmanager "platforms;android-28"
+services:
+    - mongodb
+
 env:
   #- TEST_DIR=./code/Split
   - TEST_DIR=code/split-backend
