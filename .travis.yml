@@ -1,16 +1,20 @@
-language: android
-android:
- components:
-    - platform-tools
-    - tools
-    - build-tools-26.0.2
-    - android-26
-    - extra-android-m2repository
+#language: android
+language: java
+#android:
+# components:
+#    - platform-tools
+#    - tools
+#    - build-tools-26.0.2
+#    - android-26
+#    - extra-android-m2repository
     
-before_install:
-    - yes | sdkmanager "platforms;android-28"
+#before_install:
+#    - yes | sdkmanager "platforms;android-28"
+services:
+    - mongodb
+
 env:
-  - TEST_DIR=./code/Split
-  #- TEST_DIR=code/split-be
+  #- TEST_DIR=./code/Split
+  - TEST_DIR=code/split-backend
 
 script: cd $TEST_DIR && ./gradlew test
