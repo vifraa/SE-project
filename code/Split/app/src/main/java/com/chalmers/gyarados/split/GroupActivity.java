@@ -186,11 +186,25 @@ public class GroupActivity extends AppCompatActivity {
         if(data!=null){
             compositeDisposable.add(mStompClient.send(destination, data)
                     .compose(applySchedulers()).subscribe(()
-                                    -> Log.d(TAG, "STOMP echo send successfully"),
+                                    -> Log.d(TAG, "Message send successfully"),
                             throwable -> errorWhileSendingMessage(throwable)));
         }else{
             Log.d(TAG,"Didn't send message since it was null");
         }
+
+    }
+
+    /**
+     * Sends leave message to server on main thread
+     * @param destination The path we want to send to
+     */
+    private void sendLeaveMessage(String destination){
+        compositeDisposable.add(mStompClient.send(destination,jsonHelper.createChatMessage(NAME,null,"LEAVE"))
+                .unsubscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(()
+                -> Log.d(TAG, "Leave message send successfully"),
+                throwable -> errorWhileSendingMessage(throwable)));
 
     }
 
@@ -200,7 +214,7 @@ public class GroupActivity extends AppCompatActivity {
         if (compositeDisposable != null){
             compositeDisposable.dispose();
         }
-        sendMessage(CHAT_PREFIX+myGroup+CHAT_LEAVING_GROUP_SUFFIX,jsonHelper.createChatMessage(NAME,null,"LEAVE"));
+        sendLeaveMessage(CHAT_PREFIX+myGroup+CHAT_LEAVING_GROUP_SUFFIX);
         mStompClient.disconnect();
 
         

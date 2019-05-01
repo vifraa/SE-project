@@ -99,23 +99,28 @@ public class ChatController {
      * specified in the @SendTo annotation. The ChatMessage that is sent is to notify that an
      * user has left the channel.
      * @param chatMessage The message to be sent.
-     * @param headerAccessor object to work with message headers.
      * @return The ChatMessage that are being sent.
      */
     @MessageMapping("/chat/{groupId}/leave")
     @SendTo("/topic/{groupId}")
-    public ChatMessage leaveUser(@DestinationVariable String groupId, @Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor){
-        //todo we need to find the user or just use name
+    public ChatMessage leaveUser(@DestinationVariable String groupId, @Payload ChatMessage chatMessage){
+        //todo we need to find the user
         chatMessage.setGroupid(groupId);
         groupService.removeUserFromGroup(null,groupId);
         logger.info("User left: " + chatMessage.toString());
-        headerAccessor.getSessionAttributes().put("sender", chatMessage.getSender());
         return chatMessage;
     }
 
+    /**
+     * getGroupInfo retrieves the group with the given groupid and sends an the group to the user that is
+     * subscribed to the endpoint specified in the @SendToUser annotation.
+     * @param chatMessage A message with info about the request.
+     * @return The ChatMessage that are being sent.
+     */
     @MessageMapping("/chat/{groupId}/getInfo")
     @SendToUser("/queue/getInfo/{groupId}")
-    public Group getGroupInfo(@DestinationVariable String groupId, @Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor){
+    public Group getGroupInfo(@DestinationVariable String groupId, @Payload ChatMessage chatMessage){
+        //todo perhaps we shouldn't return a group but a group info class?
         logger.info(chatMessage.getSender() + " asking for information about " + groupId);
         try{
             return groupService.findById(groupId);
