@@ -94,7 +94,14 @@ public class ChatController {
         headerAccessor.getSessionAttributes().put("sender", chatMessage.getSender());
         return chatMessage;
     }
-
+    /**
+     * leaveUser sends an ChatMessage to all connections that are subscribed to the endpoint
+     * specified in the @SendTo annotation. The ChatMessage that is sent is to notify that an
+     * user has left the channel.
+     * @param chatMessage The message to be sent.
+     * @param headerAccessor object to work with message headers.
+     * @return The ChatMessage that are being sent.
+     */
     @MessageMapping("/chat/{groupId}/leave")
     @SendTo("/topic/{groupId}")
     public ChatMessage leaveUser(@DestinationVariable String groupId, @Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor){
@@ -107,7 +114,7 @@ public class ChatController {
     }
 
     @MessageMapping("/chat/{groupId}/getInfo")
-    @SendToUser("/queue/{groupId}")
+    @SendToUser("/queue/getInfo/{groupId}")
     public Group getGroupInfo(@DestinationVariable String groupId, @Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor){
         logger.info(chatMessage.getSender() + " asking for information about " + groupId);
         try{

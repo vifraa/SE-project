@@ -31,6 +31,8 @@ public class GroupActivity extends AppCompatActivity {
     private static final String CHAT_ADD_USER_SUFFIX = "/addUser";
     private static final String CHAT_SEND_MESSAGE_SUFFIX = "/sendMessage";
     private static final String CHAT_ASK_FOR_GROUP_INFO = "/getInfo";
+    private static final String CHAT_LEAVING_GROUP_SUFFIX = "/leave";
+
 
     //-------------------------CLIENT STUFF-----------------------------
     /**
@@ -108,7 +110,9 @@ public class GroupActivity extends AppCompatActivity {
         receivedMessages = findViewById(R.id.receivedMessages);
         writtenText = findViewById(R.id.writtenText);
         ImageButton sendButton = findViewById(R.id.sendbutton);
+        ImageButton leaveButton = findViewById(R.id.leaveButton);
         sendButton.setOnClickListener(v -> onSendButtonPressed(writtenText.getText().toString()));
+        leaveButton.setOnClickListener(l -> onLeaveButtonPressed());
 
 
         compositeDisposable = new CompositeDisposable();
@@ -149,6 +153,7 @@ public class GroupActivity extends AppCompatActivity {
      */
     private void newGroupInfoReceived(String groupInfoInJson) {
         receivedMessages.setText(groupInfoInJson);
+        Log.d(TAG,"newGroupInfoReceived");
     }
 
     //-------------SENDING MESSAGE------------------------------
@@ -189,7 +194,19 @@ public class GroupActivity extends AppCompatActivity {
 
     }
 
+    //-----------------LEAVING----------------------------------------
+    
+    private void leaveGroup(){
+        if (compositeDisposable != null){
+            compositeDisposable.dispose();
+        }
+        sendMessage(CHAT_PREFIX+myGroup+CHAT_LEAVING_GROUP_SUFFIX,jsonHelper.createChatMessage(NAME,null,"LEAVE"));
+        mStompClient.disconnect();
 
+        
+        
+        
+    }
 
     //-----------------GUI METHODS----------------------------------
 
@@ -216,6 +233,12 @@ public class GroupActivity extends AppCompatActivity {
         if(message!=null && !message.isEmpty() && myGroup!=null){
             sendMessage(CHAT_PREFIX+ myGroup+ CHAT_SEND_MESSAGE_SUFFIX, createChatMessage(NAME,message,"CHAT"));
         }
+        //todo gui stuff
+    }
+
+    public void onLeaveButtonPressed(){
+        leaveGroup();
+        //todo gui stuff
     }
     //-------------WEBSOCKET---------------------------------------
 
@@ -234,7 +257,8 @@ public class GroupActivity extends AppCompatActivity {
         Disposable dispTopic = mStompClient.topic(RECEIVE_GROUP_NUMBER)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(topicMessage ->{
-                    JsonObject message = new JsonParser().parse(topicMessage.getPayload()).getAsJsonObject();
+                    //todo we need to check if the received message is ok
+                    JsonObject message = jsonHelper.stringToJSONObject(topicMessage.getPayload());
 
                     myGroup = message.get("groupId").getAsString();
 
@@ -331,7 +355,7 @@ public class GroupActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    //-------------------------ERROR HANDLING
+    //-------------------------ERROR HANDLING------------------------------
 
     private void errorWhileSendingMessage(Throwable throwable) {
         hideCustomDialogIfNeeded();
