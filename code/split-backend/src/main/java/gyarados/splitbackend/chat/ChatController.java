@@ -1,9 +1,11 @@
 package gyarados.splitbackend.chat;
 
 import gyarados.splitbackend.group.Group;
+import gyarados.splitbackend.group.GroupNotFoundException;
 import gyarados.splitbackend.group.GroupService;
 import gyarados.splitbackend.WebSocketEventListener;
 import gyarados.splitbackend.user.User;
+import gyarados.splitbackend.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,8 @@ public class ChatController {
     // Service to work with groups.
     @Autowired
     private GroupService groupService;
+
+
 
 
     /**
@@ -90,5 +94,31 @@ public class ChatController {
         headerAccessor.getSessionAttributes().put("sender", chatMessage.getSender());
         return chatMessage;
     }
+
+    @MessageMapping("/chat/{groupId}/leave")
+    @SendTo("/topic/{groupId}")
+    public ChatMessage leaveUser(@DestinationVariable String groupId, @Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor){
+        //todo we need to find the user or just use name
+        chatMessage.setGroupid(groupId);
+        groupService.removeUserFromGroup(null,groupId);
+        logger.info("User left: " + chatMessage.toString());
+        headerAccessor.getSessionAttributes().put("sender", chatMessage.getSender());
+        return chatMessage;
+    }
+
+    @MessageMapping("/chat/{groupId}/getInfo")
+    @SendToUser("/queue/{groupId}")
+    public Group getGroupInfo(@DestinationVariable String groupId, @Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor){
+        logger.info(chatMessage.getSender() + " asking for information about " + groupId);
+        try{
+            return groupService.findById(groupId);
+        }catch(GroupNotFoundException g){
+            logger.info("Couldn't retrieve information from " + groupId);
+            return null;
+        }
+
+    }
+
+
 
 }

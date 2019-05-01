@@ -8,6 +8,9 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import io.reactivex.CompletableTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -27,6 +30,7 @@ public class GroupActivity extends AppCompatActivity {
     private static final String CHAT_PREFIX = "/ws/chat/";
     private static final String CHAT_ADD_USER_SUFFIX = "/addUser";
     private static final String CHAT_SEND_MESSAGE_SUFFIX = "/sendMessage";
+    private static final String CHAT_ASK_FOR_GROUP_INFO = "/getInfo";
 
     //-------------------------CLIENT STUFF-----------------------------
     /**
@@ -139,6 +143,14 @@ public class GroupActivity extends AppCompatActivity {
         receivedMessages.setText(messageInJson);
     }
 
+    /**
+     * This method is called when the user receives a new message that belongs to the group
+     * @param groupInfoInJson The group info, in json format
+     */
+    private void newGroupInfoReceived(String groupInfoInJson) {
+        receivedMessages.setText(groupInfoInJson);
+    }
+
     //-------------SENDING MESSAGE------------------------------
     /**
      * Creates a json string with the given values. The string represents a find group message.
@@ -222,13 +234,18 @@ public class GroupActivity extends AppCompatActivity {
         Disposable dispTopic = mStompClient.topic(RECEIVE_GROUP_NUMBER)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(topicMessage ->{
-                    myGroup = topicMessage.getPayload();
+                    JsonObject message = new JsonParser().parse(topicMessage.getPayload()).getAsJsonObject();
 
-                    //We want to subscribe on our given group
-                    createSubscription("/topic/"+myGroup);
+                    myGroup = message.get("groupId").getAsString();
+
+                    //We want to subscribe to messages on our given group
+                    createRecevingMessageSubscription("/topic/"+myGroup);
+                    //We want to subscribe on group info
+                    createRecevingGroupInfoSubscription("/user/queue/getInfo/"+myGroup);
                     //We want to join our given group
                     sendMessage(CHAT_PREFIX+myGroup+ CHAT_ADD_USER_SUFFIX, createChatMessage(NAME,null,"JOIN"));
-
+                    //We want to send a message to receive group info
+                    sendMessage(CHAT_PREFIX+myGroup+CHAT_ASK_FOR_GROUP_INFO,createChatMessage(NAME,null,null));
                 }, throwable -> {
                     errorOnSubcribingOnTopic(throwable);
 
@@ -274,13 +291,11 @@ public class GroupActivity extends AppCompatActivity {
     }
 
 
-
-
     /**
      * Subscribing on the given destination
      * @param destination The destination we are trying to subscribe on
      */
-    private void createSubscription(String destination){
+    private void createRecevingMessageSubscription(String destination){
         Disposable dispTopic = mStompClient.topic(destination)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(tm -> newGroupMessageReceived(tm.getPayload()),
@@ -289,6 +304,19 @@ public class GroupActivity extends AppCompatActivity {
 
         compositeDisposable.add(dispTopic);
     }
+
+    private void createRecevingGroupInfoSubscription(String destination){
+        Disposable dispTopic = mStompClient.topic(destination)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(tm -> newGroupInfoReceived(tm.getPayload()),
+                        throwable -> errorOnSubcribingOnTopic(throwable));
+
+
+        compositeDisposable.add(dispTopic);
+    }
+
+
+
 
     /**
      * An object that ensures that a completable (like an observable) will be subscribed on and unsubscribed from on background threads
