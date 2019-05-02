@@ -2,14 +2,22 @@ package com.chalmers.gyarados.split;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 
-import java.util.HashMap;
-import java.util.Map;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 import io.reactivex.CompletableTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -31,6 +39,9 @@ public class GroupActivity extends AppCompatActivity {
     private static final String CHAT_PREFIX = "/ws/chat/";
     private static final String CHAT_ADD_USER_SUFFIX = "/addUser";
     private static final String CHAT_SEND_MESSAGE_SUFFIX = "/sendMessage";
+    private static final String CHAT_ASK_FOR_GROUP_INFO = "/getInfo";
+    private static final String CHAT_LEAVING_GROUP_SUFFIX = "/leave";
+
 
     //-------------------------CLIENT STUFF-----------------------------
     /**
@@ -87,7 +98,8 @@ public class GroupActivity extends AppCompatActivity {
     private JSONHelper jsonHelper;
 
 
-
+    private RecyclerView mMessageRecycler;
+    private MessageListAdapter mMessageAdapter;
 
     //-------------------ANDROID METHODS---------------------------------------------
     /**
@@ -105,10 +117,11 @@ public class GroupActivity extends AppCompatActivity {
 
 
         //initializing gui
-        receivedMessages = findViewById(R.id.receivedMessages);
         writtenText = findViewById(R.id.writtenText);
         ImageButton sendButton = findViewById(R.id.sendbutton);
+        ImageButton leaveButton = findViewById(R.id.leaveButton);
         sendButton.setOnClickListener(v -> onSendButtonPressed(writtenText.getText().toString()));
+        leaveButton.setOnClickListener(l -> onLeaveButtonPressed());
 
 
         compositeDisposable = new CompositeDisposable();
@@ -120,6 +133,12 @@ public class GroupActivity extends AppCompatActivity {
 
         //Connecting to server
         connectStomp();
+
+        List<Message> messageList = new ArrayList<>();
+        mMessageRecycler = (RecyclerView) findViewById(R.id.reyclerview_message_list);
+        mMessageAdapter = new MessageListAdapter(this, messageList);
+        mMessageRecycler.setLayoutManager(new LinearLayoutManager(this));
+        mMessageRecycler.setAdapter(mMessageAdapter);
     }
     /**
      * When the activity is to be destroyed the client will disconnect from the server.
@@ -133,6 +152,11 @@ public class GroupActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    @Override
+    public void onBackPressed() {
+        //do nothing
+    }
+
     //-------------RECEIVING MESSAGE-------------------------------
     /**
      * This method is called when the user receives a new message that belongs to the group
@@ -140,7 +164,19 @@ public class GroupActivity extends AppCompatActivity {
      */
     private void newGroupMessageReceived(String messageInJson) {
         hideCustomDialogIfNeeded();
-        receivedMessages.setText(messageInJson);
+        Message message = jsonHelper.convertJsonToChatMessage(messageInJson);
+        mMessageAdapter.addItem(message);
+
+        mMessageRecycler.scrollToPosition(mMessageAdapter.getItemCount()-1);
+        //receivedMessages.setText(messageInJson);
+    }
+
+    /**
+     * This method is called when the user receives a new message that belongs to the group
+     * @param groupInfoInJson The group info, in json format
+     */
+    private void newGroupInfoReceived(String groupInfoInJson) {
+        Log.d(TAG,"newGroupInfoReceived");
     }
 
     //-------------SENDING MESSAGE------------------------------
@@ -173,7 +209,7 @@ public class GroupActivity extends AppCompatActivity {
         if(data!=null){
             compositeDisposable.add(mStompClient.send(destination, data)
                     .compose(applySchedulers()).subscribe(()
-                                    -> Log.d(TAG, "STOMP echo send successfully"),
+                                    -> Log.d(TAG, "Message send successfully"),
                             throwable -> errorWhileSendingMessage(throwable)));
         }else{
             Log.d(TAG,"Didn't send message since it was null");
@@ -181,7 +217,38 @@ public class GroupActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Sends leave message to server on main thread
+     * @param destination The path we want to send to
+     */
+    private void sendLeaveMessage(String destination){
+        compositeDisposable.add(mStompClient.send(destination,jsonHelper.createChatMessage(NAME,null,"LEAVE"))
+                .unsubscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(()
+                -> Log.d(TAG, "Leave message send successfully"),
+                throwable -> errorWhileSendingMessage(throwable)));
 
+    }
+
+    //-----------------LEAVING----------------------------------------
+    
+    private void leaveGroup(){
+        if (compositeDisposable != null){
+            compositeDisposable.dispose();
+        }
+        if(mStompClient.isConnected()) {
+            sendLeaveMessage(CHAT_PREFIX + myGroup + CHAT_LEAVING_GROUP_SUFFIX);
+            mStompClient.disconnect();
+        }
+
+        finish();
+
+
+        
+        
+        
+    }
 
     //-----------------GUI METHODS----------------------------------
 
@@ -208,6 +275,12 @@ public class GroupActivity extends AppCompatActivity {
         if(message!=null && !message.isEmpty() && myGroup!=null){
             sendMessage(CHAT_PREFIX+ myGroup.get("groupId").toString() + CHAT_SEND_MESSAGE_SUFFIX, createChatMessage(NAME,message,"CHAT"));
         }
+        //todo gui stuff
+    }
+
+    public void onLeaveButtonPressed(){
+        leaveGroup();
+        //todo gui stuff
     }
     //-------------WEBSOCKET---------------------------------------
 
@@ -227,16 +300,19 @@ public class GroupActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(topicMessage ->{
 
-                    // Convert payload json string to a hasmap.
-                    String jsonGroup = topicMessage.getPayload();
-                    myGroup = new ObjectMapper().readValue(jsonGroup, HashMap.class);
+                    //todo we need to check if the received message is ok
+                    JsonObject message = jsonHelper.stringToJSONObject(topicMessage.getPayload());
 
+                    myGroup = message.get("groupId").getAsString();
 
-
-                    //We want to subscribe on our given group
-                    createSubscription("/topic/"+myGroup.get("groupId").toString());
+                    //We want to subscribe to messages on our given group
+                    createRecevingMessageSubscription("/topic/"+myGroup);
+                    //We want to subscribe on group info
+                    createRecevingGroupInfoSubscription("/user/queue/getInfo/"+myGroup);
                     //We want to join our given group
-                    sendMessage(CHAT_PREFIX+myGroup.get("groupId").toString()+ CHAT_ADD_USER_SUFFIX, createChatMessage(NAME,null,"JOIN"));
+                    sendMessage(CHAT_PREFIX+myGroup+ CHAT_ADD_USER_SUFFIX, createChatMessage(NAME,null,"JOIN"));
+                    //We want to send a message to receive group info
+                    sendMessage(CHAT_PREFIX+myGroup+CHAT_ASK_FOR_GROUP_INFO,createChatMessage(NAME,null,null));
 
                 }, throwable -> {
                     errorOnSubcribingOnTopic(throwable);
@@ -283,13 +359,11 @@ public class GroupActivity extends AppCompatActivity {
     }
 
 
-
-
     /**
      * Subscribing on the given destination
      * @param destination The destination we are trying to subscribe on
      */
-    private void createSubscription(String destination){
+    private void createRecevingMessageSubscription(String destination){
         Disposable dispTopic = mStompClient.topic(destination)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(tm -> newGroupMessageReceived(tm.getPayload()),
@@ -298,6 +372,19 @@ public class GroupActivity extends AppCompatActivity {
 
         compositeDisposable.add(dispTopic);
     }
+
+    private void createRecevingGroupInfoSubscription(String destination){
+        Disposable dispTopic = mStompClient.topic(destination)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(tm -> newGroupInfoReceived(tm.getPayload()),
+                        throwable -> errorOnSubcribingOnTopic(throwable));
+
+
+        compositeDisposable.add(dispTopic);
+    }
+
+
+
 
     /**
      * An object that ensures that a completable (like an observable) will be subscribed on and unsubscribed from on background threads
@@ -312,19 +399,23 @@ public class GroupActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    //-------------------------ERROR HANDLING
+    //-------------------------ERROR HANDLING------------------------------
 
     private void errorWhileSendingMessage(Throwable throwable) {
         hideCustomDialogIfNeeded();
         Log.e(TAG, "Error while sending message", throwable);
+
     }
     private void errorOnSubcribingOnTopic(Throwable throwable) {
         hideCustomDialogIfNeeded();
         Log.e(TAG, "Error on subscribe topic", throwable);
+        leaveGroup();
+
     }
     private void errorOnLifeCycle(Throwable throwable) {
         hideCustomDialogIfNeeded();
         Log.e(TAG, "Error on subscribe lifestyle", throwable);
+        leaveGroup();
     }
 
 

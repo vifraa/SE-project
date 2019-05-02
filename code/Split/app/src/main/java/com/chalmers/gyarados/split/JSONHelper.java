@@ -1,7 +1,11 @@
 package com.chalmers.gyarados.split;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 
 public class JSONHelper {
 
@@ -9,6 +13,7 @@ public class JSONHelper {
         JSONObject message = new JSONObject();
         try {
             if(sender!=null){
+
                 message.put("sender",sender);
             }
             if(content!=null){
@@ -46,6 +51,27 @@ public class JSONHelper {
             return null;
         }
         return message.toString();
+
+    }
+
+    public JsonObject stringToJSONObject(String json){
+        return new JsonParser().parse(json).getAsJsonObject();
+    }
+
+    public Message convertJsonToChatMessage(String messageInJson) {
+        JsonObject json = new JsonParser().parse(messageInJson).getAsJsonObject();
+        String type = json.get("type").toString();
+        if(type.equals("\"CHAT\"")){
+            return new Message(json.get("content").getAsString());
+        }else if(type.equals("\"JOIN\"")){
+            return new Message("JOIN");
+        }else if(type.equals("\"LEAVE\"")){
+            return new Message("LEAVE");
+        }else{
+            //todo
+            return new Message("");
+        }
+
 
     }
 }
