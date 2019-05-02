@@ -17,6 +17,7 @@ import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 import io.reactivex.CompletableTransformer;
@@ -25,7 +26,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ua.naiksoftware.stomp.Stomp;
 
@@ -68,7 +68,8 @@ public class GroupActivity extends AppCompatActivity {
     /**
      * The group the server gives to me
      */
-    private Map<String, Object> myGroup;
+    private String myGroup;
+
 
     /**
      * The ip we want to connect to, given by activity before
@@ -273,7 +274,7 @@ public class GroupActivity extends AppCompatActivity {
      */
     public void onSendButtonPressed(String message){
         if(message!=null && !message.isEmpty() && myGroup!=null){
-            sendMessage(CHAT_PREFIX+ myGroup.get("groupId").toString() + CHAT_SEND_MESSAGE_SUFFIX, createChatMessage(NAME,message,"CHAT"));
+            sendMessage(CHAT_PREFIX+ myGroup + CHAT_SEND_MESSAGE_SUFFIX, createChatMessage(NAME,message,"CHAT"));
         }
         //todo gui stuff
     }
