@@ -52,6 +52,7 @@ public class ChatController {
     @SendToUser("/queue/find-group")
     public Group findGroup(User user){
         Group group = groupService.findMatchingGroup(user);
+        group.addUser(user);
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setGroupid(group.getGroupId());
         chatMessage.setSender(user.getName());
@@ -61,7 +62,7 @@ public class ChatController {
 
         simpMessaging.convertAndSend("/topic/"+group.getGroupId(),chatMessage);
 
-        logger.info(user.getName() + "got matched with group: " + group.getGroupId());
+        logger.info(user.getName() + " got matched with group: " + group.getGroupId());
 
         return group;
     }

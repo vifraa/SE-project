@@ -2,8 +2,8 @@ package com.chalmers.gyarados.split;
 
 public class User {
 
-    String name;
-    String profileURL;
+    private String name;
+    private String profileURL;
 
     public String getName() {
         return name;

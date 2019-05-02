@@ -69,7 +69,7 @@ public class GroupActivity extends AppCompatActivity {
     /**
      * The group the server gives to me
      */
-    private String myGroup;
+    private Group myGroup;
 
     /**
      * The ip we want to connect to, given by activity before
@@ -135,12 +135,11 @@ public class GroupActivity extends AppCompatActivity {
         //Connecting to server
         connectStomp();
 
-        List<Message> messageList = new ArrayList<>();
-        mMessageRecycler = (RecyclerView) findViewById(R.id.reyclerview_message_list);
-        mMessageAdapter = new MessageListAdapter(this, messageList);
-        mMessageRecycler.setLayoutManager(new LinearLayoutManager(this));
-        mMessageRecycler.setAdapter(mMessageAdapter);
+
     }
+
+
+
     /**
      * When the activity is to be destroyed the client will disconnect from the server.
      * We will also dispose all our current subscriptions.
@@ -239,7 +238,7 @@ public class GroupActivity extends AppCompatActivity {
             compositeDisposable.dispose();
         }
         if(mStompClient.isConnected()) {
-            sendLeaveMessage(CHAT_PREFIX + myGroup + CHAT_LEAVING_GROUP_SUFFIX);
+            sendLeaveMessage(CHAT_PREFIX + myGroup.getId() + CHAT_LEAVING_GROUP_SUFFIX);
             mStompClient.disconnect();
         }
 
@@ -252,7 +251,12 @@ public class GroupActivity extends AppCompatActivity {
     }
 
     //-----------------GUI METHODS----------------------------------
-
+    private void initMessageView(List<Message> messages) {
+        mMessageRecycler = (RecyclerView) findViewById(R.id.reyclerview_message_list);
+        mMessageAdapter = new MessageListAdapter(this, messages);
+        mMessageRecycler.setLayoutManager(new LinearLayoutManager(this));
+        mMessageRecycler.setAdapter(mMessageAdapter);
+    }
     private void hideCustomDialogIfNeeded() {
         if(viewDialog.isShowing()){
             hideCustomLoadingDialog();
@@ -274,7 +278,7 @@ public class GroupActivity extends AppCompatActivity {
      */
     public void onSendButtonPressed(String message){
         if(message!=null && !message.isEmpty() && myGroup!=null){
-            sendMessage(CHAT_PREFIX+ myGroup+ CHAT_SEND_MESSAGE_SUFFIX, createChatMessage(NAME,message,"CHAT"));
+            sendMessage(CHAT_PREFIX+ myGroup.getId()+ CHAT_SEND_MESSAGE_SUFFIX, createChatMessage(NAME,message,"CHAT"));
         }
         //todo gui stuff
     }
@@ -304,16 +308,15 @@ public class GroupActivity extends AppCompatActivity {
                     //todo we need to check if the received message is ok
                     JsonObject message = jsonHelper.stringToJSONObject(topicMessage.getPayload());
 
-                    myGroup = message.get("groupId").getAsString();
+                    myGroup = jsonHelper.convertJsonToGroup(topicMessage.getPayload());
+
 
                     //We want to subscribe to messages on our given group
-                    createRecevingMessageSubscription("/topic/"+myGroup);
+                    createRecevingMessageSubscription("/topic/"+myGroup.getId());
                     //We want to subscribe on group info
-                    createRecevingGroupInfoSubscription("/user/queue/getInfo/"+myGroup);
-                    //We want to join our given group
-                    //sendMessage(CHAT_PREFIX+myGroup+ CHAT_ADD_USER_SUFFIX, createChatMessage(NAME,null,"JOIN"));
-                    //We want to send a message to receive group info
-                    //sendMessage(CHAT_PREFIX+myGroup+CHAT_ASK_FOR_GROUP_INFO,createChatMessage(NAME,null,null));
+                    createRecevingGroupInfoSubscription("/user/queue/getInfo/"+myGroup.getId());
+
+                    initMessageView(myGroup.getMessages());
                     hideCustomDialogIfNeeded();
                 }, throwable -> {
                     errorOnSubcribingOnTopic(throwable);
@@ -358,6 +361,8 @@ public class GroupActivity extends AppCompatActivity {
 
 
     }
+
+
 
 
     /**

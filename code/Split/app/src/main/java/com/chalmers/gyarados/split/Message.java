@@ -6,9 +6,9 @@ public class Message {
     User sender;
     String createdAt;
 
-    public Message(String message) {
+    public Message(String message, String createdAt) {
         this.message = message;
-        this.createdAt="now";
+        this.createdAt=createdAt;
     }
 
     public String getMessage() {
