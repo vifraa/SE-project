@@ -140,7 +140,7 @@ public class GroupService {
 
         List<Group> allGroups = repository.findAll();
         List<Group> potentialGroups = new ArrayList<Group>();
-        Group matchedGroup;
+        Group matchedGroup=null;
         /*TODO A group needs a calculated position
         Currently we dont have that, instead you can use the below code to get one users position instead temporarily
         just to get it working.
@@ -148,7 +148,7 @@ public class GroupService {
 		*/
 
         // 1) List all possible groups within a maximum destination distance from users preferred distance
-        /*for (Group group: allGroups) {
+        for (Group group: allGroups) {
             Double groupDestLongitude = getGroupDestinationLongitude(group);
             Double groupDestLatitude = getGroupDestinationLatitude(group);
             Double destinationDistance = calcDist(groupDestLatitude, groupDestLongitude, destLatitude, destLongitude);
@@ -161,16 +161,20 @@ public class GroupService {
         for (Group group: potentialGroups) {
         		Double groupCurrentLongitude = getGroupCurrentLongitude(group);
         		Double groupCurrentLatitude = getGroupCurrentLatitude(group);
-        		Double matchedDistance;
+        		Double matchedDistance=0.0;
         		Double currentDistance = calcDist(groupCurrentLatitude, groupCurrentLongitude, currentLatitude, currentLongitude);
-        			if(currentDistance < matchedDistance || matchedGroup==null) {
+        		if(currentDistance < matchedDistance || matchedGroup==null) {
         			matchedDistance = currentDistance;
         			matchedGroup = group;	
         		}
         		
         		
          }
-	
+	    if(matchedGroup==null){
+	        Group newGroup = new Group();
+	        Group createdGroup  = repository.save(newGroup);
+	        return createdGroup;
+        }
         return matchedGroup;
         
         // STEPS
@@ -183,9 +187,9 @@ public class GroupService {
 
         // ELSE CREATE NEW
 
-        */
+
         // Current implementation change to above when it is working.
-        List<Group> groups = findAll();
+        /*List<Group> groups = findAll();
 
 
         if (groups.size() > 0) {
@@ -195,6 +199,7 @@ public class GroupService {
             Group createdGroup = repository.save(newGroup);
             return createdGroup;
         }
+        */
 
     }
 
