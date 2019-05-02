@@ -26,7 +26,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-//import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 import ua.naiksoftware.stomp.Stomp;
 
@@ -69,6 +69,7 @@ public class GroupActivity extends AppCompatActivity {
     /**
      * The group the server gives to me
      */
+
     private Group myGroup;
 
     /**
