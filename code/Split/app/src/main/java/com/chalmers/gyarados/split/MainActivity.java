@@ -119,6 +119,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
+            updateLocationUI();
+            getDeviceLocation();
         } else {
             ActivityCompat.requestPermissions(this,
                     new String[]{ACCESS_FINE_LOCATION},
@@ -148,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         updateLocationUI();
+        getDeviceLocation();
 
     }
 
@@ -161,11 +164,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+
         getLocationPermission();
 
-        updateLocationUI();
+        //updateLocationUI();
 
-        getDeviceLocation();
+        //getDeviceLocation();
 
 
     }
@@ -219,7 +223,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mMap.setMyLocationEnabled(false);
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
                 mLastKnownLocation = null;
-                getLocationPermission();
+                //getLocationPermission();
+
             }
         } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage());

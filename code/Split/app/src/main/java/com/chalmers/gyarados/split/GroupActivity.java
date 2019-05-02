@@ -384,14 +384,18 @@ public class GroupActivity extends AppCompatActivity {
     private void errorWhileSendingMessage(Throwable throwable) {
         hideCustomDialogIfNeeded();
         Log.e(TAG, "Error while sending message", throwable);
+
     }
     private void errorOnSubcribingOnTopic(Throwable throwable) {
         hideCustomDialogIfNeeded();
         Log.e(TAG, "Error on subscribe topic", throwable);
+        leaveGroup();
+
     }
     private void errorOnLifeCycle(Throwable throwable) {
         hideCustomDialogIfNeeded();
         Log.e(TAG, "Error on subscribe lifestyle", throwable);
+        leaveGroup();
     }
 
 
