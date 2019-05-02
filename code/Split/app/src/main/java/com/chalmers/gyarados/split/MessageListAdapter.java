@@ -24,7 +24,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
         mMessageList = messageList;
     }
 
-    //@NonNull
+    @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
@@ -74,6 +74,11 @@ public class MessageListAdapter extends RecyclerView.Adapter {
         return VIEW_TYPE_MESSAGE_SENT;
     }
 
+    public void addItem(Message message) {
+        mMessageList.add(message);
+        notifyItemInserted(mMessageList.size()-1);
+    }
+
     private class ReceivedMessageHolder extends RecyclerView.ViewHolder{
 
         TextView messageText, timeText, nameText;
@@ -92,7 +97,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
 
             // Format the stored timestamp into a readable String using method.
             //timeText.setText(Utils.formatDateTime(message.getCreatedAt()));
-            timeText.setText((int) message.getCreatedAt());
+            timeText.setText(message.getCreatedAt());
             nameText.setText(message.getSender().getName());
 
             // Insert the profile image from the URL into the ImageView.
@@ -113,7 +118,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
             messageText.setText(message.getMessage());
 
             // Format the stored timestamp into a readable String using method.
-            timeText.setText((int) message.getCreatedAt());
+            timeText.setText(message.getCreatedAt());
         }
     }
 }

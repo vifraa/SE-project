@@ -2,7 +2,10 @@ package com.chalmers.gyarados.split;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -10,6 +13,9 @@ import android.widget.TextView;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.CompletableTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -89,7 +95,8 @@ public class GroupActivity extends AppCompatActivity {
     private JSONHelper jsonHelper;
 
 
-
+    private RecyclerView mMessageRecycler;
+    private MessageListAdapter mMessageAdapter;
 
     //-------------------ANDROID METHODS---------------------------------------------
     /**
@@ -124,6 +131,12 @@ public class GroupActivity extends AppCompatActivity {
 
         //Connecting to server
         connectStomp();
+
+        List<Message> messageList = new ArrayList<>();
+        mMessageRecycler = (RecyclerView) findViewById(R.id.reyclerview_message_list);
+        mMessageAdapter = new MessageListAdapter(this, messageList);
+        mMessageRecycler.setLayoutManager(new LinearLayoutManager(this));
+        mMessageRecycler.setAdapter(mMessageAdapter);
     }
     /**
      * When the activity is to be destroyed the client will disconnect from the server.
@@ -144,7 +157,8 @@ public class GroupActivity extends AppCompatActivity {
      */
     private void newGroupMessageReceived(String messageInJson) {
         hideCustomDialogIfNeeded();
-        receivedMessages.setText(messageInJson);
+        mMessageAdapter.addItem(new Message(messageInJson));
+        //receivedMessages.setText(messageInJson);
     }
 
     /**

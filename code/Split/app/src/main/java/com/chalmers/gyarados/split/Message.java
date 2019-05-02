@@ -4,7 +4,12 @@ public class Message {
 
     String message;
     User sender;
-    long createdAt;
+    String createdAt;
+
+    public Message(String message) {
+        this.message = message;
+        this.createdAt="now";
+    }
 
     public String getMessage() {
         return message;
@@ -14,7 +19,7 @@ public class Message {
         this.message = message;
     }
 
-    public long getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
