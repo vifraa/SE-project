@@ -91,6 +91,9 @@ public class ChatMessage {
 
     @Override
     public String toString() {
-        return "Type: " + this.getType() + ", Message: " + this.getContent() + ", Sender: " + this.getSender() + ", Groupid: " + this.getGroupid();
+        return "Type: " + this.getType()
+                + ", Message: " + this.getContent()
+                + ", Sender: " + this.getSender()
+                + ", Groupid: " + this.getGroupid();
     }
 }
