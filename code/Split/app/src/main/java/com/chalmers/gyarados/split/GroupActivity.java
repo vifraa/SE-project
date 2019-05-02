@@ -8,12 +8,16 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 import io.reactivex.CompletableTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ua.naiksoftware.stomp.Stomp;
 
@@ -53,7 +57,7 @@ public class GroupActivity extends AppCompatActivity {
     /**
      * The group the server gives to me
      */
-    private String myGroup;
+    private Map<String, Object> myGroup;
 
     /**
      * The ip we want to connect to, given by activity before
@@ -202,7 +206,7 @@ public class GroupActivity extends AppCompatActivity {
      */
     public void onSendButtonPressed(String message){
         if(message!=null && !message.isEmpty() && myGroup!=null){
-            sendMessage(CHAT_PREFIX+ myGroup+ CHAT_SEND_MESSAGE_SUFFIX, createChatMessage(NAME,message,"CHAT"));
+            sendMessage(CHAT_PREFIX+ myGroup.get("groupId").toString() + CHAT_SEND_MESSAGE_SUFFIX, createChatMessage(NAME,message,"CHAT"));
         }
     }
     //-------------WEBSOCKET---------------------------------------
@@ -222,12 +226,17 @@ public class GroupActivity extends AppCompatActivity {
         Disposable dispTopic = mStompClient.topic(RECEIVE_GROUP_NUMBER)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(topicMessage ->{
-                    myGroup = topicMessage.getPayload();
+
+                    // Convert payload json string to a hasmap.
+                    String jsonGroup = topicMessage.getPayload();
+                    myGroup = new ObjectMapper().readValue(jsonGroup, HashMap.class);
+
+
 
                     //We want to subscribe on our given group
-                    createSubscription("/topic/"+myGroup);
+                    createSubscription("/topic/"+myGroup.get("groupId").toString());
                     //We want to join our given group
-                    sendMessage(CHAT_PREFIX+myGroup+ CHAT_ADD_USER_SUFFIX, createChatMessage(NAME,null,"JOIN"));
+                    sendMessage(CHAT_PREFIX+myGroup.get("groupId").toString()+ CHAT_ADD_USER_SUFFIX, createChatMessage(NAME,null,"JOIN"));
 
                 }, throwable -> {
                     errorOnSubcribingOnTopic(throwable);
