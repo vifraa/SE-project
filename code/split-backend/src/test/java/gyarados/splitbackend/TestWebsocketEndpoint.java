@@ -92,6 +92,10 @@ public class TestWebsocketEndpoint {
 
         User sendUser = new User();
         sendUser.setName("TESTNAME");
+        sendUser.setCurrentLongitude(5.4);
+        sendUser.setCurrentLatitude(2.5);
+        sendUser.setDestinationLongitude(5.2);
+        sendUser.setDestinationLatitude(2.5);
         stompSession.send(ASK_FOR_GROUP_NUMBER, sendUser);
 
         // Arguments in get function call determines how long we wait for an answer until throwing an error.
