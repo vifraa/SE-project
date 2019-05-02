@@ -45,4 +45,21 @@ public class MessageListAdapter extends RecyclerView.Adapter {
             //Utils.displayRoundImageFromUrl(mContext, message.getSender().getProfileURL(), profileImage);
         }
     }
+
+    private class SentMessageHolder extends RecyclerView.ViewHolder {
+        TextView messageText, timeText;
+
+        SentMessageHolder(View itemView) {
+            super(itemView);
+            messageText = (TextView) itemView.findViewById(R.id.text_message_body);
+            timeText = (TextView) itemView.findViewById(R.id.text_message_time);
+        }
+
+        void bind(Message message) {
+            messageText.setText(message.getMessage());
+
+            // Format the stored timestamp into a readable String using method.
+            timeText.setText((int) message.getCreatedAt());
+        }
+    }
 }
