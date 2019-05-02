@@ -17,6 +17,8 @@ public class Group{
     private String direction;
     private List<ChatMessage> messages;
     private List<User> users;
+    private final int MAX_GROUP_SIZE = 4;
+
 
 
     public Group(){
@@ -74,5 +76,9 @@ public class Group{
                 ", direction='" + direction + '\'' +
                 ", messages=" + messages +
                 '}';
+    }
+
+    public int getMAX_GROUP_SIZE() {
+        return MAX_GROUP_SIZE;
     }
 }
