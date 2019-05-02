@@ -91,15 +91,15 @@ public class TestWebsocketEndpoint {
         stompSession.subscribe(RECIEVE_GROUP_NUMBER, new CreateGroupStompFrameHandler());
 
         User sendUser = new User();
-        sendUser.setName("TESTNAME");
-        sendUser.setCurrentLongitude(5.4);
-        sendUser.setCurrentLatitude(2.5);
-        sendUser.setDestinationLongitude(5.2);
-        sendUser.setDestinationLatitude(2.5);
+        sendUser.setName("TEST_NAME");
+        sendUser.setCurrentLongitude(57.68);
+        sendUser.setCurrentLatitude(11.84);
+        sendUser.setDestinationLongitude(57.70);
+        sendUser.setDestinationLatitude(11.85);
         stompSession.send(ASK_FOR_GROUP_NUMBER, sendUser);
 
         // Arguments in get function call determines how long we wait for an answer until throwing an error.
-        Group group = groupCompletableFuture.get(5, SECONDS);
+        Group group = groupCompletableFuture.get(10, SECONDS);
 
         stompSession.disconnect();
 
