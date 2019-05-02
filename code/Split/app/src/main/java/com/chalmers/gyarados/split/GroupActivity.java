@@ -137,6 +137,11 @@ public class GroupActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    @Override
+    public void onBackPressed() {
+        //do nothing
+    }
+
     //-------------RECEIVING MESSAGE-------------------------------
     /**
      * This method is called when the user receives a new message that belongs to the group
@@ -214,8 +219,10 @@ public class GroupActivity extends AppCompatActivity {
         if (compositeDisposable != null){
             compositeDisposable.dispose();
         }
-        sendLeaveMessage(CHAT_PREFIX+myGroup+CHAT_LEAVING_GROUP_SUFFIX);
-        mStompClient.disconnect();
+        if(mStompClient.isConnected()) {
+            sendLeaveMessage(CHAT_PREFIX + myGroup + CHAT_LEAVING_GROUP_SUFFIX);
+            mStompClient.disconnect();
+        }
 
         finish();
 
