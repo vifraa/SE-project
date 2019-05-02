@@ -57,4 +57,21 @@ public class JSONHelper {
     public JsonObject stringToJSONObject(String json){
         return new JsonParser().parse(json).getAsJsonObject();
     }
+
+    public Message convertJsonToChatMessage(String messageInJson) {
+        JsonObject json = new JsonParser().parse(messageInJson).getAsJsonObject();
+        String type = json.get("type").toString();
+        if(type.equals("\"CHAT\"")){
+            return new Message(json.get("content").getAsString());
+        }else if(type.equals("\"JOIN\"")){
+            return new Message("JOIN");
+        }else if(type.equals("\"LEAVE\"")){
+            return new Message("LEAVE");
+        }else{
+            //todo
+            return new Message("");
+        }
+
+
+    }
 }

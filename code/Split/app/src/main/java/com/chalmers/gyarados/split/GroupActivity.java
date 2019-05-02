@@ -2,7 +2,10 @@ package com.chalmers.gyarados.split;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -10,6 +13,9 @@ import android.widget.TextView;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.CompletableTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -89,7 +95,8 @@ public class GroupActivity extends AppCompatActivity {
     private JSONHelper jsonHelper;
 
 
-
+    private RecyclerView mMessageRecycler;
+    private MessageListAdapter mMessageAdapter;
 
     //-------------------ANDROID METHODS---------------------------------------------
     /**
@@ -107,7 +114,6 @@ public class GroupActivity extends AppCompatActivity {
 
 
         //initializing gui
-        receivedMessages = findViewById(R.id.receivedMessages);
         writtenText = findViewById(R.id.writtenText);
         ImageButton sendButton = findViewById(R.id.sendbutton);
         ImageButton leaveButton = findViewById(R.id.leaveButton);
@@ -124,6 +130,12 @@ public class GroupActivity extends AppCompatActivity {
 
         //Connecting to server
         connectStomp();
+
+        List<Message> messageList = new ArrayList<>();
+        mMessageRecycler = (RecyclerView) findViewById(R.id.reyclerview_message_list);
+        mMessageAdapter = new MessageListAdapter(this, messageList);
+        mMessageRecycler.setLayoutManager(new LinearLayoutManager(this));
+        mMessageRecycler.setAdapter(mMessageAdapter);
     }
     /**
      * When the activity is to be destroyed the client will disconnect from the server.
@@ -137,6 +149,11 @@ public class GroupActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    @Override
+    public void onBackPressed() {
+        //do nothing
+    }
+
     //-------------RECEIVING MESSAGE-------------------------------
     /**
      * This method is called when the user receives a new message that belongs to the group
@@ -144,7 +161,11 @@ public class GroupActivity extends AppCompatActivity {
      */
     private void newGroupMessageReceived(String messageInJson) {
         hideCustomDialogIfNeeded();
-        receivedMessages.setText(messageInJson);
+        Message message = jsonHelper.convertJsonToChatMessage(messageInJson);
+        mMessageAdapter.addItem(message);
+
+        mMessageRecycler.scrollToPosition(mMessageAdapter.getItemCount()-1);
+        //receivedMessages.setText(messageInJson);
     }
 
     /**
@@ -152,7 +173,6 @@ public class GroupActivity extends AppCompatActivity {
      * @param groupInfoInJson The group info, in json format
      */
     private void newGroupInfoReceived(String groupInfoInJson) {
-        receivedMessages.setText(groupInfoInJson);
         Log.d(TAG,"newGroupInfoReceived");
     }
 
@@ -214,8 +234,13 @@ public class GroupActivity extends AppCompatActivity {
         if (compositeDisposable != null){
             compositeDisposable.dispose();
         }
-        sendLeaveMessage(CHAT_PREFIX+myGroup+CHAT_LEAVING_GROUP_SUFFIX);
-        mStompClient.disconnect();
+        if(mStompClient.isConnected()) {
+            sendLeaveMessage(CHAT_PREFIX + myGroup + CHAT_LEAVING_GROUP_SUFFIX);
+            mStompClient.disconnect();
+        }
+
+        finish();
+
 
         
         
@@ -374,14 +399,18 @@ public class GroupActivity extends AppCompatActivity {
     private void errorWhileSendingMessage(Throwable throwable) {
         hideCustomDialogIfNeeded();
         Log.e(TAG, "Error while sending message", throwable);
+
     }
     private void errorOnSubcribingOnTopic(Throwable throwable) {
         hideCustomDialogIfNeeded();
         Log.e(TAG, "Error on subscribe topic", throwable);
+        leaveGroup();
+
     }
     private void errorOnLifeCycle(Throwable throwable) {
         hideCustomDialogIfNeeded();
         Log.e(TAG, "Error on subscribe lifestyle", throwable);
+        leaveGroup();
     }
 
 

@@ -16,7 +16,8 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".GroupActivity"></activity>
+
+
 
         <service
             android:name=".FetchAddressIntentService"
@@ -38,6 +39,11 @@
 
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".GroupActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MessageListActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".LoginActivity"
