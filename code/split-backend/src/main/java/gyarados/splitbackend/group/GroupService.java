@@ -138,9 +138,9 @@ public class GroupService {
      */
     public Group findMatchingGroup(Double destLatitude, Double destLongitude, Double currentLatitude, Double currentLongitude) {
 
-        List<Group> allGroups = repository.findAll();
+        List<Group> allGroups = findAll();
         List<Group> potentialGroups = new ArrayList<Group>();
-        Group matchedGroup=null;
+        Group matchedGroup = null;
         /*TODO A group needs a calculated position
         Currently we dont have that, instead you can use the below code to get one users position instead temporarily
         just to get it working.
@@ -152,25 +152,26 @@ public class GroupService {
             Double groupDestLongitude = getGroupDestinationLongitude(group);
             Double groupDestLatitude = getGroupDestinationLatitude(group);
             Double destinationDistance = calcDist(groupDestLatitude, groupDestLongitude, destLatitude, destLongitude);
-			
-            		//Add Exception Handling
-            if(destinationDistance <= 40.0)
+
+                //Add Exception Handling
+            if(group.getUsers().size() < 4 && destinationDistance <= 0.1)
             		potentialGroups.add(group);
         }
+
+        Double matchedDistance = 0.0;
         //2) Loop and choose the group with the minimum current distance from users current distance
         for (Group group: potentialGroups) {
         		Double groupCurrentLongitude = getGroupCurrentLongitude(group);
         		Double groupCurrentLatitude = getGroupCurrentLatitude(group);
-        		Double matchedDistance=0.0;
         		Double currentDistance = calcDist(groupCurrentLatitude, groupCurrentLongitude, currentLatitude, currentLongitude);
-        		if(currentDistance < matchedDistance || matchedGroup==null) {
+        		if(currentDistance < matchedDistance || matchedGroup == null) {
         			matchedDistance = currentDistance;
         			matchedGroup = group;	
         		}
         		
         		
          }
-	    if(matchedGroup==null){
+	    if(matchedGroup == null){
 	        Group newGroup = new Group();
 	        Group createdGroup  = repository.save(newGroup);
 	        return createdGroup;
