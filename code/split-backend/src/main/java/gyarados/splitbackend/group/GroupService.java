@@ -183,10 +183,9 @@ public class GroupService {
 
     public boolean removeUserFromGroup(User user, String groupid) {
         //todo remove the user from his group
-        /*Group group = findById(groupid);
+        Group group = findById(groupid);
         group.removeUser(user);
-        return repository.save(group);
-         */
+        repository.save(group);
         return true;
 
     }
