@@ -114,11 +114,15 @@ public class GroupService {
      * Retrieves the destination latitude of a Group
      */
     public Double getGroupDestinationLatitude(Group group) {
-        User firstUser = group.getUsers().get(0);
-        if(firstUser!=null){
-            Double groupLatitude = firstUser.getDestinationLatitude();
-            return groupLatitude;
+        List<User> users = group.getUsers();
+        if(users.size()>0){
+            User firstUser = group.getUsers().get(0);
+            if(firstUser!=null){
+                Double groupLatitude = firstUser.getDestinationLatitude();
+                return groupLatitude;
+            }
         }
+
         return null;
     }
 
@@ -126,11 +130,15 @@ public class GroupService {
      * Retrieves the destination longitude of a Group
      */
     public Double getGroupDestinationLongitude(Group group) {
-        User firstUser = group.getUsers().get(0);
-        if(firstUser!=null){
-            Double groupLongitude = firstUser.getDestinationLongitude();
-            return groupLongitude;
+        List<User> users = group.getUsers();
+        if(users.size()>0){
+            User firstUser = group.getUsers().get(0);
+            if(firstUser!=null){
+                Double groupLongitude = firstUser.getDestinationLongitude();
+                return groupLongitude;
+            }
         }
+
         return null;
 
     }
