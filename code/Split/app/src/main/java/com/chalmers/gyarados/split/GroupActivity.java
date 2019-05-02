@@ -137,6 +137,11 @@ public class GroupActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    @Override
+    public void onBackPressed() {
+        //do nothing
+    }
+
     //-------------RECEIVING MESSAGE-------------------------------
     /**
      * This method is called when the user receives a new message that belongs to the group
@@ -214,8 +219,13 @@ public class GroupActivity extends AppCompatActivity {
         if (compositeDisposable != null){
             compositeDisposable.dispose();
         }
-        sendLeaveMessage(CHAT_PREFIX+myGroup+CHAT_LEAVING_GROUP_SUFFIX);
-        mStompClient.disconnect();
+        if(mStompClient.isConnected()) {
+            sendLeaveMessage(CHAT_PREFIX + myGroup + CHAT_LEAVING_GROUP_SUFFIX);
+            mStompClient.disconnect();
+        }
+
+        finish();
+
 
         
         
@@ -374,14 +384,18 @@ public class GroupActivity extends AppCompatActivity {
     private void errorWhileSendingMessage(Throwable throwable) {
         hideCustomDialogIfNeeded();
         Log.e(TAG, "Error while sending message", throwable);
+
     }
     private void errorOnSubcribingOnTopic(Throwable throwable) {
         hideCustomDialogIfNeeded();
         Log.e(TAG, "Error on subscribe topic", throwable);
+        leaveGroup();
+
     }
     private void errorOnLifeCycle(Throwable throwable) {
         hideCustomDialogIfNeeded();
         Log.e(TAG, "Error on subscribe lifestyle", throwable);
+        leaveGroup();
     }
 
 
