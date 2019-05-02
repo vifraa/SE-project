@@ -122,25 +122,22 @@ public class GroupService {
      * Retrieves the destination longitude of a Group
      */
     public Double getGroupDestinationLongitude(Group group) {
-        Double groupLatitude = group.getUsers().get(0).getDestinationLatitude();
-        return groupLatitude;
+        Double groupLongitude = group.getUsers().get(0).getDestinationLongitude();
+        return groupLongitude;
     }
 
     /**
      * findMatchingGroup is responsible to return a groupID with a group that is a good choice of a group for the user.
      * If no good group exists, a new one is created and the id of that one returned.
      *
-     * @param destLatitude
-     * @param destLongitude
-     * @param currentLatitude
-     * @param currentLongitude
+     * @param user
      * @return The id of the group.
      */
-    public Group findMatchingGroup(Double destLatitude, Double destLongitude, Double currentLatitude, Double currentLongitude) {
+    public Group findMatchingGroup(User user) {
 
-        List<Group> allGroups = repository.findAll();
+        List<Group> allGroups = findAll();
         List<Group> potentialGroups = new ArrayList<Group>();
-        Group matchedGroup;
+        Group matchedGroup = null;
         /*TODO A group needs a calculated position
         Currently we dont have that, instead you can use the below code to get one users position instead temporarily
         just to get it working.
@@ -148,62 +145,47 @@ public class GroupService {
 		*/
 
         // 1) List all possible groups within a maximum destination distance from users preferred distance
-        /*for (Group group: allGroups) {
+        for (Group group: allGroups) {
             Double groupDestLongitude = getGroupDestinationLongitude(group);
             Double groupDestLatitude = getGroupDestinationLatitude(group);
-            Double destinationDistance = calcDist(groupDestLatitude, groupDestLongitude, destLatitude, destLongitude);
-			
-            		//Add Exception Handling
-            if(destinationDistance <= 40.0)
-            		potentialGroups.add(group);
+            Double destinationDistance = calcDist(groupDestLatitude, groupDestLongitude, user.getDestinationLatitude(), user.getDestinationLongitude());
+
+                //Add Exception Handling
+            if(group.getUsers().size() + user.getNumberOfFriends() <= group.getMAX_GROUP_SIZE()
+                    && group.getUsers().size() > 0
+                    && destinationDistance <= 0.1) {
+                potentialGroups.add(group);
+            }
+
         }
+
+        Double matchedDistance = 0.0;
         //2) Loop and choose the group with the minimum current distance from users current distance
         for (Group group: potentialGroups) {
         		Double groupCurrentLongitude = getGroupCurrentLongitude(group);
         		Double groupCurrentLatitude = getGroupCurrentLatitude(group);
-        		Double matchedDistance;
-        		Double currentDistance = calcDist(groupCurrentLatitude, groupCurrentLongitude, currentLatitude, currentLongitude);
-        			if(currentDistance < matchedDistance || matchedGroup==null) {
+        		Double currentDistance = calcDist(groupCurrentLatitude, groupCurrentLongitude, user.getCurrentLatitude(), user.getCurrentLongitude());
+        		if(currentDistance < matchedDistance || matchedGroup == null) {
         			matchedDistance = currentDistance;
         			matchedGroup = group;	
         		}
         		
         		
          }
-	
-        return matchedGroup;
-        
-        // STEPS
+	    if(matchedGroup == null){
+	        Group newGroup = new Group();
+	        matchedGroup  = repository.save(newGroup);
 
-        // CALCULATE BOUNDRY FOR USERS POSITION
-
-        // QUERY THE DATABASE FOR THE GROUPS WITHIN THE RANGE OF ABOVE
-
-        // IF FOUND, JOIN
-
-        // ELSE CREATE NEW
-
-        */
-        // Current implementation change to above when it is working.
-        List<Group> groups = findAll();
-
-
-        if (groups.size() > 0) {
-            return groups.get(0);
-        } else {
-            Group newGroup = new Group();
-            Group createdGroup = repository.save(newGroup);
-            return createdGroup;
         }
+        return matchedGroup;
 
     }
 
     public boolean removeUserFromGroup(User user, String groupid) {
         //todo remove the user from his group
-        /*Group group = findById(groupid);
+        Group group = findById(groupid);
         group.removeUser(user);
-        return repository.save(group);
-         */
+        repository.save(group);
         return true;
 
     }
