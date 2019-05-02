@@ -161,7 +161,9 @@ public class GroupActivity extends AppCompatActivity {
      */
     private void newGroupMessageReceived(String messageInJson) {
         hideCustomDialogIfNeeded();
-        mMessageAdapter.addItem(new Message(messageInJson));
+        Message message = jsonHelper.convertJsonToChatMessage(messageInJson);
+        mMessageAdapter.addItem(message);
+
         mMessageRecycler.scrollToPosition(mMessageAdapter.getItemCount()-1);
         //receivedMessages.setText(messageInJson);
     }
