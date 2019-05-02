@@ -11,11 +11,13 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 import io.reactivex.CompletableTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -23,6 +25,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ua.naiksoftware.stomp.Stomp;
 
@@ -65,7 +68,7 @@ public class GroupActivity extends AppCompatActivity {
     /**
      * The group the server gives to me
      */
-    private String myGroup;
+    private Map<String, Object> myGroup;
 
     /**
      * The ip we want to connect to, given by activity before
@@ -270,7 +273,7 @@ public class GroupActivity extends AppCompatActivity {
      */
     public void onSendButtonPressed(String message){
         if(message!=null && !message.isEmpty() && myGroup!=null){
-            sendMessage(CHAT_PREFIX+ myGroup+ CHAT_SEND_MESSAGE_SUFFIX, createChatMessage(NAME,message,"CHAT"));
+            sendMessage(CHAT_PREFIX+ myGroup.get("groupId").toString() + CHAT_SEND_MESSAGE_SUFFIX, createChatMessage(NAME,message,"CHAT"));
         }
         //todo gui stuff
     }
@@ -296,6 +299,7 @@ public class GroupActivity extends AppCompatActivity {
         Disposable dispTopic = mStompClient.topic(RECEIVE_GROUP_NUMBER)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(topicMessage ->{
+
                     //todo we need to check if the received message is ok
                     JsonObject message = jsonHelper.stringToJSONObject(topicMessage.getPayload());
 
@@ -309,6 +313,7 @@ public class GroupActivity extends AppCompatActivity {
                     sendMessage(CHAT_PREFIX+myGroup+ CHAT_ADD_USER_SUFFIX, createChatMessage(NAME,null,"JOIN"));
                     //We want to send a message to receive group info
                     sendMessage(CHAT_PREFIX+myGroup+CHAT_ASK_FOR_GROUP_INFO,createChatMessage(NAME,null,null));
+
                 }, throwable -> {
                     errorOnSubcribingOnTopic(throwable);
 
