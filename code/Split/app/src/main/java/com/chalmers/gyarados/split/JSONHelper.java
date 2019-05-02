@@ -1,7 +1,11 @@
 package com.chalmers.gyarados.split;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 
 public class JSONHelper {
 
@@ -9,6 +13,7 @@ public class JSONHelper {
         JSONObject message = new JSONObject();
         try {
             if(sender!=null){
+
                 message.put("sender",sender);
             }
             if(content!=null){
@@ -47,5 +52,9 @@ public class JSONHelper {
         }
         return message.toString();
 
+    }
+
+    public JsonObject stringToJSONObject(String json){
+        return new JsonParser().parse(json).getAsJsonObject();
     }
 }

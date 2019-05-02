@@ -18,7 +18,7 @@
 
 
         <ImageButton
-            android:id="@+id/imageButton2"
+            android:id="@+id/leaveButton"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_marginTop="8dp"
@@ -61,7 +61,7 @@
             android:background="@drawable/profile_picture_small"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/imageButton2"
+            app:layout_constraintEnd_toStartOf="@+id/leaveButton"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/googlelogo" />
 

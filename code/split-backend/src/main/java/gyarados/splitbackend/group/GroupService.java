@@ -26,7 +26,7 @@ public class GroupService {
      * @return The group.
      * @throws GroupNotFoundException if there is no group with the given id.
      */
-    public Group findById(String id) {
+    public Group findById(String id) throws GroupNotFoundException{
         return repository.findById(id).orElseThrow(() -> new GroupNotFoundException(id));
     }
 
@@ -195,6 +195,16 @@ public class GroupService {
             Group createdGroup = repository.save(newGroup);
             return createdGroup;
         }
+
+    }
+
+    public boolean removeUserFromGroup(User user, String groupid) {
+        //todo remove the user from his group
+        /*Group group = findById(groupid);
+        group.removeUser(user);
+        return repository.save(group);
+         */
+        return true;
 
     }
 }
