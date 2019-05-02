@@ -114,7 +114,6 @@ public class GroupActivity extends AppCompatActivity {
 
 
         //initializing gui
-        receivedMessages = findViewById(R.id.receivedMessages);
         writtenText = findViewById(R.id.writtenText);
         ImageButton sendButton = findViewById(R.id.sendbutton);
         ImageButton leaveButton = findViewById(R.id.leaveButton);
@@ -163,6 +162,7 @@ public class GroupActivity extends AppCompatActivity {
     private void newGroupMessageReceived(String messageInJson) {
         hideCustomDialogIfNeeded();
         mMessageAdapter.addItem(new Message(messageInJson));
+        mMessageRecycler.scrollToPosition(mMessageAdapter.getItemCount()-1);
         //receivedMessages.setText(messageInJson);
     }
 
@@ -171,7 +171,6 @@ public class GroupActivity extends AppCompatActivity {
      * @param groupInfoInJson The group info, in json format
      */
     private void newGroupInfoReceived(String groupInfoInJson) {
-        receivedMessages.setText(groupInfoInJson);
         Log.d(TAG,"newGroupInfoReceived");
     }
 
