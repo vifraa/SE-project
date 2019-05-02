@@ -2,9 +2,11 @@ package gyarados.splitbackend.chat;
 
 
 import org.springframework.data.annotation.Id;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 /**
  * ChatMessage is a representation of a message that is sent in chats.
@@ -16,7 +18,9 @@ public class ChatMessage {
     private MessageType type;
     private String content;
     private String sender;
-    private Timestamp timestamp;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime timestamp = LocalDateTime.now();
 
 
 
@@ -30,7 +34,6 @@ public class ChatMessage {
     }
 
     public ChatMessage(){
-        timestamp = new Timestamp(System.currentTimeMillis());
     }
 
     public ChatMessage(MessageType type, String content, String sender) {
