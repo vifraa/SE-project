@@ -5,21 +5,26 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import org.json.JSONArray;
+;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
+
 import java.util.ArrayList;
 import java.util.Date;
 
 
 public class JSONHelper {
-
+    /**
+     * Creates a json string that represents a chat message
+     * @param sender The name of the sender
+     * @param content The content of the message
+     * @param type The type of message
+     * @return the json string
+     */
     public String createChatMessage(String sender, String content, String type){
         JSONObject message = new JSONObject();
         try {
@@ -40,6 +45,15 @@ public class JSONHelper {
 
     }
 
+    /**
+     * Creates a jsoin string that represents a find group message
+     * @param name The name of the one looking for a group
+     * @param currentLatitude The current latitude
+     * @param currentLongitude The current longitude
+     * @param destinationLatitude The destination latitude
+     * @param destinationLongitude The destination longitude
+     * @return the json string
+     */
     public String createFindGroupMessage(String name, Double currentLatitude, Double currentLongitude, Double destinationLatitude, Double destinationLongitude){
         JSONObject message = new JSONObject();
         try {
@@ -69,6 +83,11 @@ public class JSONHelper {
         return new JsonParser().parse(json).getAsJsonObject();
     }
 
+    /**
+     * Converts json string representing a chat message to an actual message
+     * @param messageInJson The message as a json string
+     * @return The actual message
+     */
     public Message convertJsonToChatMessage(String messageInJson) {
         JsonObject json = new JsonParser().parse(messageInJson).getAsJsonObject();
         return convertJsonToChatMessage(json);
@@ -76,6 +95,11 @@ public class JSONHelper {
 
     }
 
+    /**
+     * Converts json object representing a chat message to an actual message
+     * @param jsonObjectMessage The message as a json object
+     * @return The actual message
+     */
     private Message convertJsonToChatMessage(JsonObject jsonObjectMessage) {
         String type = jsonObjectMessage.get("type").toString();
 
@@ -112,6 +136,11 @@ public class JSONHelper {
         return time;
     }
 
+    /**
+     * Converts json string representing a group to an actual group
+     * @param jsonGroup The message as a json string
+     * @return The group
+     */
     public Group convertJsonToGroup(String jsonGroup){
         JsonObject jsonObject = new JsonParser().parse(jsonGroup).getAsJsonObject();
         JsonArray jsonUsers= jsonObject.getAsJsonArray("users");

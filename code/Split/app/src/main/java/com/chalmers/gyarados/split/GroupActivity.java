@@ -78,11 +78,15 @@ public class GroupActivity extends AppCompatActivity {
 
 
     //------------------GUI-------------------------------
-
     /**
-     * Used to show received messages
+     * Used to show messages
      */
-    private TextView receivedMessages;
+    private RecyclerView mMessageRecycler;
+    /**
+     * Used by the message recycler
+     */
+    private MessageListAdapter mMessageAdapter;
+
     /**
      * Where the user can write his messages
      */
@@ -99,8 +103,7 @@ public class GroupActivity extends AppCompatActivity {
     private JSONHelper jsonHelper;
 
 
-    private RecyclerView mMessageRecycler;
-    private MessageListAdapter mMessageAdapter;
+
 
     //-------------------ANDROID METHODS---------------------------------------------
     /**
@@ -251,6 +254,11 @@ public class GroupActivity extends AppCompatActivity {
     }
 
     //-----------------GUI METHODS----------------------------------
+
+    /**
+     * Initialises the message recycler and the message adapter. Adds the given messages to the adapter.
+     * @param messages The messages that are to be added to the message view.
+     */
     private void initMessageView(List<Message> messages) {
         mMessageRecycler = (RecyclerView) findViewById(R.id.reyclerview_message_list);
         mMessageAdapter = new MessageListAdapter(this, messages);
@@ -306,10 +314,7 @@ public class GroupActivity extends AppCompatActivity {
                 .subscribe(topicMessage ->{
 
                     //todo we need to check if the received message is ok
-                    JsonObject message = jsonHelper.stringToJSONObject(topicMessage.getPayload());
-
                     myGroup = jsonHelper.convertJsonToGroup(topicMessage.getPayload());
-
 
                     //We want to subscribe to messages on our given group
                     createRecevingMessageSubscription("/topic/"+myGroup.getId());
@@ -331,10 +336,7 @@ public class GroupActivity extends AppCompatActivity {
 
         mStompClient.connect();
 
-
-
         //Subscribes on the connection status
-
         Disposable dispLifecycle = mStompClient.lifecycle().subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(lifecycleEvent -> {

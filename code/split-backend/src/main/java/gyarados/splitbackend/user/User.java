@@ -65,6 +65,8 @@ public class User {
         this.destinationLongitude = destinationLongitude;
     }
 
+
+
     @Override
     public String toString() {
         return "User{" +
