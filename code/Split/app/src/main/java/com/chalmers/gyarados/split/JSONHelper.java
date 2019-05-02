@@ -122,11 +122,12 @@ public class JSONHelper {
         if(timestamp==null){
             return "";
         }
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
         String time;
         try {
-            Date date = format.parse(timestamp.getAsString());
-            format.applyPattern("hh:mm");
+            String test = timestamp.getAsString();
+            Date date = format.parse(test);
+            format.applyPattern("HH:mm");
             time=format.format(date);
 
         } catch (ParseException e) {
