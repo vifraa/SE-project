@@ -114,16 +114,25 @@ public class GroupService {
      * Retrieves the destination latitude of a Group
      */
     public Double getGroupDestinationLatitude(Group group) {
-        Double groupLatitude = group.getUsers().get(0).getDestinationLatitude();
-        return groupLatitude;
+        User firstUser = group.getUsers().get(0);
+        if(firstUser!=null){
+            Double groupLatitude = firstUser.getDestinationLatitude();
+            return groupLatitude;
+        }
+        return null;
     }
 
     /**
      * Retrieves the destination longitude of a Group
      */
     public Double getGroupDestinationLongitude(Group group) {
-        Double groupLongitude = group.getUsers().get(0).getDestinationLongitude();
-        return groupLongitude;
+        User firstUser = group.getUsers().get(0);
+        if(firstUser!=null){
+            Double groupLongitude = firstUser.getDestinationLongitude();
+            return groupLongitude;
+        }
+        return null;
+
     }
 
     /**
@@ -148,12 +157,15 @@ public class GroupService {
         for (Group group: allGroups) {
             Double groupDestLongitude = getGroupDestinationLongitude(group);
             Double groupDestLatitude = getGroupDestinationLatitude(group);
-            Double destinationDistance = calcDist(groupDestLatitude, groupDestLongitude, user.getDestinationLatitude(), user.getDestinationLongitude());
+            Double destinationDistance = -1.0;
+            if(groupDestLongitude!=null || groupDestLatitude!=null){
+                destinationDistance=calcDist(groupDestLatitude, groupDestLongitude, user.getDestinationLatitude(), user.getDestinationLongitude());
+            }
 
                 //Add Exception Handling
             if(group.getUsers().size() + user.getNumberOfFriends() <= group.getMAX_GROUP_SIZE()
                     && group.getUsers().size() > 0
-                    && destinationDistance <= 0.1) {
+                    && destinationDistance <= 0.1 && destinationDistance > 0) {
                 potentialGroups.add(group);
             }
 
