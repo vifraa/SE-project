@@ -109,14 +109,14 @@ public class JSONHelper {
 
 
         if(type.equals("\"CHAT\"")){
-            return new Message(jsonObjectMessage.get("content").getAsString(),user,time);
+            return new Message(jsonObjectMessage.get("content").getAsString(),user,time, MessageType.CHAT);
         }else if(type.equals("\"JOIN\"")){
-            return new Message("JOIN", user, time);
+            return new Message("JOIN", user, time, MessageType.JOIN);
         }else if(type.equals("\"LEAVE\"")){
-            return new Message("LEAVE", user, time);
+            return new Message("LEAVE", user, time, MessageType.LEAVE);
         }else{
             //todo
-            return new Message("", user, time);
+            return new Message("", user, time, MessageType.CHAT);
         }
     }
 

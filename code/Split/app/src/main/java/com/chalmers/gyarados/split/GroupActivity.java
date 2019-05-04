@@ -97,6 +97,8 @@ public class GroupActivity extends AppCompatActivity {
      */
     private ViewDialog viewDialog;
 
+    private TextView groupMembers;
+
     //------------------OTHER PROPERTIES------------------------------------
     /**
      * An object that helps us creating messages in json format
@@ -123,6 +125,7 @@ public class GroupActivity extends AppCompatActivity {
 
         //initializing gui
         writtenText = findViewById(R.id.writtenText);
+        groupMembers=findViewById(R.id.groupMembers);
         ImageButton sendButton = findViewById(R.id.sendbutton);
         ImageButton leaveButton = findViewById(R.id.leaveButton);
         sendButton.setOnClickListener(v -> onSendButtonPressed(writtenText.getText().toString()));
@@ -169,6 +172,9 @@ public class GroupActivity extends AppCompatActivity {
     private void newGroupMessageReceived(String messageInJson) {
         hideCustomDialogIfNeeded();
         Message message = jsonHelper.convertJsonToChatMessage(messageInJson);
+        if(message.getType().equals(MessageType.JOIN )|| message.getType().equals(MessageType.LEAVE)){
+            sendMessage(CHAT_PREFIX+myGroup.getId()+CHAT_ASK_FOR_GROUP_INFO,createChatMessage(NAME,null,"CHAT"));
+        }
         mMessageAdapter.addItem(message);
 
         mMessageRecycler.scrollToPosition(mMessageAdapter.getItemCount()-1);
@@ -180,6 +186,8 @@ public class GroupActivity extends AppCompatActivity {
      * @param groupInfoInJson The group info, in json format
      */
     private void newGroupInfoReceived(String groupInfoInJson) {
+        Group group = jsonHelper.convertJsonToGroup(groupInfoInJson);
+        updateMembersList(group.getUsers());
         Log.d(TAG,"newGroupInfoReceived");
     }
 
@@ -316,6 +324,7 @@ public class GroupActivity extends AppCompatActivity {
 
                     //todo we need to check if the received message is ok
                     myGroup = jsonHelper.convertJsonToGroup(topicMessage.getPayload());
+                    updateMembersList(myGroup.getUsers());
 
                     //We want to subscribe to messages on our given group
                     createRecevingMessageSubscription("/topic/"+myGroup.getId());
@@ -365,7 +374,15 @@ public class GroupActivity extends AppCompatActivity {
 
     }
 
-
+    private void updateMembersList(List<User> users) {
+        StringBuilder sb = new StringBuilder();
+        for(User u:users){
+            sb.append(u.getName());
+            sb.append("\n");
+        }
+        sb.deleteCharAt(sb.length()-1);
+        groupMembers.setText(sb.toString());
+    }
 
 
     /**
