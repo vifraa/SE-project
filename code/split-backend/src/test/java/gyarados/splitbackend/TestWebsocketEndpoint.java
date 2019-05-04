@@ -1,5 +1,6 @@
 package gyarados.splitbackend;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import gyarados.splitbackend.chat.ChatMessage;
 import gyarados.splitbackend.group.Group;
 import gyarados.splitbackend.group.GroupService;
@@ -67,7 +68,10 @@ public class TestWebsocketEndpoint {
         url = "ws://localhost:" + port + "/split";
 
         stompClient = new WebSocketStompClient(new SockJsClient(createTransportClient()));
-        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+        //stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+        MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
+        converter.getObjectMapper().registerModule(new JavaTimeModule());
+        stompClient.setMessageConverter(converter);
 
         // We need a group to be able to send messages.
         testGroup = new Group();
@@ -135,6 +139,7 @@ public class TestWebsocketEndpoint {
         assertEquals(message.getContent(), recievedMessage.getContent());
         assertEquals(message.getGroupid(), recievedMessage.getGroupid());
         assertEquals(message.getContent(), recievedMessage.getContent());
+        assertEquals(message.getTimestamp(),recievedMessage.getTimestamp());
     }
 
     /*@Test
