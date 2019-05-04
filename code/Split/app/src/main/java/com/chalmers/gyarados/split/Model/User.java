@@ -1,4 +1,4 @@
-package com.chalmers.gyarados.split;
+package com.chalmers.gyarados.split.Model;
 
 public class User {
 

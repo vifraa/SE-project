@@ -1,8 +1,8 @@
-package com.chalmers.gyarados.split;
+package com.chalmers.gyarados.split.Model;
 
 import java.util.List;
 
-class Group {
+public class Group {
 
     private String id;
     private List<Message> messages;

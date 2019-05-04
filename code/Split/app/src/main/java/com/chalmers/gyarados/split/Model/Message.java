@@ -1,6 +1,7 @@
-package com.chalmers.gyarados.split;
+package com.chalmers.gyarados.split.Model;
 
-import java.text.SimpleDateFormat;
+import com.chalmers.gyarados.split.MessageType;
+
 import java.util.Date;
 
 public class Message {

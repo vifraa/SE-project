@@ -5,19 +5,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 
+import com.chalmers.gyarados.split.Model.Group;
+import com.chalmers.gyarados.split.Model.Message;
+import com.chalmers.gyarados.split.Model.User;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
 import io.reactivex.CompletableTransformer;

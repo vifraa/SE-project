@@ -1,5 +1,8 @@
 package com.chalmers.gyarados.split;
 
+import com.chalmers.gyarados.split.Model.Group;
+import com.chalmers.gyarados.split.Model.Message;
+import com.chalmers.gyarados.split.Model.User;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
