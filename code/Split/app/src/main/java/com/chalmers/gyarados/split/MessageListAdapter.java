@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class MessageListAdapter extends RecyclerView.Adapter {
@@ -97,7 +99,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
 
             // Format the stored timestamp into a readable String using method.
             //timeText.setText(Utils.formatDateTime(message.getCreatedAt()));
-            timeText.setText(message.getCreatedAt());
+            timeText.setText(handleTime(message.getCreatedAt()));
             nameText.setText(message.getSender().getName());
 
             // Insert the profile image from the URL into the ImageView.
@@ -118,7 +120,17 @@ public class MessageListAdapter extends RecyclerView.Adapter {
             messageText.setText(message.getMessage());
 
             // Format the stored timestamp into a readable String using method.
-            timeText.setText(message.getCreatedAt());
+            timeText.setText(handleTime(message.getCreatedAt()));
+        }
+    }
+
+    private String handleTime(Date date){
+        if(date!=null){
+            SimpleDateFormat format = new SimpleDateFormat();
+            format.applyPattern("HH:mm");
+            return format.format(date);
+        }else{
+            return  "";
         }
     }
 }

@@ -5,6 +5,12 @@ public class User {
     private String name;
     private String profileURL;
 
+
+    public User(String name, String profileURL) {
+        this.name = name;
+        this.profileURL = profileURL;
+    }
+
     public String getName() {
         return name;
     }

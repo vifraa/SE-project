@@ -102,39 +102,39 @@ public class JSONHelper {
      */
     private Message convertJsonToChatMessage(JsonObject jsonObjectMessage) {
         String type = jsonObjectMessage.get("type").toString();
+        String sender = jsonObjectMessage.get("sender").toString();
 
-        String time = handleTimeStamp(jsonObjectMessage.get("timestamp"));
+        Date time = handleTimeStamp(jsonObjectMessage.get("timestamp"));
+        User user = new User(sender,null);
 
 
         if(type.equals("\"CHAT\"")){
-            return new Message(jsonObjectMessage.get("content").getAsString(),time);
+            return new Message(jsonObjectMessage.get("content").getAsString(),user,time);
         }else if(type.equals("\"JOIN\"")){
-            return new Message("JOIN",time);
+            return new Message("JOIN", user, time);
         }else if(type.equals("\"LEAVE\"")){
-            return new Message("LEAVE",time);
+            return new Message("LEAVE", user, time);
         }else{
             //todo
-            return new Message("",time);
+            return new Message("", user, time);
         }
     }
 
-    private String handleTimeStamp(JsonElement timestamp) {
+    private Date handleTimeStamp(JsonElement timestamp) {
         if(timestamp==null){
-            return "";
+            return null;
         }
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-        String time;
+
         try {
             String test = timestamp.getAsString();
-            Date date = format.parse(test);
-            format.applyPattern("HH:mm");
-            time=format.format(date);
+            return format.parse(test);
+
 
         } catch (ParseException e) {
-            time="";
+            return null;
         }
 
-        return time;
     }
 
     /**
@@ -172,8 +172,7 @@ public class JSONHelper {
 
     private User createUserFromJsonUsers(JsonObject userInJson) {
         String name = userInJson.get("name").getAsString();
-        User newUser = new User();
-        newUser.setName(name);
+        User newUser = new User(name,null);
         return newUser;
     }
 }

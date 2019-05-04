@@ -57,8 +57,8 @@ public class ChatController {
         chatMessage.setGroupid(group.getGroupId());
         chatMessage.setSender(user.getName());
         chatMessage.setType(ChatMessage.MessageType.JOIN);
-        groupService.addChatMessageToGroup(group.getGroupId(), chatMessage);
-        groupService.addUserToGroup(group.getGroupId(),user);
+        group = groupService.addChatMessageToGroup(group.getGroupId(), chatMessage);
+        group = groupService.addUserToGroup(group.getGroupId(),user);
 
         simpMessaging.convertAndSend("/topic/"+group.getGroupId(),chatMessage);
 
