@@ -10,9 +10,9 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 
-import com.chalmers.gyarados.split.Model.Group;
-import com.chalmers.gyarados.split.Model.Message;
-import com.chalmers.gyarados.split.Model.User;
+import com.chalmers.gyarados.split.model.Group;
+import com.chalmers.gyarados.split.model.Message;
+import com.chalmers.gyarados.split.model.User;
 
 import java.util.List;
 

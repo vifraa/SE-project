@@ -1,4 +1,4 @@
-package com.chalmers.gyarados.split.Model;
+package com.chalmers.gyarados.split.model;
 
 import com.chalmers.gyarados.split.MessageType;
 

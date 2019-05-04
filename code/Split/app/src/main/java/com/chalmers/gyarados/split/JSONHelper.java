@@ -1,8 +1,8 @@
 package com.chalmers.gyarados.split;
 
-import com.chalmers.gyarados.split.Model.Group;
-import com.chalmers.gyarados.split.Model.Message;
-import com.chalmers.gyarados.split.Model.User;
+import com.chalmers.gyarados.split.model.Group;
+import com.chalmers.gyarados.split.model.Message;
+import com.chalmers.gyarados.split.model.User;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -29,6 +29,7 @@ public class JSONHelper {
      * @return the json string
      */
     public String createChatMessage(String sender, String content, String type){
+
         JSONObject message = new JSONObject();
         try {
             if(sender!=null){

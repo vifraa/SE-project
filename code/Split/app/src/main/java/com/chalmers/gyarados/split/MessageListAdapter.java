@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.chalmers.gyarados.split.Model.Message;
+import com.chalmers.gyarados.split.model.Message;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
