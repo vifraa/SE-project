@@ -16,6 +16,12 @@ public class Message {
         this.sender=user;
         this.createdAt=createdAt;
         this.type=type;
+    }
+
+    public Message(String message, User user,MessageType type) {
+        this.message = message;
+        this.sender=user;
+        this.type=type;
 
 
     }

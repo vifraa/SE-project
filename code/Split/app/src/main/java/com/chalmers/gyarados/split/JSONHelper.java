@@ -3,6 +3,7 @@ package com.chalmers.gyarados.split;
 import com.chalmers.gyarados.split.model.Group;
 import com.chalmers.gyarados.split.model.Message;
 import com.chalmers.gyarados.split.model.User;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -19,6 +20,19 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+//TODO should probably use something like
+/*
+Gson g = new Gson();
+Group group = g.fromJson(jsonString, Group.class)
+
+or with jackson
+
+ObjectMapper objectMapper = new ObjectMapper();
+Group group = objectMapper.readValue(jsonString,Group.class=
+
+but right now we do it "manually"
+
+ */
 
 public class JSONHelper {
     /**
@@ -178,5 +192,17 @@ public class JSONHelper {
         String name = userInJson.get("name").getAsString();
         User newUser = new User(name,null);
         return newUser;
+    }
+
+    public String convertChatMessageToJSon(Message message) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("sender",message.getSender().getName());
+            json.put("content",message.getMessage());
+            json.put("type",message.getType().toString());
+        } catch (JSONException e) {
+            return null;
+        }
+        return json.toString();
     }
 }
