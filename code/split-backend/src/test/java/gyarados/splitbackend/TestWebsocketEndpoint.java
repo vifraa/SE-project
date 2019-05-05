@@ -171,6 +171,13 @@ public class TestWebsocketEndpoint {
         leaveMessage.setGroupid("testgroup");
         leaveMessage.setType(ChatMessage.MessageType.LEAVE);
 
+        ChatMessage recievedMessage = chatMessageCompletableFuture.get(5, SECONDS);
+
+        assertNotNull(recievedMessage);
+        assertEquals(leaveMessage.getType(), recievedMessage.getType());
+        assertEquals(leaveMessage.getGroupid(), recievedMessage.getGroupid());
+        assertEquals(leaveMessage.getSender(), recievedMessage.getSender());
+
         User testUser = new User();
         testUser.setUserID("testID");
 
