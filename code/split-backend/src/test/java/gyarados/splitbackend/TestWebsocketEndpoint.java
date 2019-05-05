@@ -159,6 +159,36 @@ public class TestWebsocketEndpoint {
         assertEquals(joinMessage.getSender(), recievedMessage.getSender());
     }
 
+    @Test
+    public void testRemoveUser() throws URISyntaxException, InterruptedException, ExecutionException, TimeoutException {
+        StompSession stompSession = stompClient.connect(url, new StompSessionHandlerAdapter() {
+        }).get(1, SECONDS);
+
+
+        stompSession.subscribe(RECIEVE_MESSAGE, new SendMessageStompFrameHandler());
+        ChatMessage leaveMessage = new ChatMessage();
+        leaveMessage.setSender("testleaver");
+        leaveMessage.setGroupid("testgroup");
+        leaveMessage.setType(ChatMessage.MessageType.LEAVE);
+
+        User testUser = new User();
+        testUser.setUserID("testID");
+
+        groupService.addUserToGroup("testgroup", testUser);
+        int membersBefore = testGroup.getUsers().size();
+
+        groupService.removeUserFromGroup(testUser, "testgroup");
+        int membersAfter = testGroup.getUsers().size();
+
+        assertEquals(membersBefore -1, membersAfter);
+
+        stompSession.send(SEND_MESSAGE, leaveMessage);
+
+
+        stompSession.disconnect();
+    }
+
+
 
     private class SendMessageStompFrameHandler implements StompFrameHandler {
 

@@ -129,7 +129,6 @@ public class GroupService {
     /**
      * findMatchingGroup is responsible to return a groupID with a group that is a good choice of a group for the user.
      * If no good group exists, a new one is created and the id of that one returned.
-     *
      * @param user
      * @return The id of the group.
      */
