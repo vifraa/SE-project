@@ -81,13 +81,13 @@ public class Client {
         Disposable dispTopic = mStompClient.topic(RECEIVE_GROUP_NUMBER)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(topicMessage ->{
-                    //Now we have received a group 
+                    //Now we have received a group
                     myGroup = jsonHelper.convertJsonToGroup(topicMessage.getPayload());
                     clientListener.updateMembersList(myGroup.getUsers());
 
 
                     //We want to subscribe to messages on our given group
-                    createRecevingMessageSubscription("/topic/"+myGroup.getId());
+                    createReceivingMessageSubscription("/topic/"+myGroup.getId());
                     //We want to subscribe on group info
                     createRecevingGroupInfoSubscription("/user/queue/getInfo/"+myGroup.getId());
 
@@ -141,7 +141,7 @@ public class Client {
      * Subscribing on the given destination
      * @param destination The destination we are trying to subscribe on
      */
-    private void createRecevingMessageSubscription(String destination){
+    private void createReceivingMessageSubscription(String destination){
         Disposable dispTopic = mStompClient.topic(destination)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(tm -> newGroupMessageReceived(tm.getPayload()),
@@ -151,14 +151,20 @@ public class Client {
         compositeDisposable.add(dispTopic);
     }
 
+    /**
+     * Called when a new message has been sent to the group
+     * @param messageInJson the message in json
+     */
     private void newGroupMessageReceived(String messageInJson) {
         Message message = jsonHelper.convertJsonToChatMessage(messageInJson);
         clientListener.newGroupMessageReceived(message);
 
     }
 
-
-
+    /**
+     * We are creating  a subscription to be able to receive info about the group
+     * @param destination the path to subscribe on
+     */
     private void createRecevingGroupInfoSubscription(String destination){
         Disposable dispTopic = mStompClient.topic(destination)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -169,17 +175,20 @@ public class Client {
         compositeDisposable.add(dispTopic);
     }
 
+    /**
+     * Called when the client recevies new info about the group
+     * @param groupInfoInJson
+     */
     private void newGroupInfoReceived(String groupInfoInJson) {
         Group group = jsonHelper.convertJsonToGroup(groupInfoInJson);
         clientListener.updateMembersList(group.getUsers());
     }
 
     /**
-     * Sending the given data to the given destination
-     *
+     * Sending a message to the chat
      */
     public void sendMessageToChat(Message message){
-        if(message!=null){
+        if(message!=null && myGroup!=null){
             compositeDisposable.add(mStompClient.send(CHAT_PREFIX+myGroup.getId()+CHAT_SEND_MESSAGE_SUFFIX, jsonHelper.convertChatMessageToJSon(message))
                     .compose(applySchedulers()).subscribe(()
                                     -> Log.d(TAG, "Message send successfully"),
@@ -190,6 +199,10 @@ public class Client {
 
     }
 
+    /**
+     * Sends a message to find a group
+     * @param message message in json format
+     */
     private void sendFindGroupMessage(String message) {
         if(message!=null){
             compositeDisposable.add(mStompClient.send(ASK_FOR_GROUP_NUMBER, message)
@@ -229,18 +242,24 @@ public class Client {
     }
 
     /**
-     * Creates a json string with the given values. The string represents a find group message.
+     * Creates a json string which represents a find group message.
      * @return a json string
      */
     private String createFindGroupMessage() {
         return jsonHelper.createFindGroupMessage(CurrentSession.getCurrentUser().getName(),57.684027,11.975490,57.735473, 12.112732);
     }
 
+    /**
+     * Disconnects from server and disposes the subscriptions
+     */
     public void disconnect() {
         mStompClient.disconnect();
         if (compositeDisposable != null) compositeDisposable.dispose();
     }
 
+    /**
+     * Sends a message to the server and asks for info about a group
+     */
     public void askForGroupInfo() {
         compositeDisposable.add(mStompClient.send(CHAT_PREFIX+myGroup.getId()+CHAT_ASK_FOR_GROUP_INFO,jsonHelper.createChatMessage(CurrentSession.getCurrentUser().getName(),null,"CHAT"))
                 .unsubscribeOn(Schedulers.newThread())
@@ -250,6 +269,9 @@ public class Client {
                         throwable -> clientListener.errorWhileSendingMessage(throwable)));
     }
 
+    /**
+     * Sends a leave message to the server, disconnects and disposes any subscriptions
+     */
     public void leaveGroup() {
         if (compositeDisposable != null){
             compositeDisposable.dispose();

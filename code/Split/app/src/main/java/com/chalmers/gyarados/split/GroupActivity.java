@@ -19,19 +19,11 @@ import java.util.List;
 
 public class GroupActivity extends AppCompatActivity implements ClientListener {
 
-
-    //-------------------------CLIENT STUFF-----------------------------
-
-
-
-
-    //-------------CONFIG VALUES---------------------------
+    //-------------LOGGING---------------------------
     /**
      * Used for logging
      */
     private static final String TAG = "ClientActivity";
-
-
 
 
     //------------------GUI-------------------------------
@@ -57,11 +49,10 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
 
     //------------------OTHER PROPERTIES------------------------------------
 
-
+    /**
+     * USed to connect to server and send messages
+     */
     private Client client;
-
-
-
 
     //-------------------ANDROID METHODS---------------------------------------------
     /**
@@ -73,9 +64,6 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.group_view);
-
-
-        CurrentSession.setCurrentUser(new User("Tobias",null));
 
         //Retrieving the ip-address given in activity before
         String ip=getIntent().getStringExtra("IP");
@@ -125,15 +113,6 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
 
         mMessageRecycler.scrollToPosition(mMessageAdapter.getItemCount()-1);
         //receivedMessages.setText(messageInJson);
-    }
-
-    /**
-     * This method is called when the user receives a new message that belongs to the group
-     * @param group The group info
-     */
-    public void newGroupInfoReceived(Group group) {
-        updateMembersList(group.getUsers());
-        Log.d(TAG,"newGroupInfoReceived");
     }
 
     //-------------SENDING MESSAGE------------------------------
@@ -187,8 +166,6 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
             sendChatMessage(new Message(message,CurrentSession.getCurrentUser(),MessageType.CHAT));
             clearSendText();
         }
-
-        //todo gui stuff
     }
 
     private void clearSendText() {
@@ -198,11 +175,7 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
     public void onLeaveButtonPressed(){
         leaveGroup();
         returnToPreviousActivity();
-        //todo gui stuff
     }
-    //-------------WEBSOCKET---------------------------------------
-
-
 
     public void updateMembersList(List<User> users) {
         StringBuilder sb = new StringBuilder();
@@ -213,13 +186,21 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
         sb.deleteCharAt(sb.length()-1);
         groupMembers.setText(sb.toString());
     }
+    //-------------INITIALIZING---------------------------------------
 
 
+    /**
+     * Called when client has found a group and received all old messages
+     * @param messages
+     */
     @Override
     public void onOldMessagesReceived(List<Message> messages) {
         initMessageView(messages);
     }
 
+    /**
+     * Called when the client is ready.
+     */
     @Override
     public void onClientReady() {
         hideCustomDialogIfNeeded();
