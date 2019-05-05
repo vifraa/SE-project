@@ -1,5 +1,6 @@
 package gyarados.splitbackend.group;
 
+import gyarados.splitbackend.chat.ChatMessage;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,9 +9,14 @@ import static org.junit.Assert.*;
 
 public class GroupTest {
 
+    private Group testGroup;
+    private ChatMessage message;
+
     @Before
     public void setup() {
 
+        testGroup = new Group();
+        testGroup.setGroupId("testgroup");
     }
 
     @After
