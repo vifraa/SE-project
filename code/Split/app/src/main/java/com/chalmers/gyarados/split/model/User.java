@@ -1,9 +1,15 @@
-package com.chalmers.gyarados.split;
+package com.chalmers.gyarados.split.model;
 
 public class User {
 
-    String name;
-    String profileURL;
+    private String name;
+    private String profileURL;
+
+
+    public User(String name, String profileURL) {
+        this.name = name;
+        this.profileURL = profileURL;
+    }
 
     public String getName() {
         return name;

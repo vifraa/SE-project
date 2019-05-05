@@ -4,8 +4,6 @@ package gyarados.splitbackend.chat;
 import org.springframework.data.annotation.Id;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 /**
@@ -82,9 +80,20 @@ public class ChatMessage {
         this.messageId = messageId;
     }
 
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp=timestamp;
+    }
+
 
     @Override
     public String toString() {
-        return "Type: " + this.getType() + ", Message: " + this.getContent() + ", Sender: " + this.getSender() + ", Groupid: " + this.getGroupid();
+        return "Type: " + this.getType()
+                + ", Message: " + this.getContent()
+                + ", Sender: " + this.getSender()
+                + ", Groupid: " + this.getGroupid();
     }
 }
