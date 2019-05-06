@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -74,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     //UI
     private TextView currentPositionTextView; //Textview to show the current location
-
+    private Spinner companionSpinner;
     private Button findButton;
 
 
@@ -91,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this,GroupActivity.class);
                 intent.putExtra("IP",ip_address.getText().toString());
+                intent.putExtra("companions", companionSpinner.getSelectedItem().toString());
                 startActivity(intent);
             }
         });
@@ -100,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //UI
         currentPositionTextView = findViewById(R.id.currentPositionTextView);
+        companionSpinner = findViewById(R.id.companionSpinner);
 
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);

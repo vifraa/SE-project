@@ -65,6 +65,8 @@ public class User {
         this.destinationLongitude = destinationLongitude;
     }
 
+
+
     @Override
     public String toString() {
         return "User{" +
@@ -83,6 +85,25 @@ public class User {
 
     public void setNumberOfFriends(int numberOfFriends) {
         this.numberOfFriends = numberOfFriends;
+    }
+    
+    @Override
+    public boolean equals (Object user) {
+    		//if the object is compared to itself, return true
+    		if(user == this) {
+    			return true;
+    			}
+    		// Check if user is an instance of User or not
+    		if (!(user instanceof User)) { 
+    	            return false; 
+    	        }
+    		 
+    		//Typecast User so that we can compare data members
+    		 User tempUser = (User) user;
+    		 
+    		 //Compare data members and return accordingly
+    		 return name.equals(tempUser.name) && userID.equals(tempUser.userID);
+
     }
 }
 

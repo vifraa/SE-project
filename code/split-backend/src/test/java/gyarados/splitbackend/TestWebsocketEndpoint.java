@@ -1,5 +1,6 @@
 package gyarados.splitbackend;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import gyarados.splitbackend.chat.ChatMessage;
 import gyarados.splitbackend.group.Group;
 import gyarados.splitbackend.group.GroupService;
@@ -31,6 +32,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 
@@ -66,7 +68,10 @@ public class TestWebsocketEndpoint {
         url = "ws://localhost:" + port + "/split";
 
         stompClient = new WebSocketStompClient(new SockJsClient(createTransportClient()));
-        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+        //stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+        MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
+        converter.getObjectMapper().registerModule(new JavaTimeModule());
+        stompClient.setMessageConverter(converter);
 
         // We need a group to be able to send messages.
         testGroup = new Group();
@@ -92,6 +97,7 @@ public class TestWebsocketEndpoint {
 
         User sendUser = new User();
         sendUser.setName("TEST_NAME");
+        sendUser.setUserID("testID");
         sendUser.setCurrentLongitude(57.68);
         sendUser.setCurrentLatitude(11.84);
         sendUser.setDestinationLongitude(57.70);
@@ -104,6 +110,7 @@ public class TestWebsocketEndpoint {
         stompSession.disconnect();
 
         assertNotNull(group);
+        //assertTrue(group.getUsers().contains(sendUser));
     }
 
 
@@ -117,7 +124,11 @@ public class TestWebsocketEndpoint {
         stompSession.subscribe(RECIEVE_MESSAGE, new SendMessageStompFrameHandler());
 
         ChatMessage message = new ChatMessage();
-        message.setSender("TestSender");
+
+        User sender = new User();
+        sender.setName("testsender");
+        sender.setUserID("testID");
+        message.setSender(sender);
         message.setContent("Test message entered here.");
         message.setType(ChatMessage.MessageType.CHAT);
         message.setGroupid("testgroup");
@@ -129,13 +140,15 @@ public class TestWebsocketEndpoint {
         stompSession.disconnect();
 
         assertNotNull(recievedMessage);
+
         assertEquals(message.getSender(), recievedMessage.getSender());
         assertEquals(message.getContent(), recievedMessage.getContent());
         assertEquals(message.getGroupid(), recievedMessage.getGroupid());
         assertEquals(message.getContent(), recievedMessage.getContent());
+        assertEquals(message.getTimestamp(),recievedMessage.getTimestamp());
     }
 
-    @Test
+    /*@Test
     public void testAddUser() throws URISyntaxException, InterruptedException, ExecutionException, TimeoutException {
         StompSession stompSession = stompClient.connect(url, new StompSessionHandlerAdapter() {
         }).get(1, SECONDS);
@@ -157,7 +170,38 @@ public class TestWebsocketEndpoint {
         assertEquals(joinMessage.getType(), recievedMessage.getType());
         assertEquals(joinMessage.getGroupid(), recievedMessage.getGroupid());
         assertEquals(joinMessage.getSender(), recievedMessage.getSender());
+    }*/
+
+    @Test
+    public void testRemoveUser() throws URISyntaxException, InterruptedException, ExecutionException, TimeoutException {
+        StompSession stompSession = stompClient.connect(url, new StompSessionHandlerAdapter() {
+        }).get(1, SECONDS);
+
+
+        stompSession.subscribe(RECIEVE_MESSAGE, new SendMessageStompFrameHandler());
+        ChatMessage leaveMessage = new ChatMessage();
+
+        User sender = new User();
+        sender.setName("testleaver");
+        sender.setUserID("testID");
+        leaveMessage.setSender(sender);
+        leaveMessage.setGroupid("testgroup");
+        leaveMessage.setType(ChatMessage.MessageType.LEAVE);
+
+
+        stompSession.send(SEND_MESSAGE, leaveMessage);
+
+
+        ChatMessage recievedMessage = chatMessageCompletableFuture.get(5, SECONDS);
+
+        assertNotNull(recievedMessage);
+        assertEquals(leaveMessage.getType(), recievedMessage.getType());
+        assertEquals(leaveMessage.getGroupid(), recievedMessage.getGroupid());
+        assertEquals(leaveMessage.getSender(), recievedMessage.getSender());
+
+        stompSession.disconnect();
     }
+
 
 
     private class SendMessageStompFrameHandler implements StompFrameHandler {

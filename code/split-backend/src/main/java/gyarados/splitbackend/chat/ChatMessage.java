@@ -1,11 +1,10 @@
 package gyarados.splitbackend.chat;
 
 
+import gyarados.splitbackend.user.User;
 import org.springframework.data.annotation.Id;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 /**
@@ -17,7 +16,7 @@ public class ChatMessage {
     private String groupid;
     private MessageType type;
     private String content;
-    private String sender;
+    private User sender;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime timestamp = LocalDateTime.now();
@@ -36,7 +35,7 @@ public class ChatMessage {
     public ChatMessage(){
     }
 
-    public ChatMessage(MessageType type, String content, String sender) {
+    public ChatMessage(MessageType type, String content, User sender) {
         this.type = type;
         this.content = content;
         this.sender = sender;
@@ -50,7 +49,7 @@ public class ChatMessage {
         this.content = content;
     }
 
-    public void setSender(String sender) {
+    public void setSender(User sender) {
         this.sender = sender;
     }
 
@@ -62,7 +61,7 @@ public class ChatMessage {
         return content;
     }
 
-    public String getSender() {
+    public User getSender() {
         return sender;
     }
 
@@ -82,9 +81,20 @@ public class ChatMessage {
         this.messageId = messageId;
     }
 
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp=timestamp;
+    }
+
 
     @Override
     public String toString() {
-        return "Type: " + this.getType() + ", Message: " + this.getContent() + ", Sender: " + this.getSender() + ", Groupid: " + this.getGroupid();
+        return "Type: " + this.getType()
+                + ", Message: " + this.getContent()
+                + ", Sender: " + this.getSender()
+                + ", Groupid: " + this.getGroupid();
     }
 }
