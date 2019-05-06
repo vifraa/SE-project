@@ -1,8 +1,11 @@
 package gyarados.splitbackend.chat;
 
+import gyarados.splitbackend.group.Group;
+import gyarados.splitbackend.group.GroupNotFoundException;
 import gyarados.splitbackend.group.GroupService;
 import gyarados.splitbackend.WebSocketEventListener;
 import gyarados.splitbackend.user.User;
+import gyarados.splitbackend.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
@@ -32,6 +36,11 @@ public class ChatController {
     @Autowired
     private GroupService groupService;
 
+    @Autowired
+    private SimpMessagingTemplate simpMessaging;
+
+
+
 
     /**
      * findGroup returns an string containing the groupID of the group the user should join. It returns only to the
@@ -41,11 +50,21 @@ public class ChatController {
      */
     @MessageMapping("/find-group")
     @SendToUser("/queue/find-group")
-    public String findGroup(User user){
-        String groupId = groupService.findMatchingGroup(user.getDestinationLatitude(), user.getDestinationLongitude(),user.getCurrentLatitude(), user.getCurrentLongitude());
-        logger.info(user.getName() + "got matched with group: " + groupId);
+    public Group findGroup(User user){
+        Group group = groupService.findMatchingGroup(user);
+        group.addUser(user);
+        ChatMessage chatMessage = new ChatMessage();
+        chatMessage.setGroupid(group.getGroupId());
+        chatMessage.setSender(user.getName());
+        chatMessage.setType(ChatMessage.MessageType.JOIN);
+        group = groupService.addChatMessageToGroup(group.getGroupId(), chatMessage);
+        group = groupService.addUserToGroup(group.getGroupId(),user);
 
-        return groupId;
+        simpMessaging.convertAndSend("/topic/"+group.getGroupId(),chatMessage);
+
+        logger.info(user.getName() + " got matched with group: " + group.getGroupId());
+
+        return group;
     }
 
 
@@ -89,5 +108,44 @@ public class ChatController {
         headerAccessor.getSessionAttributes().put("sender", chatMessage.getSender());
         return chatMessage;
     }
+    /**
+     * leaveUser sends an ChatMessage to all connections that are subscribed to the endpoint
+     * specified in the @SendTo annotation. The ChatMessage that is sent is to notify that an
+     * user has left the channel.
+     * @param chatMessage The message to be sent.
+     * @return The ChatMessage that are being sent.
+     */
+    @MessageMapping("/chat/{groupId}/leave")
+    @SendTo("/topic/{groupId}")
+    public ChatMessage leaveUser(@DestinationVariable String groupId, @Payload ChatMessage chatMessage){
+        //todo we need to find the user
+        chatMessage.setGroupid(groupId);
+        groupService.removeUserFromGroup(null,groupId);
+        groupService.addChatMessageToGroup(groupId, chatMessage);
+        logger.info("User left: " + chatMessage.toString());
+        return chatMessage;
+    }
+
+    /**
+     * getGroupInfo retrieves the group with the given groupid and sends an the group to the user that is
+     * subscribed to the endpoint specified in the @SendToUser annotation.
+     * @param chatMessage A message with info about the request.
+     * @return The ChatMessage that are being sent.
+     */
+    @MessageMapping("/chat/{groupId}/getInfo")
+    @SendToUser("/queue/getInfo/{groupId}")
+    public Group getGroupInfo(@DestinationVariable String groupId, @Payload ChatMessage chatMessage){
+        //todo perhaps we shouldn't return a group but a group info class?
+        logger.info(chatMessage.getSender() + " asking for information about " + groupId);
+        try{
+            return groupService.findById(groupId);
+        }catch(GroupNotFoundException g){
+            logger.info("Couldn't retrieve information from " + groupId);
+            return null;
+        }
+
+    }
+
+
 
 }

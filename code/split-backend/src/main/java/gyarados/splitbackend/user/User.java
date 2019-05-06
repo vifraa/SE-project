@@ -10,6 +10,7 @@ public class User {
     private Double currentLongitude;
     private Double destinationLatitude;
     private Double destinationLongitude;
+    private int numberOfFriends;
 
 
     public User(){}
@@ -64,6 +65,8 @@ public class User {
         this.destinationLongitude = destinationLongitude;
     }
 
+
+
     @Override
     public String toString() {
         return "User{" +
@@ -74,6 +77,14 @@ public class User {
                 ", destinationLatitude='" + destinationLatitude + '\'' +
                 ", destinationLongitude='" + destinationLongitude + '\'' +
                 '}';
+    }
+
+    public int getNumberOfFriends() {
+        return numberOfFriends;
+    }
+
+    public void setNumberOfFriends(int numberOfFriends) {
+        this.numberOfFriends = numberOfFriends;
     }
 }
 
