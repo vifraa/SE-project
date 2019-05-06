@@ -46,9 +46,6 @@ public class WebSocketEventListener {
         String username = (String) headerAccessor.getSessionAttributes().get("sender");
         if(username != null){
             logger.info("User disconnected: " + username);
-            ChatMessage chatMessage = new ChatMessage(ChatMessage.MessageType.LEAVE,null,username);
-
-            messagingTemplate.convertAndSend("/topic/public", chatMessage);
 
         }else{
             logger.info("Unknown user disconnected");
