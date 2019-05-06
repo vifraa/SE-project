@@ -17,6 +17,9 @@ import com.google.android.gms.tasks.Task;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private static final String TAG = "LoginActivity";
+    private static final int RC_SIGN_IN = 9001;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,7 +28,9 @@ public class LoginActivity extends AppCompatActivity {
 
         updateUI(account);
 
-        final SignInButton login = findViewById(R.id.sign_in_button);
+        final SignInButton signInButton = findViewById(R.id.sign_in_button);
+
+        signInButton.setSize(SignInButton.SIZE_STANDARD);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -35,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
-        login.setOnClickListener(new View.OnClickListener() {
+        signInButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -93,4 +98,12 @@ public class LoginActivity extends AppCompatActivity {
             setContentView(R.layout.login_view);
         }
     }
+    /*
+    if (acct != null) {
+        String personName = acct.getDisplayName();
+        String personGivenName = acct.getGivenName();
+        String personFamilyName = acct.getFamilyName();
+        String personEmail = acct.getEmail();
+        String personId = acct.getId();
+        Uri personPhoto = acct.getPhotoUrl();*/
 }
