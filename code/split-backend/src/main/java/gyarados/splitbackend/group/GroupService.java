@@ -146,7 +146,6 @@ public class GroupService {
     /**
      * findMatchingGroup is responsible to return a groupID with a group that is a good choice of a group for the user.
      * If no good group exists, a new one is created and the id of that one returned.
-     *
      * @param user
      * @return The id of the group.
      */
@@ -201,13 +200,11 @@ public class GroupService {
 
     }
 
-    public boolean removeUserFromGroup(User user, String groupid) {
+    public Group removeUserFromGroup(User user, String groupid) {
         //todo remove the user from his group
         Group group = findById(groupid);
         group.removeUser(user);
-        repository.save(group);
-        return true;
-
+        return repository.save(group);
     }
 }
 
