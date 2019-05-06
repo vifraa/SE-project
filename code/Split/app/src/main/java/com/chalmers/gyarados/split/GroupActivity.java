@@ -127,7 +127,20 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
     //-----------------LEAVING----------------------------------------
     
     private void leaveGroup(){
+<<<<<<< HEAD
+        if (compositeDisposable != null){
+            compositeDisposable.dispose();
+        }
+        sendLeaveMessage(CHAT_PREFIX+myGroup+CHAT_LEAVING_GROUP_SUFFIX);
+        mStompClient.disconnect();
+        finish();
+
+        
+        
+        
+=======
         client.leaveGroup();
+>>>>>>> 78b75d2a111ff7c7e7aef6d7fcdd37422844070c
     }
 
     //-----------------GUI METHODS----------------------------------

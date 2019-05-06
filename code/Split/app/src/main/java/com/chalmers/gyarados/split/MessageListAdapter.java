@@ -66,16 +66,15 @@ public class MessageListAdapter extends RecyclerView.Adapter {
     }
 
     public int getItemViewType(int position) {
-        /*Message message = (Message) mMessageList.get(position);
+        Message message = (Message) mMessageList.get(position);
 
-        if (message.getSender().getUserId().equals(GroupActivity.getCurrentUser().getUserId())) {
+        if (message.getSender().getUserId().equals(CurrentSession.getCurrentUser().getUserId())) {
             // If the current user is the sender of the message
             return VIEW_TYPE_MESSAGE_SENT;
         } else {
             // If some other user sent the message
             return VIEW_TYPE_MESSAGE_RECEIVED;
-        }*/
-        return VIEW_TYPE_MESSAGE_SENT;
+        }
     }
 
     public void addItem(Message message) {

@@ -97,6 +97,7 @@ public class TestWebsocketEndpoint {
 
         User sendUser = new User();
         sendUser.setName("TEST_NAME");
+        sendUser.setUserID("testID");
         sendUser.setCurrentLongitude(57.68);
         sendUser.setCurrentLatitude(11.84);
         sendUser.setDestinationLongitude(57.70);
@@ -123,7 +124,11 @@ public class TestWebsocketEndpoint {
         stompSession.subscribe(RECIEVE_MESSAGE, new SendMessageStompFrameHandler());
 
         ChatMessage message = new ChatMessage();
-        message.setSender("TestSender");
+
+        User sender = new User();
+        sender.setName("testsender");
+        sender.setUserID("testID");
+        message.setSender(sender);
         message.setContent("Test message entered here.");
         message.setType(ChatMessage.MessageType.CHAT);
         message.setGroupid("testgroup");
@@ -135,6 +140,7 @@ public class TestWebsocketEndpoint {
         stompSession.disconnect();
 
         assertNotNull(recievedMessage);
+
         assertEquals(message.getSender(), recievedMessage.getSender());
         assertEquals(message.getContent(), recievedMessage.getContent());
         assertEquals(message.getGroupid(), recievedMessage.getGroupid());
@@ -174,7 +180,11 @@ public class TestWebsocketEndpoint {
 
         stompSession.subscribe(RECIEVE_MESSAGE, new SendMessageStompFrameHandler());
         ChatMessage leaveMessage = new ChatMessage();
-        leaveMessage.setSender("testleaver");
+
+        User sender = new User();
+        sender.setName("testleaver");
+        sender.setUserID("testID");
+        leaveMessage.setSender(sender);
         leaveMessage.setGroupid("testgroup");
         leaveMessage.setType(ChatMessage.MessageType.LEAVE);
 
@@ -188,23 +198,6 @@ public class TestWebsocketEndpoint {
         assertEquals(leaveMessage.getType(), recievedMessage.getType());
         assertEquals(leaveMessage.getGroupid(), recievedMessage.getGroupid());
         assertEquals(leaveMessage.getSender(), recievedMessage.getSender());
-
-        User testUser = new User();
-        testUser.setUserID("testID");
-        testUser.setName("testUser");
-        testGroup.addUser(testUser);
-
-        Group addGroup = groupService.addUserToGroup("testgroup", testUser);
-        int membersBefore = addGroup.getUsers().size();
-
-        Group removeGroup  = groupService.removeUserFromGroup(testUser, "testgroup");
-        int membersAfter = removeGroup.getUsers().size();
-
-        //test below works but for the moment the method in chat controller does not remove a user because it sends in a "null" user
-        //assertEquals(membersBefore -1, membersAfter);
-
-        stompSession.send(SEND_MESSAGE, leaveMessage);
-
 
         stompSession.disconnect();
     }
