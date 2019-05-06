@@ -102,12 +102,8 @@ public class User {
     		 User tempUser = (User) user;
     		 
     		 //Compare data members and return accordingly
-    		 return name.equals(tempUser.name)
-    	                && Double.compare(currentLatitude, tempUser.currentLatitude) == 0
-    		 			&& Double.compare(currentLongitude, tempUser.currentLongitude) == 0
-    		 			&& Double.compare(destinationLatitude, tempUser.destinationLatitude) == 0
-    		 			&& Double.compare(destinationLongitude, tempUser.destinationLongitude) == 0
-    		 			&& numberOfFriends - numberOfFriends == 0;
+    		 return name.equals(tempUser.name) && userID.equals(tempUser.userID);
+
     }
 }
 
