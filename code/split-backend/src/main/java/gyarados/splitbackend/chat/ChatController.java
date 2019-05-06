@@ -120,7 +120,7 @@ public class ChatController {
     public ChatMessage leaveUser(@DestinationVariable String groupId, @Payload ChatMessage chatMessage){
         //todo we need to find the user
         chatMessage.setGroupid(groupId);
-        groupService.removeUserFromGroup(null,groupId);
+        groupService.removeUserFromGroup(chatMessage.getSender(),groupId);
         groupService.addChatMessageToGroup(groupId, chatMessage);
         logger.info("User left: " + chatMessage.toString());
         return chatMessage;
