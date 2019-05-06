@@ -38,6 +38,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:16.1.0'
     implementation 'com.google.android.libraries.places:places:1.1.0'
 
+    //-----------------GOOGLE LOGIN------------------------------
+    api 'com.google.android.gms:play-services-auth:16.0.1'
     //------------------WEBSOCKET--------------------------------
     implementation 'com.github.NaikSoftware:StompProtocolAndroid:1.6.4'
     implementation 'com.squareup.okhttp3:okhttp:3.12.1'
