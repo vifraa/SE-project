@@ -144,7 +144,7 @@
         app:layout_constraintTop_toBottomOf="@+id/findbutton" />
 
     <Spinner
-        android:id="@+id/spinner"
+        android:id="@+id/companionSpinner"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
