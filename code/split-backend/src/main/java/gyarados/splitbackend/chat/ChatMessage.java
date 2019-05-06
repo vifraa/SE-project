@@ -2,6 +2,9 @@ package gyarados.splitbackend.chat;
 
 
 import org.springframework.data.annotation.Id;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 /**
  * ChatMessage is a representation of a message that is sent in chats.
@@ -14,6 +17,10 @@ public class ChatMessage {
     private String content;
     private String sender;
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime timestamp = LocalDateTime.now();
+
+
 
     /**
      * MessageType is an enum responsible for declaring the type of the message.
@@ -25,7 +32,6 @@ public class ChatMessage {
     }
 
     public ChatMessage(){
-
     }
 
     public ChatMessage(MessageType type, String content, String sender) {
@@ -74,9 +80,20 @@ public class ChatMessage {
         this.messageId = messageId;
     }
 
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp=timestamp;
+    }
+
 
     @Override
     public String toString() {
-        return "Type: " + this.getType() + ", Message: " + this.getContent() + ", Sender: " + this.getSender() + ", Groupid: " + this.getGroupid();
+        return "Type: " + this.getType()
+                + ", Message: " + this.getContent()
+                + ", Sender: " + this.getSender()
+                + ", Groupid: " + this.getGroupid();
     }
 }

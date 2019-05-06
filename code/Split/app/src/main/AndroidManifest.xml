@@ -43,9 +43,6 @@
         <activity android:name=".GroupActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".MessageListActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".LoginActivity"
             android:screenOrientation="portrait">
             <intent-filter>
