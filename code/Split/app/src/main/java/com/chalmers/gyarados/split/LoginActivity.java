@@ -1,6 +1,7 @@
 package com.chalmers.gyarados.split;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,6 +26,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+
+        User user = createUser();
 
         updateUI(account);
 
@@ -65,6 +68,20 @@ public class LoginActivity extends AppCompatActivity {
             }*/
         });
     }
+
+    private User createUser(GoogleSignInAccount acct) {
+        if (acct != null) {
+            String personName = acct.getDisplayName();
+            String personGivenName = acct.getGivenName();
+            String personFamilyName = acct.getFamilyName();
+            String personEmail = acct.getEmail();
+            String personId = acct.getId();
+            Uri personPhoto = acct.getPhotoUrl();
+            return new User(personName, personId, null)
+        }
+
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
