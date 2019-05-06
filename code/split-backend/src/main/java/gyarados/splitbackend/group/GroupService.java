@@ -114,22 +114,38 @@ public class GroupService {
      * Retrieves the destination latitude of a Group
      */
     public Double getGroupDestinationLatitude(Group group) {
-        Double groupLatitude = group.getUsers().get(0).getDestinationLatitude();
-        return groupLatitude;
+        List<User> users = group.getUsers();
+        if(users.size()>0){
+            User firstUser = group.getUsers().get(0);
+            if(firstUser!=null){
+                Double groupLatitude = firstUser.getDestinationLatitude();
+                return groupLatitude;
+            }
+        }
+
+        return null;
     }
 
     /**
      * Retrieves the destination longitude of a Group
      */
     public Double getGroupDestinationLongitude(Group group) {
-        Double groupLongitude = group.getUsers().get(0).getDestinationLongitude();
-        return groupLongitude;
+        List<User> users = group.getUsers();
+        if(users.size()>0){
+            User firstUser = group.getUsers().get(0);
+            if(firstUser!=null){
+                Double groupLongitude = firstUser.getDestinationLongitude();
+                return groupLongitude;
+            }
+        }
+
+        return null;
+
     }
 
     /**
      * findMatchingGroup is responsible to return a groupID with a group that is a good choice of a group for the user.
      * If no good group exists, a new one is created and the id of that one returned.
-     *
      * @param user
      * @return The id of the group.
      */
@@ -148,12 +164,15 @@ public class GroupService {
         for (Group group: allGroups) {
             Double groupDestLongitude = getGroupDestinationLongitude(group);
             Double groupDestLatitude = getGroupDestinationLatitude(group);
-            Double destinationDistance = calcDist(groupDestLatitude, groupDestLongitude, user.getDestinationLatitude(), user.getDestinationLongitude());
+            Double destinationDistance = -1.0;
+            if(groupDestLongitude!=null || groupDestLatitude!=null){
+                destinationDistance=calcDist(groupDestLatitude, groupDestLongitude, user.getDestinationLatitude(), user.getDestinationLongitude());
+            }
 
                 //Add Exception Handling
-            if(group.getUsers().size() + user.getNumberOfFriends() <= group.getMAX_GROUP_SIZE()
+            if(group.getUsers().size() + user.getNumberOfFriends() < group.getMAX_GROUP_SIZE()
                     && group.getUsers().size() > 0
-                    && destinationDistance <= 0.1) {
+                    && destinationDistance <= 0.1 && destinationDistance >= 0) {
                 potentialGroups.add(group);
             }
 
@@ -181,14 +200,11 @@ public class GroupService {
 
     }
 
-    public boolean removeUserFromGroup(User user, String groupid) {
+    public Group removeUserFromGroup(User user, String groupid) {
         //todo remove the user from his group
-        /*Group group = findById(groupid);
+        Group group = findById(groupid);
         group.removeUser(user);
         return repository.save(group);
-         */
-        return true;
-
     }
 }
 
