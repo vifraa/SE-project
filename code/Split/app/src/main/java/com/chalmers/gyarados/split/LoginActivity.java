@@ -17,6 +17,9 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 
+import io.reactivex.Completable;
+import io.reactivex.Single;
+
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -29,7 +32,15 @@ public class LoginActivity extends AppCompatActivity {
 
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
 
-        User user = createUser();
+        User user = createUser(account);
+
+        RestClient.getInstance().getExampleRepository().sendRestEcho(user).subscribe(myData -> {
+            Log.d(TAG, myData.toString());
+        }, throwable -> {
+            Log.d(TAG, throwable.toString());
+        });
+
+
 
         updateUI(account);
 
@@ -75,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
             Uri personPhoto = acct.getPhotoUrl();
             return new User(personName, personId, null);
         }
-
+        return null;
     }
 
     @Override
