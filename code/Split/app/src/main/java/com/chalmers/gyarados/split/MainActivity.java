@@ -16,12 +16,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
@@ -33,6 +31,15 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
@@ -43,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     //Constants
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final int DEFAULT_ZOOM = 15;
+    private static final int AUTOCOMPLETE_REQUEST_CODE = 1;
 
 
     private AddressResultReceiver resultReceiver;
@@ -74,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     //UI
-    private TextView currentPositionTextView; //Textview to show the current location
+    private TextView destinationTextView; //Textview to show the current location
     private Spinner companionSpinner;
     private Button findButton;
 
@@ -87,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         findButton = findViewById(R.id.findbutton);
         EditText ip_address = findViewById(R.id.ip_address);
+
         findButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,13 +110,67 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         resultReceiver=new AddressResultReceiver(new Handler());
 
         //UI
-        currentPositionTextView = findViewById(R.id.currentPositionTextView);
+        destinationTextView = findViewById(R.id.destinationTextView);
         companionSpinner = findViewById(R.id.companionSpinner);
 
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        // Initialize the AutocompleteSupportFragment.
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+        // Specify the types of place data to return.
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+
+        // Set up a PlaceSelectionListener to handle the response.
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                //Exception needs to be changed after the method has been updated
+                Log.i("Exception", "Place: " + place.getName() + ", " + place.getId());
+            }
+
+            @Override
+            public void onError(@NonNull Status status) {
+                //TODO: implement onError method when we understaand TAG
+            }
+        });
     }
+
+    private void lauchAutocomplete() {
+        //int AUTOCOMPLETE_REQUEST_CODE = 1;
+        // Set the fields to specify which types of place data to
+        // return after the user has made a selection.
+        List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+
+        // Start the autocomplete intent.
+        Intent intent = new Autocomplete.IntentBuilder(
+                AutocompleteActivityMode.OVERLAY, fields)
+                .build(this);
+        startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                //Dont understand TAG so replaced it with "ëxception"
+                Log.i("Exception" ,"Place: " + place.getName() + ", " + place.getId());
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // TODO: Handle the error.
+                Status status = Autocomplete.getStatusFromIntent(data);
+                //Dont understand TAG so replaced it with "exception"
+                Log.i("Exception", status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }
+    }
+
 
     /**
      * Checks if the user have given permission, otherwise we ask the user for permission
@@ -249,7 +312,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void setAddress(String address) {
-        currentPositionTextView.setText(address);
+        destinationTextView.setText(address);
     }
 
     /**

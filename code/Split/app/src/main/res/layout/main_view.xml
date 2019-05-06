@@ -11,7 +11,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="32dp"
-        app:layout_constraintBottom_toTopOf="@+id/currentPositionTextView"
+        app:layout_constraintBottom_toTopOf="@+id/destinationTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.6"
         app:layout_constraintStart_toStartOf="parent"
@@ -59,7 +59,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/currentPositionTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/destinationTextView" />
 
     <TextView
         android:id="@+id/textView2"
@@ -75,7 +75,7 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/whereTextView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/currentPositionTextView"
+        app:layout_constraintTop_toBottomOf="@+id/destinationTextView"
         app:layout_constraintVertical_bias="0.743" />
 
     <TextView
@@ -92,11 +92,11 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/whereTextView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/currentPositionTextView"
+        app:layout_constraintTop_toBottomOf="@+id/destinationTextView"
         app:layout_constraintVertical_bias="0.743" />
 
     <EditText
-        android:id="@+id/currentPositionTextView"
+        android:id="@+id/destinationTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -111,7 +111,14 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" >
+
+        <fragment android:id="@+id/autocomplete_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+            />
+    </EditText>
 
     <Button
         android:id="@+id/findbutton"
