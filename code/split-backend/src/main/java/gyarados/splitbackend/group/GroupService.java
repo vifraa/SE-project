@@ -68,6 +68,22 @@ public class GroupService {
     }
 
     /**
+     * userIsInGroup checks all groups if the inputted user is a member of one of them.
+     * @param user The user we want to check.
+     * @return True if found in a group. Otherwise false.
+     */
+    public boolean userIsInGroup(User user){
+        List<Group> groups = repository.findAll();
+
+        for (Group group: groups){
+            if(group.getUsers().contains(user)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * addChatMessageToGroup adds a chatmessage to the group specified by the groupID parameter.
      *
      * @param groupID The group we want to add the chatmessage to.
