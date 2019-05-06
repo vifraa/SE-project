@@ -16,7 +16,9 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.login_view);
 
         //todo
-        CurrentSession.setCurrentUser(new User("Oscar",null));
+        User myUser = new User("Viktor",null);
+        myUser.setId("jkdfasjkj");
+        CurrentSession.setCurrentUser(myUser);
 
         final Button login = findViewById(R.id.googleLogInButton);
         final Button fbLogin = findViewById(R.id.facebookButton);

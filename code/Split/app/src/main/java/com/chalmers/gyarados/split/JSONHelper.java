@@ -37,18 +37,18 @@ but right now we do it "manually"
 public class JSONHelper {
     /**
      * Creates a json string that represents a chat message
-     * @param sender The name of the sender
+     * @param user the user of the message
      * @param content The content of the message
      * @param type The type of message
      * @return the json string
      */
-    public String createChatMessage(String sender, String content, String type){
+    public String createChatMessage(User user, String content, String type){
 
         JSONObject message = new JSONObject();
         try {
-            if(sender!=null){
+            if(user!=null){
 
-                message.put("sender",sender);
+                message.put("sender",convertUserToJsonObject(user));
             }
             if(content!=null){
                 message.put("content",content);
@@ -65,18 +65,20 @@ public class JSONHelper {
 
     /**
      * Creates a jsoin string that represents a find group message
-     * @param name The name of the one looking for a group
      * @param currentLatitude The current latitude
      * @param currentLongitude The current longitude
      * @param destinationLatitude The destination latitude
      * @param destinationLongitude The destination longitude
      * @return the json string
      */
-    public String createFindGroupMessage(String name, Double currentLatitude, Double currentLongitude, Double destinationLatitude, Double destinationLongitude){
+    public String createFindGroupMessage(User user, Double currentLatitude, Double currentLongitude, Double destinationLatitude, Double destinationLongitude){
         JSONObject message = new JSONObject();
         try {
-            if(name!=null){
-                message.put("name",name);
+            if(user.getName()!=null){
+                message.put("name",user.getName());
+            }
+            if(user.getUserId()!=null){
+                message.put("userID",user.getUserId());
             }
             if(currentLatitude!=null){
                 message.put("currentLatitude",currentLatitude);
@@ -120,10 +122,13 @@ public class JSONHelper {
      */
     private Message convertJsonToChatMessage(JsonObject jsonObjectMessage) {
         String type = jsonObjectMessage.get("type").toString();
-        String sender = jsonObjectMessage.get("sender").toString();
+        JsonObject sender = jsonObjectMessage.get("sender").getAsJsonObject();
+
 
         Date time = handleTimeStamp(jsonObjectMessage.get("timestamp"));
-        User user = new User(sender,null);
+        String name = sender.get("name").getAsString();
+        String id = sender.get("userID").getAsString();
+        User user = new User(name,id,null);
 
 
         if(type.equals("\"CHAT\"")){
@@ -197,12 +202,23 @@ public class JSONHelper {
     public String convertChatMessageToJSon(Message message) {
         JSONObject json = new JSONObject();
         try {
-            json.put("sender",message.getSender().getName());
+            json.put("sender",convertUserToJsonObject(message.getSender()));
             json.put("content",message.getMessage());
             json.put("type",message.getType().toString());
         } catch (JSONException e) {
             return null;
         }
         return json.toString();
+    }
+
+    private JSONObject convertUserToJsonObject(User sender) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("name",sender.getName());
+            jsonObject.put("userID",sender.getUserId());
+            return jsonObject;
+        } catch (JSONException e) {
+            return null;
+        }
     }
 }

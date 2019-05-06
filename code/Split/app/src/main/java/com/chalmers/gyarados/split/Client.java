@@ -219,7 +219,7 @@ public class Client {
      * @param destination The path we want to send to
      */
     public void sendLeaveMessage(String destination){
-        compositeDisposable.add(mStompClient.send(destination,jsonHelper.createChatMessage(CurrentSession.getCurrentUser().getName(),null,"LEAVE"))
+        compositeDisposable.add(mStompClient.send(destination,jsonHelper.createChatMessage(CurrentSession.getCurrentUser(),null,"LEAVE"))
                 .unsubscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(()
@@ -246,7 +246,7 @@ public class Client {
      * @return a json string
      */
     private String createFindGroupMessage() {
-        return jsonHelper.createFindGroupMessage(CurrentSession.getCurrentUser().getName(),57.684027,11.975490,57.735473, 12.112732);
+        return jsonHelper.createFindGroupMessage(CurrentSession.getCurrentUser(),57.684027,11.975490,57.735473, 12.112732);
     }
 
     /**
@@ -261,7 +261,7 @@ public class Client {
      * Sends a message to the server and asks for info about a group
      */
     public void askForGroupInfo() {
-        compositeDisposable.add(mStompClient.send(CHAT_PREFIX+myGroup.getId()+CHAT_ASK_FOR_GROUP_INFO,jsonHelper.createChatMessage(CurrentSession.getCurrentUser().getName(),null,"CHAT"))
+        compositeDisposable.add(mStompClient.send(CHAT_PREFIX+myGroup.getId()+CHAT_ASK_FOR_GROUP_INFO,jsonHelper.createChatMessage(CurrentSession.getCurrentUser(),null,"CHAT"))
                 .unsubscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(()
