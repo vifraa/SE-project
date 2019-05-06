@@ -216,6 +216,7 @@ public class GroupActivity extends AppCompatActivity {
         }
         sendLeaveMessage(CHAT_PREFIX+myGroup+CHAT_LEAVING_GROUP_SUFFIX);
         mStompClient.disconnect();
+        finish();
 
         
         
