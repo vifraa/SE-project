@@ -14,6 +14,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
@@ -35,6 +36,9 @@ public class ChatController {
     @Autowired
     private GroupService groupService;
 
+    @Autowired
+    private SimpMessagingTemplate simpMessaging;
+
 
 
 
@@ -47,8 +51,18 @@ public class ChatController {
     @MessageMapping("/find-group")
     @SendToUser("/queue/find-group")
     public Group findGroup(User user){
-        Group group = groupService.findMatchingGroup(user.getDestinationLatitude(), user.getDestinationLongitude(),user.getCurrentLatitude(), user.getCurrentLongitude());
-        logger.info(user.getName() + "got matched with group: " + group.getGroupId());
+        Group group = groupService.findMatchingGroup(user);
+        group.addUser(user);
+        ChatMessage chatMessage = new ChatMessage();
+        chatMessage.setGroupid(group.getGroupId());
+        chatMessage.setSender(user.getName());
+        chatMessage.setType(ChatMessage.MessageType.JOIN);
+        group = groupService.addChatMessageToGroup(group.getGroupId(), chatMessage);
+        group = groupService.addUserToGroup(group.getGroupId(),user);
+
+        simpMessaging.convertAndSend("/topic/"+group.getGroupId(),chatMessage);
+
+        logger.info(user.getName() + " got matched with group: " + group.getGroupId());
 
         return group;
     }
