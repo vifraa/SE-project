@@ -23,8 +23,9 @@
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="320dp"
-            android:layout_marginBottom="22dp"
-            app:layout_constraintBottom_toTopOf="@id/textView"
+            android:layout_marginBottom="14dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:context="com.example.currentplacedetailsonmap.MapsActivityCurrentPlace" />
 
     </android.support.constraint.ConstraintLayout>
@@ -40,8 +41,8 @@
         android:text="Destination"
         android:textColor="@color/red"
         android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="338dp" />
+        app:layout_constraintBottom_toTopOf="@+id/currentPositionTextView"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/whereTextView"
