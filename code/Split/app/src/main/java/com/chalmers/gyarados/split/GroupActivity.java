@@ -1,5 +1,6 @@
 package com.chalmers.gyarados.split;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -47,12 +48,17 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
 
     private TextView groupMembers;
 
+
+
     //------------------OTHER PROPERTIES------------------------------------
 
     /**
      * USed to connect to server and send messages
      */
     private Client client;
+
+
+    private boolean fromMainActivity;
 
     //-------------------ANDROID METHODS---------------------------------------------
     /**
@@ -80,6 +86,7 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
         if(groupID!=null){
             client=new Client(groupID,this);
         }else{
+            fromMainActivity=true;
             client = new Client(this);
         }
 
@@ -241,7 +248,14 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
 
 
     private void returnToPreviousActivity(){
-        finish();
+        if(fromMainActivity){
+            finish();
+        }else{
+            Intent intent = new Intent(GroupActivity.this,MainActivity.class);
+            finish();
+            startActivity(intent);
+        }
+
     }
 
 

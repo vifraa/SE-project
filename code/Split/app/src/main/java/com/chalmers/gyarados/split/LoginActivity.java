@@ -124,11 +124,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
 
                 Log.d(TAG, myData.toString());
+                        finish();
             }, throwable -> {
                 Log.d(TAG, throwable.toString());
             });
-
-            setContentView(R.layout.main_view);
+            
         } else {
 
         }
