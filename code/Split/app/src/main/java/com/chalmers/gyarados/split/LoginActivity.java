@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.chalmers.gyarados.split.model.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -22,6 +23,7 @@ import com.google.gson.internal.LinkedTreeMap;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 
@@ -30,11 +32,24 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private static final String TAG = "LoginActivity";
     private static final int RC_SIGN_IN = 9001;
 
+    private Disposable mRestPingDisposable;
+
     private GoogleSignInClient signInClient;
+
+    private TextView onErrorTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_view);
+
+        SignInButton signInButton = findViewById(R.id.sign_in_button);
+        signInButton.setOnClickListener(this);
+
+        signInButton.setSize(SignInButton.SIZE_STANDARD);
+
+        onErrorTextView = findViewById(R.id.onErrorTextView);
+
+        //todo start loading screen
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -43,10 +58,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         signInClient = GoogleSignIn.getClient(this, gso);
 
 
-        SignInButton signInButton = findViewById(R.id.sign_in_button);
-        signInButton.setOnClickListener(this);
 
-        signInButton.setSize(SignInButton.SIZE_STANDARD);
+
+
 
     }
 
@@ -62,14 +76,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         updateUI(account);
     }
 
+    @Override
+    protected void onDestroy() {
+        if (mRestPingDisposable != null) mRestPingDisposable.dispose();
+        super.onDestroy();
+
+    }
+
     private User createUser(GoogleSignInAccount acct) {
         if (acct != null) {
             String personName = acct.getDisplayName();
-            String personGivenName = acct.getGivenName();
-            String personFamilyName = acct.getFamilyName();
-            String personEmail = acct.getEmail();
             String personId = acct.getId();
-            Uri personPhoto = acct.getPhotoUrl();
             return new User(personName, personId, null);
         }
         return null;
@@ -105,60 +122,79 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (account != null) {
             User user = createUser(account);
 
-            RestClient.getInstance().getExampleRepository().sendRestEcho(user)
-                    .unsubscribeOn(Schedulers.newThread())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(myData -> {
-                        Gson gson = new Gson();
-                        User givenUser = new User((LinkedTreeMap)myData.get("user"));
-                        boolean hasGroup = (boolean)myData.get("hasGroup");
-                        CurrentSession.setCurrentUser(givenUser);
-
-                        if(!hasGroup){
-                            startMainActivity();
-                        }else{
-                            String groupID=(String)myData.get("groupID");
-                            startGroupActivity(groupID);
-                        }
-
-
-                Log.d(TAG, myData.toString());
-                        finish();
-            }, throwable -> {
-                Log.d(TAG, throwable.toString());
-            });
+            tryToStartApplication(user);
 
         } else {
-
+            // do nothing
         }
+    }
+
+    private void tryToStartApplication(User user) {
+        mRestPingDisposable = RestClient.getInstance().getExampleRepository().sendRestEcho(user)
+                .unsubscribeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(myData -> {
+                    if(myData!=null){
+                        LinkedTreeMap map = (LinkedTreeMap)myData.get("user");
+                        boolean hasGroup = (boolean)myData.get("hasGroup");
+                        if(map!=null){
+                            User givenUser = new User(map);
+                            CurrentSession.setCurrentUser(givenUser);
+                            if(!hasGroup){
+                                startMainActivity();
+                            }else{
+                                String groupID=(String)myData.get("groupID");
+                                if(groupID!=null){
+                                    startGroupActivity(groupID);
+                                }
+
+                            }
+                        }else{
+                            showError("Couldn't fetch data from");
+                        }
+                    }else{
+                        showError("Couldn't fetch data from");
+                    }
+
+
+                }, throwable -> {
+                    Log.d(TAG, throwable.toString());
+                    showError("Couldn't connect to server");
+                });
+
     }
 
     private void startGroupActivity(String groupID) {
         Intent intent = new Intent(LoginActivity.this,GroupActivity.class);
         intent.putExtra("groupID",groupID);
         startActivity(intent);
+        finish();
     }
 
     private void startMainActivity() {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);
+        finish();
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_in_button:
+                clearErrorText();
                 signIn();
                 break;
         }
     }
-    /*
-    if (acct != null) {
-        String personName = acct.getDisplayName();
-        String personGivenName = acct.getGivenName();
-        String personFamilyName = acct.getFamilyName();
-        String personEmail = acct.getEmail();
-        String personId = acct.getId();
-        Uri personPhoto = acct.getPhotoUrl();*/
+
+
+    private void showError(String error){
+        onErrorTextView.setText(error);
+    }
+
+    private void clearErrorText(){
+        onErrorTextView.setText(null);
+    }
+
 }

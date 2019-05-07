@@ -10,8 +10,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-
-import com.chalmers.gyarados.split.model.Group;
 import com.chalmers.gyarados.split.model.Message;
 import com.chalmers.gyarados.split.model.User;
 
@@ -81,18 +79,15 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
 
         viewDialog = new ViewDialog(this);
         showCustomLoadingDialog();
-        //Retrieving the ip-address given in activity before
+        //Retrieving the groupID that might have been given by activity before
         String groupID=getIntent().getStringExtra("groupID");
+
         if(groupID!=null){
             client=new Client(groupID,this);
         }else{
             fromMainActivity=true;
             client = new Client(this);
         }
-
-
-
-
 
         client.connectStomp();
     }
@@ -125,7 +120,6 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
         mMessageAdapter.addItem(message);
 
         mMessageRecycler.scrollToPosition(mMessageAdapter.getItemCount()-1);
-        //receivedMessages.setText(messageInJson);
     }
 
     //-------------SENDING MESSAGE------------------------------
