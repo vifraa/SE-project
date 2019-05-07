@@ -72,15 +72,15 @@ public class GroupService {
      * @param user The user we want to check.
      * @return True if found in a group. Otherwise false.
      */
-    public boolean userIsInGroup(User user){
+    public String userIsInGroup(User user){
         List<Group> groups = repository.findAll();
 
         for (Group group: groups){
             if(group.getUsers().contains(user)){
-                return true;
+                return group.getGroupId();
             }
         }
-        return false;
+        return null;
     }
 
     /**

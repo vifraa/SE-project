@@ -52,11 +52,20 @@ public class UserService {
             User savedUser = repository.save(user);
             returnMap.put("user", savedUser);
             returnMap.put("hasGroup", false);
+            returnMap.put("groupID", null);
         }else {
             // User exists. Check if it has a group.
-            boolean hasGroup = groupService.userIsInGroup(existingUser);
+            String groupID = groupService.userIsInGroup(existingUser);
             returnMap.put("user", existingUser);
-            returnMap.put("hasGroup", hasGroup);
+            if(groupID == null){
+                // No group found.s
+                returnMap.put("hasGroup", false);
+                returnMap.put("groupID", null);
+            }else{
+                // Group found.
+                returnMap.put("hasGroup", true);
+                returnMap.put("groupID", groupID);
+            }
         }
         return returnMap;
     }

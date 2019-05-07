@@ -140,7 +140,6 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
     //-----------------LEAVING----------------------------------------
     
     private void leaveGroup(){
-
         client.leaveGroup();
     }
 
