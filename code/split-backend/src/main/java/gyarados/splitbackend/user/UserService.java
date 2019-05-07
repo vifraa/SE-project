@@ -59,11 +59,11 @@ public class UserService {
             returnMap.put("user", existingUser);
             if(groupID == null){
                 // No group found.s
-                returnMap.put("groupID", false);
+                returnMap.put("hasGroup", false);
                 returnMap.put("groupID", null);
             }else{
                 // Group found.
-                returnMap.put("groupID", true);
+                returnMap.put("hasGroup", true);
                 returnMap.put("groupID", groupID);
             }
         }
