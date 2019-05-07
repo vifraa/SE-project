@@ -19,61 +19,45 @@ import com.google.android.gms.tasks.Task;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
 
     private static final String TAG = "LoginActivity";
     private static final int RC_SIGN_IN = 9001;
 
+    private GoogleSignInClient signInClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-
-        User user = createUser(account);
-
-        RestClient.getInstance().getExampleRepository().sendRestEcho(user).subscribe(myData -> {
-            Log.d(TAG, myData.toString());
-        }, throwable -> {
-            Log.d(TAG, throwable.toString());
-        });
-
-
-
-        updateUI(account);
-
-        final SignInButton signInButton = findViewById(R.id.sign_in_button);
-
-        signInButton.setSize(SignInButton.SIZE_STANDARD);
+        setContentView(R.layout.login_view);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
 
-        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        signInClient = GoogleSignIn.getClient(this, gso);
 
 
+        SignInButton signInButton = findViewById(R.id.sign_in_button);
+        signInButton.setOnClickListener(this);
 
-        signInButton.setOnClickListener(new View.OnClickListener() {
+        signInButton.setSize(SignInButton.SIZE_STANDARD);
 
+    }
 
-            @Override
-            public void onClick(View v) {
-                switch (v.getId()) {
-                    case R.id.sign_in_button:
-                        signIn();
-                        break;
-                    // ...
-                }
-            }
+    private void signIn() {
+        Intent signInIntent = signInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
 
-            private void signIn() {
-                Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-                startActivityForResult(signInIntent, RC_SIGN_IN);
-            }
-        });
+    @Override
+    public void onStart() {
+        super.onStart();
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        updateUI(account);
     }
 
     private User createUser(GoogleSignInAccount acct) {
@@ -117,9 +101,36 @@ public class LoginActivity extends AppCompatActivity {
 
     private void updateUI(GoogleSignInAccount account) {
         if (account != null) {
+            User user = createUser(account);
+
+            RestClient.getInstance().getExampleRepository().sendRestEcho(user)
+                    .unsubscribeOn(Schedulers.newThread())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(myData -> {
+                        startMainActivity();
+                Log.d(TAG, myData.toString());
+            }, throwable -> {
+                Log.d(TAG, throwable.toString());
+            });
+
             setContentView(R.layout.main_view);
         } else {
-            setContentView(R.layout.login_view);
+
+        }
+    }
+
+    private void startMainActivity() {
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.sign_in_button:
+                signIn();
+                break;
         }
     }
     /*
