@@ -16,6 +16,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
@@ -108,7 +110,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(myData -> {
-                        startMainActivity();
+                        Gson gson = new Gson();
+                        User givenUser = new User((LinkedTreeMap)myData.get("user"));
+                        boolean hasGroup = (boolean)myData.get("hasGroup");
+                        CurrentSession.setCurrentUser(givenUser);
+
+                        if(!hasGroup){
+                            startMainActivity();
+                        }else{
+                            String groupID=(String)myData.get("groupID");
+                            startGroupActivity(groupID);
+                        }
+
+
                 Log.d(TAG, myData.toString());
             }, throwable -> {
                 Log.d(TAG, throwable.toString());
@@ -118,6 +132,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         } else {
 
         }
+    }
+
+    private void startGroupActivity(String groupID) {
+        Intent intent = new Intent(LoginActivity.this,GroupActivity.class);
+        intent.putExtra("groupID",groupID);
+        startActivity(intent);
     }
 
     private void startMainActivity() {

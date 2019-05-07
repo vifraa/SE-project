@@ -36,7 +36,7 @@ public class Client {
     /**
      * The ip we want to connect to, given by activity before
      */
-    private String ip;
+    //private String ip;
 
     /**
      * Used for logging
@@ -60,7 +60,7 @@ public class Client {
     private ClientListener clientListener;
 
     public Client(String ip, ClientListener clientListener) {
-        this.ip = ip;
+
         this.clientListener = clientListener;
         compositeDisposable = new CompositeDisposable();
         jsonHelper=new JSONHelper();
@@ -73,7 +73,7 @@ public class Client {
     public void connectStomp(){
 
         //Which ip-adress we want to connect to
-        String uri= "ws://"+ip+"/split/websocket";
+        String uri= "ws://"+Constants.IP+":"+Constants.PORT+"/split/websocket";
         Log.d(TAG,uri);
         mStompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, uri );
 
