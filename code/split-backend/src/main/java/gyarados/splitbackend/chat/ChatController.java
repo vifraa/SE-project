@@ -53,6 +53,7 @@ public class ChatController {
     public Group findGroup(User user){
         Group group = groupService.findMatchingGroup(user);
         group.addUser(user);
+        logger.info(user + "Trying to find group");
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setGroupid(group.getGroupId());
         chatMessage.setSender(user);

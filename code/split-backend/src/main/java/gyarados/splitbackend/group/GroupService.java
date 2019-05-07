@@ -220,7 +220,14 @@ public class GroupService {
         //todo remove the user from his group
         Group group = findById(groupid);
         group.removeUser(user);
-        return repository.save(group);
+        if (group.isEmpty()){
+            repository.deleteById(groupid);
+            return null;
+        }else{
+            return repository.save(group);
+        }
+
+
     }
 }
 
