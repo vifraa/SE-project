@@ -40,7 +40,7 @@ public class JSONHelper {
     private Gson gson;
 
     public JSONHelper() {
-        this.gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
+        this.gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
     }
 
     /**
