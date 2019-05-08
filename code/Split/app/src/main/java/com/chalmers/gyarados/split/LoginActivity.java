@@ -1,12 +1,10 @@
 package com.chalmers.gyarados.split;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.chalmers.gyarados.split.model.User;
@@ -17,11 +15,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
-import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 
-import io.reactivex.Completable;
-import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -36,7 +31,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private GoogleSignInClient signInClient;
 
-    private TextView onErrorTextView;
+    private TextView statusTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +42,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         signInButton.setSize(SignInButton.SIZE_STANDARD);
 
-        onErrorTextView = findViewById(R.id.onErrorTextView);
+        statusTextView = findViewById(R.id.onErrorTextView);
 
         //todo start loading screen
 
@@ -120,8 +115,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void updateUI(GoogleSignInAccount account) {
         if (account != null) {
+            showStatus("Connecting to server...");
             User user = createUser(account);
-
             tryToStartApplication(user);
 
         } else {
@@ -151,16 +146,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                             }
                         }else{
-                            showError("Couldn't fetch data from");
+                            showStatus("Couldn't fetch data from");
                         }
                     }else{
-                        showError("Couldn't fetch data from");
+                        showStatus("Couldn't fetch data from");
                     }
 
 
                 }, throwable -> {
                     Log.d(TAG, throwable.toString());
-                    showError("Couldn't connect to server");
+                    showStatus("Couldn't connect to server");
                 });
 
     }
@@ -189,12 +184,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
 
-    private void showError(String error){
-        onErrorTextView.setText(error);
+    private void showStatus(String error){
+        statusTextView.setText(error);
     }
 
     private void clearErrorText(){
-        onErrorTextView.setText(null);
+        statusTextView.setText(null);
     }
 
 }
