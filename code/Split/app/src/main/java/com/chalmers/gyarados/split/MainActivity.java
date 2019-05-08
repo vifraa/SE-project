@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final int DEFAULT_ZOOM = 15;
     private static final int AUTOCOMPLETE_REQUEST_CODE = 1;
+    private static final String TAG = "MainActivity";
 
 
     private AddressResultReceiver resultReceiver;
@@ -113,6 +114,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         destinationTextView = findViewById(R.id.destinationTextView);
         companionSpinner = findViewById(R.id.companionSpinner);
 
+        destinationTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchAutocomplete();
+            }
+        });
+
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -129,18 +137,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onPlaceSelected(Place place) {
                 // TODO: Get info about the selected place.
-                //Exception needs to be changed after the method has been updated
-                Log.i("Exception", "Place: " + place.getName() + ", " + place.getId());
+                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
             }
 
             @Override
             public void onError(@NonNull Status status) {
-                //TODO: implement onError method when we understaand TAG
+                Log.i(TAG, "An error occurred: " + status);
             }
         });
     }
 
-    private void lauchAutocomplete() {
+    private void launchAutocomplete() {
         //int AUTOCOMPLETE_REQUEST_CODE = 1;
         // Set the fields to specify which types of place data to
         // return after the user has made a selection.
@@ -148,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // Start the autocomplete intent.
         Intent intent = new Autocomplete.IntentBuilder(
-                AutocompleteActivityMode.OVERLAY, fields)
+                AutocompleteActivityMode.FULLSCREEN, fields)
                 .build(this);
         startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
     }
@@ -158,18 +165,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = Autocomplete.getPlaceFromIntent(data);
-                //Dont understand TAG so replaced it with "ëxception"
-                Log.i("Exception" ,"Place: " + place.getName() + ", " + place.getId());
+                destinationTextView.setText(place.getAddress());
+                Log.i(TAG,"Place: " + place.getName() + ", " + place.getId());
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
                 // TODO: Handle the error.
                 Status status = Autocomplete.getStatusFromIntent(data);
-                //Dont understand TAG so replaced it with "exception"
-                Log.i("Exception", status.getStatusMessage());
+                Log.i(TAG, status.getStatusMessage());
             } else if (resultCode == RESULT_CANCELED) {
                 // The user canceled the operation.
             }
         }
     }
+
+
 
 
     /**
