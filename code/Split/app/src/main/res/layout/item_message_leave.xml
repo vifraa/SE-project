@@ -34,7 +34,7 @@
         android:background="@drawable/chat_message"
         android:maxWidth="240dp"
         android:padding="8dp"
-        android:text="Joined the group"
+        android:text="Left the group"
         android:textColor="@color/common_google_signin_btn_text_dark_focused"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

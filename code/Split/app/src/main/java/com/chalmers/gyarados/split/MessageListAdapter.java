@@ -48,7 +48,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
         }else if(viewType==VIEW_TYPE_LEAVE){
             view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_message_leave,parent,false);
-            return new JoinMessageHolder(view);
+            return new LeaveMessageHolder(view);
         }
 
         return null;
