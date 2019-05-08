@@ -68,6 +68,22 @@ public class GroupService {
     }
 
     /**
+     * userIsInGroup checks all groups if the inputted user is a member of one of them.
+     * @param user The user we want to check.
+     * @return True if found in a group. Otherwise false.
+     */
+    public String userIsInGroup(User user){
+        List<Group> groups = repository.findAll();
+
+        for (Group group: groups){
+            if(group.getUsers().contains(user)){
+                return group.getGroupId();
+            }
+        }
+        return null;
+    }
+
+    /**
      * addChatMessageToGroup adds a chatmessage to the group specified by the groupID parameter.
      *
      * @param groupID The group we want to add the chatmessage to.
@@ -201,10 +217,18 @@ public class GroupService {
     }
 
     public Group removeUserFromGroup(User user, String groupid) {
-        //todo remove the user from his group
         Group group = findById(groupid);
         group.removeUser(user);
-        return repository.save(group);
+
+        //fixme perhaps old groups should be saved somewhere else instead of removed?
+        if (group.isEmpty()){
+            repository.deleteById(groupid);
+            return null;
+        }else{
+            return repository.save(group);
+        }
+
+
     }
 }
 

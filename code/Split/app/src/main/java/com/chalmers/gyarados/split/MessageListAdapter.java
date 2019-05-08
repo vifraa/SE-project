@@ -11,14 +11,14 @@ import android.widget.TextView;
 
 import com.chalmers.gyarados.split.model.Message;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 public class MessageListAdapter extends RecyclerView.Adapter {
 
     private static final int VIEW_TYPE_MESSAGE_SENT = 1;
     private static final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
+    private static final int VIEW_TYPE_LEAVE= 3;
+    private static final int VIEW_TYPE_JOIN= 4;
 
     private Context mContext;
     private List<Message> mMessageList;
@@ -41,6 +41,14 @@ public class MessageListAdapter extends RecyclerView.Adapter {
             view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_message_received, parent, false);
             return new ReceivedMessageHolder(view);
+        } else if(viewType==VIEW_TYPE_JOIN){
+            view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_message_join,parent,false);
+            return new JoinMessageHolder(view);
+        }else if(viewType==VIEW_TYPE_LEAVE){
+            view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_message_leave,parent,false);
+            return new JoinMessageHolder(view);
         }
 
         return null;
@@ -57,6 +65,13 @@ public class MessageListAdapter extends RecyclerView.Adapter {
                 break;
             case VIEW_TYPE_MESSAGE_RECEIVED:
                 ((ReceivedMessageHolder) holder).bind(message);
+                break;
+            case VIEW_TYPE_LEAVE:
+                ((LeaveMessageHolder) holder).bind(message);
+                break;
+            case VIEW_TYPE_JOIN:
+                ((JoinMessageHolder) holder).bind(message);
+                break;
         }
     }
 
@@ -66,16 +81,28 @@ public class MessageListAdapter extends RecyclerView.Adapter {
     }
 
     public int getItemViewType(int position) {
-        /*Message message = (Message) mMessageList.get(position);
+        Message message = (Message) mMessageList.get(position);
+        MessageType type = message.getType();
 
-        if (message.getSender().getUserId().equals(GroupActivity.getCurrentUser().getUserId())) {
-            // If the current user is the sender of the message
-            return VIEW_TYPE_MESSAGE_SENT;
-        } else {
-            // If some other user sent the message
-            return VIEW_TYPE_MESSAGE_RECEIVED;
-        }*/
-        return VIEW_TYPE_MESSAGE_SENT;
+        if(type.equals(MessageType.JOIN)){
+            return VIEW_TYPE_JOIN;
+        }
+        else if(type.equals(MessageType.LEAVE)){
+            return VIEW_TYPE_LEAVE;
+        }else{
+            if (message.getSender().getUserId().equals(CurrentSession.getCurrentUser().getUserId())) {
+                // If the current user is the sender of the message
+                return VIEW_TYPE_MESSAGE_SENT;
+            } else {
+                // If some other user sent the message
+                return VIEW_TYPE_MESSAGE_RECEIVED;
+            }
+        }
+
+
+
+
+
     }
 
     public void addItem(Message message) {
@@ -97,10 +124,10 @@ public class MessageListAdapter extends RecyclerView.Adapter {
         }
 
         void bind(Message message) {
-            messageText.setText(message.getMessage());
+            messageText.setText(message.getContent());
 
             // Format the stored timestamp into a readable String using method.
-            timeText.setText(Utils.formatDateTime(message.getCreatedAt()));
+            timeText.setText(Utils.formatDateTime(message.getTimestamp()));
             nameText.setText(message.getSender().getName());
 
             // Insert the profile image from the URL into the ImageView.
@@ -118,10 +145,59 @@ public class MessageListAdapter extends RecyclerView.Adapter {
         }
 
         void bind(Message message) {
-            messageText.setText(message.getMessage());
+            messageText.setText(message.getContent());
 
             // Format the stored timestamp into a readable String using method.
-            timeText.setText(Utils.formatDateTime(message.getCreatedAt()));
+            timeText.setText(Utils.formatDateTime(message.getTimestamp()));
+        }
+    }
+
+    private class JoinMessageHolder extends RecyclerView.ViewHolder{
+
+        TextView messageText, timeText, nameText;
+
+
+        JoinMessageHolder(View itemView) {
+            super(itemView);
+            messageText = (TextView) itemView.findViewById(R.id.text_message_body);
+            timeText = (TextView) itemView.findViewById(R.id.text_message_time);
+            nameText = (TextView) itemView.findViewById(R.id.text_message_name);
+
+        }
+
+        void bind(Message message) {
+            //messageText.setText(message.getContent());
+
+            // Format the stored timestamp into a readable String using method.
+            timeText.setText(Utils.formatDateTime(message.getTimestamp()));
+            nameText.setText(message.getSender().getName());
+
+            // Insert the profile image from the URL into the ImageView.
+            //Utils.displayRoundImageFromUrl(mContext, message.getSender().getProfileURL(), profileImage);
+        }
+    }
+
+    private class LeaveMessageHolder extends RecyclerView.ViewHolder{
+
+        TextView messageText, timeText, nameText;
+
+        LeaveMessageHolder(View itemView) {
+            super(itemView);
+            messageText = (TextView) itemView.findViewById(R.id.text_message_body);
+            timeText = (TextView) itemView.findViewById(R.id.text_message_time);
+            nameText = (TextView) itemView.findViewById(R.id.text_message_name);
+
+        }
+
+        void bind(Message message) {
+            //messageText.setText(message.getContent());
+
+            // Format the stored timestamp into a readable String using method.
+            timeText.setText(Utils.formatDateTime(message.getTimestamp()));
+            nameText.setText(message.getSender().getName());
+
+            // Insert the profile image from the URL into the ImageView.
+            //Utils.displayRoundImageFromUrl(mContext, message.getSender().getProfileURL(), profileImage);
         }
     }
 

@@ -97,13 +97,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.main_view);
 
         findButton = findViewById(R.id.findbutton);
-        EditText ip_address = findViewById(R.id.ip_address);
-
         findButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this,GroupActivity.class);
-                intent.putExtra("IP",ip_address.getText().toString());
                 intent.putExtra("companions", companionSpinner.getSelectedItem().toString());
                 intent.putExtra("latitude", chosenLatitude);
                 intent.putExtra("longitude", chosenlongitude);

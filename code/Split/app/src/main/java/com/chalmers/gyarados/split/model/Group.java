@@ -4,16 +4,16 @@ import java.util.List;
 
 public class Group {
 
-    private String id;
+    private String groupId;
     private List<Message> messages;
     private List<User> users;
 
     public String getId() {
-        return id;
+        return groupId;
     }
 
-    public Group(String id, List<Message> messages, List<User> users) {
-        this.id=id;
+    public Group(String groupId, List<Message> messages, List<User> users) {
+        this.groupId = groupId;
         this.messages = messages;
         this.users = users;
     }
