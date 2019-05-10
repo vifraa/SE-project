@@ -81,6 +81,10 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
         showCustomLoadingDialog();
         //Retrieving the groupID that might have been given by activity before
         String groupID=getIntent().getStringExtra("groupID");
+        Double currentLatitude=getIntent().getDoubleExtra("currentLatitude",0);
+        Double currentLongitude=getIntent().getDoubleExtra("currentLongitude",0);
+        Double destinationLatitude=getIntent().getDoubleExtra("destinationLatitude",0);
+        Double destinationLongitude=getIntent().getDoubleExtra("destinationLongitude",0);
 
         if(groupID!=null){
             client=new Client(groupID,this);
