@@ -19,8 +19,8 @@
 
         <ImageButton
             android:id="@+id/leaveButton"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
@@ -28,7 +28,7 @@
             android:adjustViewBounds="true"
             android:background="@color/colorPrimary"
             android:scaleType="centerCrop"
-            android:src="@drawable/x_symbol"
+            android:src="@drawable/white_x_symbol"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
