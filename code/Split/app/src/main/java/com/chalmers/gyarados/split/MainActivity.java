@@ -13,14 +13,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
@@ -32,6 +31,16 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
@@ -42,6 +51,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     //Constants
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final int DEFAULT_ZOOM = 15;
+    private static final String TAG = "MainActivity";
+    private String chosenLatitude;
+    private String chosenlongitude;
 
 
     private AddressResultReceiver resultReceiver;
@@ -74,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     //UI
     private TextView currentPositionTextView; //Textview to show the current location
-
+    private Spinner companionSpinner;
     private Button findButton;
 
 
@@ -85,12 +97,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.main_view);
 
         findButton = findViewById(R.id.findbutton);
-        EditText ip_address = findViewById(R.id.ip_address);
         findButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this,GroupActivity.class);
-                intent.putExtra("IP",ip_address.getText().toString());
+                intent.putExtra("companions", companionSpinner.getSelectedItem().toString());
+                intent.putExtra("latitude", chosenLatitude);
+                intent.putExtra("longitude", chosenlongitude);
                 startActivity(intent);
             }
         });
@@ -100,11 +113,42 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //UI
         currentPositionTextView = findViewById(R.id.currentPositionTextView);
+        companionSpinner = findViewById(R.id.companionSpinner);
+
+
+        // Initialize Places.
+        Places.initialize(getApplicationContext(), getResources().getString(R.string.google_maps_key));
 
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        // Initialize the AutocompleteSupportFragment.
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+        // Specify the types of place data to return.
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
+        autocompleteFragment.setCountry("SE");
+
+        // Set up a PlaceSelectionListener to handle the response.
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                chosenLatitude= String.valueOf(place.getLatLng().latitude);
+                chosenlongitude= String.valueOf(place.getLatLng().longitude);
+                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+            }
+
+            @Override
+            public void onError(@NonNull Status status) {
+                Log.i(TAG, "An error occurred: " + status);
+            }
+        });
     }
+
+
 
     /**
      * Checks if the user have given permission, otherwise we ask the user for permission

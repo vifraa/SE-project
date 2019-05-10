@@ -97,6 +97,7 @@ public class TestWebsocketEndpoint {
 
         User sendUser = new User();
         sendUser.setName("TEST_NAME");
+        sendUser.setUserID("testID");
         sendUser.setCurrentLongitude(57.68);
         sendUser.setCurrentLatitude(11.84);
         sendUser.setDestinationLongitude(57.70);
@@ -123,7 +124,11 @@ public class TestWebsocketEndpoint {
         stompSession.subscribe(RECIEVE_MESSAGE, new SendMessageStompFrameHandler());
 
         ChatMessage message = new ChatMessage();
-        message.setSender("TestSender");
+
+        User sender = new User();
+        sender.setName("testsender");
+        sender.setUserID("testID");
+        message.setSender(sender);
         message.setContent("Test message entered here.");
         message.setType(ChatMessage.MessageType.CHAT);
         message.setGroupid("testgroup");
@@ -135,6 +140,7 @@ public class TestWebsocketEndpoint {
         stompSession.disconnect();
 
         assertNotNull(recievedMessage);
+
         assertEquals(message.getSender(), recievedMessage.getSender());
         assertEquals(message.getContent(), recievedMessage.getContent());
         assertEquals(message.getGroupid(), recievedMessage.getGroupid());
@@ -165,6 +171,37 @@ public class TestWebsocketEndpoint {
         assertEquals(joinMessage.getGroupid(), recievedMessage.getGroupid());
         assertEquals(joinMessage.getSender(), recievedMessage.getSender());
     }*/
+
+    @Test
+    public void testRemoveUser() throws URISyntaxException, InterruptedException, ExecutionException, TimeoutException {
+        StompSession stompSession = stompClient.connect(url, new StompSessionHandlerAdapter() {
+        }).get(1, SECONDS);
+
+
+        stompSession.subscribe(RECIEVE_MESSAGE, new SendMessageStompFrameHandler());
+        ChatMessage leaveMessage = new ChatMessage();
+
+        User sender = new User();
+        sender.setName("testleaver");
+        sender.setUserID("testID");
+        leaveMessage.setSender(sender);
+        leaveMessage.setGroupid("testgroup");
+        leaveMessage.setType(ChatMessage.MessageType.LEAVE);
+
+
+        stompSession.send(SEND_MESSAGE, leaveMessage);
+
+
+        ChatMessage recievedMessage = chatMessageCompletableFuture.get(5, SECONDS);
+
+        assertNotNull(recievedMessage);
+        assertEquals(leaveMessage.getType(), recievedMessage.getType());
+        assertEquals(leaveMessage.getGroupid(), recievedMessage.getGroupid());
+        assertEquals(leaveMessage.getSender(), recievedMessage.getSender());
+
+        stompSession.disconnect();
+    }
+
 
 
     private class SendMessageStompFrameHandler implements StompFrameHandler {

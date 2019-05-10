@@ -68,6 +68,22 @@ public class GroupService {
     }
 
     /**
+     * userIsInGroup checks all groups if the inputted user is a member of one of them.
+     * @param user The user we want to check.
+     * @return True if found in a group. Otherwise false.
+     */
+    public String userIsInGroup(User user){
+        List<Group> groups = repository.findAll();
+
+        for (Group group: groups){
+            if(group.getUsers().contains(user)){
+                return group.getGroupId();
+            }
+        }
+        return null;
+    }
+
+    /**
      * addChatMessageToGroup adds a chatmessage to the group specified by the groupID parameter.
      *
      * @param groupID The group we want to add the chatmessage to.
@@ -146,7 +162,6 @@ public class GroupService {
     /**
      * findMatchingGroup is responsible to return a groupID with a group that is a good choice of a group for the user.
      * If no good group exists, a new one is created and the id of that one returned.
-     *
      * @param user
      * @return The id of the group.
      */
@@ -185,7 +200,7 @@ public class GroupService {
         		Double groupCurrentLongitude = getGroupCurrentLongitude(group);
         		Double groupCurrentLatitude = getGroupCurrentLatitude(group);
         		Double currentDistance = calcDist(groupCurrentLatitude, groupCurrentLongitude, user.getCurrentLatitude(), user.getCurrentLongitude());
-        		if(currentDistance < matchedDistance || matchedGroup == null) {
+        		if(currentDistance >= 0 && currentDistance <= 0.1 && (currentDistance < matchedDistance || matchedGroup == null)) {
         			matchedDistance = currentDistance;
         			matchedGroup = group;	
         		}
@@ -201,12 +216,18 @@ public class GroupService {
 
     }
 
-    public boolean removeUserFromGroup(User user, String groupid) {
-        //todo remove the user from his group
+    public Group removeUserFromGroup(User user, String groupid) {
         Group group = findById(groupid);
         group.removeUser(user);
-        repository.save(group);
-        return true;
+
+        //fixme perhaps old groups should be saved somewhere else instead of removed?
+        if (group.isEmpty()){
+            repository.deleteById(groupid);
+            return null;
+        }else{
+            return repository.save(group);
+        }
+
 
     }
 }

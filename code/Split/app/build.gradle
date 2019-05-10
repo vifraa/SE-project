@@ -38,6 +38,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:16.1.0'
     implementation 'com.google.android.libraries.places:places:1.1.0'
 
+    //-----------------GOOGLE LOGIN------------------------------
+    api 'com.google.android.gms:play-services-auth:16.0.1'
     //------------------WEBSOCKET--------------------------------
     implementation 'com.github.NaikSoftware:StompProtocolAndroid:1.6.4'
     implementation 'com.squareup.okhttp3:okhttp:3.12.1'
@@ -45,7 +47,10 @@ dependencies {
 
     implementation 'io.reactivex.rxjava2:rxjava:2.2.6'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
-
+    //------------------REST--------------------------------
+    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.5.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
     //implementation 'com.github.bumptech.glide:glide:4.3.1'
 
     implementation group: 'org.json', name: 'json', version: '20180813'

@@ -53,9 +53,10 @@ public class ChatController {
     public Group findGroup(User user){
         Group group = groupService.findMatchingGroup(user);
         group.addUser(user);
+        logger.info(user + "Trying to find group");
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setGroupid(group.getGroupId());
-        chatMessage.setSender(user.getName());
+        chatMessage.setSender(user);
         chatMessage.setType(ChatMessage.MessageType.JOIN);
         group = groupService.addChatMessageToGroup(group.getGroupId(), chatMessage);
         group = groupService.addUserToGroup(group.getGroupId(),user);
@@ -98,7 +99,7 @@ public class ChatController {
         // TODO fix this logic!!!
         // Only placeholder to get the application working until a better fix.
         User user = new User();
-        user.setName(chatMessage.getSender());
+        user.setName(chatMessage.getSender().getName());
 
         groupService.addUserToGroup(groupId, user);
         groupService.addChatMessageToGroup(groupId, chatMessage);
@@ -120,8 +121,8 @@ public class ChatController {
     public ChatMessage leaveUser(@DestinationVariable String groupId, @Payload ChatMessage chatMessage){
         //todo we need to find the user
         chatMessage.setGroupid(groupId);
-        groupService.removeUserFromGroup(null,groupId);
         groupService.addChatMessageToGroup(groupId, chatMessage);
+        groupService.removeUserFromGroup(chatMessage.getSender(),groupId);
         logger.info("User left: " + chatMessage.toString());
         return chatMessage;
     }
