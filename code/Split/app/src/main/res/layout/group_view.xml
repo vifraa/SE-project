@@ -28,28 +28,12 @@
             android:adjustViewBounds="true"
             android:background="@color/colorPrimary"
             android:scaleType="centerCrop"
-            android:src="@drawable/white_x_symbol"
+            android:src="@drawable/x_symbol"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.555" />
 
-
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="49dp"
-            android:layout_height="57dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="8dp"
-            android:adjustViewBounds="true"
-            android:background="@drawable/profile_picture_small"
-            android:scaleType="centerCrop"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/leaveButton"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/googlelogo" />
 
         <TextView
             android:id="@+id/groupMembers"
@@ -62,7 +46,7 @@
             android:layout_marginRight="8dp"
             android:layout_marginBottom="2dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/imageView3"
+            app:layout_constraintEnd_toStartOf="@+id/leaveButton"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -74,6 +58,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
+        android:background="@color/colorBackground"
         app:layout_constraintBottom_toTopOf="@+id/layout_chatbox"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -120,9 +105,12 @@
             android:shadowRadius="2"
             android:shadowDx="2"
             android:shadowDy="2"
-            android:backgroundTint="@color/colorBackground"
+            android:textColorHighlight="@color/colorPrimary"
+            android:backgroundTint="@color/white"
             android:background="@drawable/chatbox_border"
             android:ems="10"
+            android:fontFamily="@font/futuralight"
+            android:textColor="#555555"
             android:inputType="textPersonName"
             tools:layout_editor_absoluteX="366dp"
             tools:layout_editor_absoluteY="605dp" />
