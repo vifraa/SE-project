@@ -116,6 +116,11 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:shadowColor="#555555"
+            android:shadowRadius="2"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:backgroundTint="@color/colorBackground"
             android:background="@drawable/chatbox_border"
             android:ems="10"
             android:inputType="textPersonName"
@@ -124,8 +129,8 @@
 
         <ImageButton
             android:id="@+id/sendbutton"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:background="@color/colorPrimary"
             android:src="@android:drawable/ic_menu_send"
             tools:layout_editor_absoluteX="366dp"
