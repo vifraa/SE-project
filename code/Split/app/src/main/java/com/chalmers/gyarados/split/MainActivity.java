@@ -52,9 +52,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final int DEFAULT_ZOOM = 15;
     private static final String TAG = "MainActivity";
-    private String chosenLatitude;
-    private String chosenlongitude;
-
 
     private AddressResultReceiver resultReceiver;
 
@@ -102,8 +99,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this,GroupActivity.class);
                 intent.putExtra("companions", companionSpinner.getSelectedItem().toString());
-                intent.putExtra("latitude", chosenLatitude);
-                intent.putExtra("longitude", chosenlongitude);
                 startActivity(intent);
             }
         });
@@ -135,9 +130,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onPlaceSelected(Place place) {
                 // TODO: Get info about the selected place.
-                chosenLatitude= String.valueOf(place.getLatLng().latitude);
-                chosenlongitude= String.valueOf(place.getLatLng().longitude);
                 Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+                CurrentSession.setDesinationLatitude(place.getLatLng().latitude);
+                CurrentSession.setDestinationLongitude(place.getLatLng().longitude);
             }
 
             @Override
@@ -232,6 +227,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         if (task.isSuccessful()) {
                             // Set the map's camera position to the current location of the device.
                             mLastKnownLocation = (Location) task.getResult();
+                            CurrentSession.setCurrentLatitude(mLastKnownLocation.getLatitude());
+                            CurrentSession.setCurrentLongitude(mLastKnownLocation.getLongitude());
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(mLastKnownLocation.getLatitude(),
                                             mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
