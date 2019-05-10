@@ -1,14 +1,13 @@
 package com.chalmers.gyarados.split.model;
 
-import com.google.gson.JsonElement;
+import java.util.Map;
 
-import java.util.Objects;
 
 public class User {
 
     private String name;
     private String profileURL;
-    private String id;
+    private String userID;
 
 
     public User(String name, String profileURL) {
@@ -18,12 +17,17 @@ public class User {
 
     public User(String name, String userID, String profileURL) {
         this.name = name;
-        this.id = userID;
+        this.userID = userID;
         this.profileURL = profileURL;
     }
 
+    public User(Map user) {
+        name=(String)user.get("name");
+        userID=(String)user.get("userID");
+    }
+
     public void setId(String id) {
-        this.id = id;
+        this.userID = id;
     }
 
     public String getName() {
@@ -43,7 +47,7 @@ public class User {
     }
 
     public String getUserId() {
-        return id;
+        return userID;
     }
 
 
@@ -53,11 +57,11 @@ public class User {
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
         return name.equals(user.name) &&
-                id.equals(user.id);
+                userID.equals(user.userID);
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return userID.hashCode();
     }
 }

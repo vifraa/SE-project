@@ -7,19 +7,19 @@ import java.util.Date;
 public class Message {
 
     private final MessageType type;
-    private String message;
+    private String content;
     private User sender;
-    private Date createdAt;
+    private Date timestamp;
 
-    public Message(String message, User user, Date createdAt, MessageType type) {
-        this.message = message;
+    public Message(String content, User user, Date timestamp, MessageType type) {
+        this.content = content;
         this.sender=user;
-        this.createdAt=createdAt;
+        this.timestamp = timestamp;
         this.type=type;
     }
 
-    public Message(String message, User user,MessageType type) {
-        this.message = message;
+    public Message(String content, User user, MessageType type) {
+        this.content = content;
         this.sender=user;
         this.type=type;
 
@@ -32,17 +32,19 @@ public class Message {
         return type;
     }
 
-    public String getMessage() {
-        return message;
+    public String getContent() {
+        return content;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
+    public Date getTimestamp() {
+        return timestamp;
     }
+
+    public void setTimestamp(Date timestamp){this.timestamp = timestamp;}
 
     public User getSender() {
         return sender;

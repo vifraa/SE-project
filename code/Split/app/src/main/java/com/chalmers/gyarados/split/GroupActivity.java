@@ -1,5 +1,6 @@
 package com.chalmers.gyarados.split;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,8 +10,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-
-import com.chalmers.gyarados.split.model.Group;
 import com.chalmers.gyarados.split.model.Message;
 import com.chalmers.gyarados.split.model.User;
 
@@ -47,12 +46,17 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
 
     private TextView groupMembers;
 
+
+
     //------------------OTHER PROPERTIES------------------------------------
 
     /**
      * USed to connect to server and send messages
      */
     private Client client;
+
+
+    private boolean fromMainActivity;
 
     //-------------------ANDROID METHODS---------------------------------------------
     /**
@@ -65,10 +69,6 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.group_view);
 
-        //Retrieving the ip-address given in activity before
-        String ip=getIntent().getStringExtra("IP");
-
-
         //initializing gui
         writtenText = findViewById(R.id.writtenText);
         groupMembers=findViewById(R.id.groupMembers);
@@ -79,8 +79,16 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
 
         viewDialog = new ViewDialog(this);
         showCustomLoadingDialog();
+        //Retrieving the groupID that might have been given by activity before
+        String groupID=getIntent().getStringExtra("groupID");
 
-        client = new Client(ip,this);
+        if(groupID!=null){
+            client=new Client(groupID,this);
+        }else{
+            fromMainActivity=true;
+            client = new Client(this);
+        }
+
         client.connectStomp();
     }
 
@@ -112,7 +120,6 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
         mMessageAdapter.addItem(message);
 
         mMessageRecycler.scrollToPosition(mMessageAdapter.getItemCount()-1);
-        //receivedMessages.setText(messageInJson);
     }
 
     //-------------SENDING MESSAGE------------------------------
@@ -234,7 +241,14 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
 
 
     private void returnToPreviousActivity(){
-        finish();
+        if(fromMainActivity){
+            finish();
+        }else{
+            Intent intent = new Intent(GroupActivity.this,MainActivity.class);
+            finish();
+            startActivity(intent);
+        }
+
     }
 
 

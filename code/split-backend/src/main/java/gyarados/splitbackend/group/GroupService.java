@@ -217,10 +217,18 @@ public class GroupService {
     }
 
     public Group removeUserFromGroup(User user, String groupid) {
-        //todo remove the user from his group
         Group group = findById(groupid);
         group.removeUser(user);
-        return repository.save(group);
+
+        //fixme perhaps old groups should be saved somewhere else instead of removed?
+        if (group.isEmpty()){
+            repository.deleteById(groupid);
+            return null;
+        }else{
+            return repository.save(group);
+        }
+
+
     }
 }
 

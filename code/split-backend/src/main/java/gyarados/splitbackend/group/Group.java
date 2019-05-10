@@ -85,4 +85,8 @@ public class Group{
     public int getMAX_GROUP_SIZE() {
         return MAX_GROUP_SIZE;
     }
+
+    public boolean isEmpty() {
+        return users.size()<=0;
+    }
 }
