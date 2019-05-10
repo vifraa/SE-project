@@ -107,7 +107,7 @@
             android:shadowDy="2"
             android:textColorHighlight="@color/colorPrimary"
             android:backgroundTint="@color/white"
-            android:background="@drawable/chatbox_border"
+            android:background="@color/white"
             android:ems="10"
             android:fontFamily="@font/futuralight"
             android:textColor="#555555"
