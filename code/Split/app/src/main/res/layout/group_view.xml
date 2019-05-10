@@ -19,6 +19,7 @@
 
         <ImageButton
             android:id="@+id/leaveButton"
+            android:background="@color/colorPrimary"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_marginTop="8dp"
