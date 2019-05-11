@@ -31,6 +31,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private GoogleSignInClient signInClient;
 
+    private ViewDialog viewDialog;
+
     private TextView statusTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +44,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         signInButton.setSize(SignInButton.SIZE_STANDARD);
 
-        statusTextView = findViewById(R.id.onErrorTextView);
 
-        //todo start loading screen
+        viewDialog = new ViewDialog(this);
+        //showCustomLoadingDialog();
+
+        statusTextView = findViewById(R.id.onErrorTextView);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -114,7 +118,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void updateUI(GoogleSignInAccount account) {
+
         if (account != null) {
+            showCustomLoadingDialog();
             showStatus("Connecting to server...");
             User user = createUser(account);
             tryToStartApplication(user);
@@ -122,6 +128,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         } else {
             // do nothing
         }
+
     }
 
     private void tryToStartApplication(User user) {
@@ -152,9 +159,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         showStatus("Couldn't fetch data from");
                     }
 
+                    hideCustomDialogIfNeeded();
+
 
                 }, throwable -> {
                     Log.d(TAG, throwable.toString());
+                    hideCustomDialogIfNeeded();
                     showStatus("Couldn't connect to server");
                 });
 
@@ -192,4 +202,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         statusTextView.setText(null);
     }
 
+    private void hideCustomDialogIfNeeded() {
+        if(viewDialog.isShowing()){
+            hideCustomLoadingDialog();
+        }
+    }
+
+    public void showCustomLoadingDialog() {
+        //if(!viewDialog.isShowing()){
+            viewDialog.showDialog();
+        //}
+
+    }
+
+    public void hideCustomLoadingDialog(){
+        viewDialog.hideDialog();
+    }
 }

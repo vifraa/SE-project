@@ -12,9 +12,7 @@ import android.support.v4.app.ActivityCompat;
 
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Adapter;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -35,14 +33,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.widget.Autocomplete;
-import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
-import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
@@ -95,30 +89,27 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_view);
 
+        //UI
         findButton = findViewById(R.id.findbutton);
         findButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this,GroupActivity.class);
-                intent.putExtra("companions", companionSpinner.getSelectedItem().toString());
                 startActivity(intent);
             }
         });
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        resultReceiver=new AddressResultReceiver(new Handler());
-
-        //UI
         currentPositionTextView = findViewById(R.id.currentPositionTextView);
         companionSpinner = findViewById(R.id.companionSpinner);
-
         companionSpinner.setOnItemSelectedListener(new SpinnerListener());
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        resultReceiver=new AddressResultReceiver(new Handler());
 
         // Initialize Places.
         Places.initialize(getApplicationContext(), getResources().getString(R.string.google_maps_key));
 
-
+        //Initialize map fragment
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
