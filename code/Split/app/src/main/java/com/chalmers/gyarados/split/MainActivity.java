@@ -11,6 +11,7 @@ import android.support.v4.app.ActivityCompat;
 
 
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatImageButton;
 import android.util.Log;
 import android.widget.AdapterView;
 import android.widget.Spinner;
@@ -91,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //UI
         findButton = findViewById(R.id.findbutton);
+        disableFindButton();
         findButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,10 +126,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-                // TODO: Get info about the selected place.
                 Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
                 CurrentSession.setDesinationLatitude(place.getLatLng().latitude);
                 CurrentSession.setDestinationLongitude(place.getLatLng().longitude);
+                enableFindButton();
             }
 
             @Override
@@ -135,9 +137,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Log.i(TAG, "An error occurred: " + status);
             }
         });
+
+        AppCompatImageButton clear_autocomplete = autocompleteFragment.getView().findViewById(R.id.places_autocomplete_clear_button);
+        clear_autocomplete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                disableFindButton();
+                autocompleteFragment.setText("");
+            }
+        });
     }
 
-
+    private void disableFindButton() {
+        findButton.setEnabled(false);
+    }
+    private void enableFindButton() {
+        findButton.setEnabled(true);
+    }
 
     /**
      * Checks if the user have given permission, otherwise we ask the user for permission
