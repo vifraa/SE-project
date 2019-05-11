@@ -186,7 +186,7 @@ public class GroupService {
             }
 
                 //Add Exception Handling
-            if(group.getUsers().size() + user.getNumberOfFriends() < group.getMAX_GROUP_SIZE()
+            if(group.getUsers().size() + user.getNumberOfTravelers() < group.getMAX_GROUP_SIZE()
                     && group.getUsers().size() > 0
                     && destinationDistance <= 0.05 && destinationDistance >= 0) {
                 potentialGroups.add(group);

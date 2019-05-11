@@ -12,6 +12,8 @@ import android.support.v4.app.ActivityCompat;
 
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -109,6 +111,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         //UI
         currentPositionTextView = findViewById(R.id.currentPositionTextView);
         companionSpinner = findViewById(R.id.companionSpinner);
+
+        companionSpinner.setOnItemSelectedListener(new SpinnerListener());
 
 
         // Initialize Places.
@@ -323,6 +327,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
 
+    }
+
+
+    private class SpinnerListener implements AdapterView.OnItemSelectedListener{
+
+        private int[] items = {1,2,3};
+        @Override
+        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+            CurrentSession.setNrOfTravelers(items[i]);
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> adapterView) {
+
+        }
     }
 
 

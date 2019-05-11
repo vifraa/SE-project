@@ -273,7 +273,7 @@ public class Client {
      * @return a json string
      */
     private String createFindGroupMessage() {
-        return jsonHelper.createFindGroupMessage(CurrentSession.getCurrentUser(),CurrentSession.getCurrentLatitude(),CurrentSession.getCurrentLongitude(),CurrentSession.getDesinationLatitude(),CurrentSession.getDestinationLongitude());
+        return jsonHelper.createFindGroupMessage();
     }
 
     /**
