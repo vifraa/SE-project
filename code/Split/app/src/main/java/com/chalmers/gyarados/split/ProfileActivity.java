@@ -19,7 +19,7 @@ public class ProfileActivity extends AppCompatActivity {
         ImageButton leaveProfileButton = findViewById(R.id.leaveProfileButton);
     }
 
-    private void leaveProfileButtonPressed() {
+    public void leaveProfileButtonPressed() {
         returnToPreviousActivity();
     }
 
