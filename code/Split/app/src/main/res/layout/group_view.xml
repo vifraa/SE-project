@@ -110,7 +110,7 @@
             android:background="@color/white"
             android:ems="10"
             android:fontFamily="@font/futuralight"
-            android:textColor="#555555"
+            android:textColor="@color/secondaryText"
             android:inputType="textPersonName"
             tools:layout_editor_absoluteX="366dp"
             tools:layout_editor_absoluteY="605dp" />
