@@ -47,13 +47,21 @@
 
     <Button
         android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="280dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="30dp"
         android:background="@drawable/confirm_button"
         android:fontFamily="@font/paytoneone"
         android:text="Confirm"
         android:textColor="@color/white"
         android:textSize="@dimen/font_size_large"
-        tools:layout_editor_absoluteX="120dp"
-        tools:layout_editor_absoluteY="656dp" />
+        android:gravity="center"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </android.support.constraint.ConstraintLayout>
