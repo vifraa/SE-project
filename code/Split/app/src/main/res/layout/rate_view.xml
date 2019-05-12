@@ -25,6 +25,7 @@
             android:layout_marginBottom="8dp"
             android:adjustViewBounds="true"
             android:background="@color/colorPrimary"
+            android:onClick="leaveRateButtonPressed"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
