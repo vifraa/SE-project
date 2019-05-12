@@ -34,19 +34,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private ViewDialog viewDialog;
 
     private TextView statusTextView;
+
+    private SignInButton signInButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_view);
 
-        SignInButton signInButton = findViewById(R.id.sign_in_button);
+        signInButton = findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(this);
-
         signInButton.setSize(SignInButton.SIZE_STANDARD);
+        disableLoginButton();
 
 
         viewDialog = new ViewDialog(this);
-        //showCustomLoadingDialog();
 
         statusTextView = findViewById(R.id.onErrorTextView);
 
@@ -55,12 +56,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 .build();
 
         signInClient = GoogleSignIn.getClient(this, gso);
-
-
-
-
-
-
     }
 
     private void signIn() {
@@ -103,10 +98,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             handleSignInResult(task);
         }
     }
+
+
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-
             // Signed in successfully, show authenticated UI.
             updateUI(account);
         } catch (ApiException e) {
@@ -126,6 +122,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             tryToStartApplication(user);
 
         } else {
+            enableLoginButton();
             // do nothing
         }
 
@@ -154,9 +151,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             }
                         }else{
                             showStatus("Couldn't fetch data from");
+                            enableLoginButton();
                         }
                     }else{
                         showStatus("Couldn't fetch data from");
+                        enableLoginButton();
                     }
 
                     hideCustomDialogIfNeeded();
@@ -165,6 +164,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 }, throwable -> {
                     Log.d(TAG, throwable.toString());
                     hideCustomDialogIfNeeded();
+                    enableLoginButton();
                     showStatus("Couldn't connect to server");
                 });
 
@@ -217,5 +217,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     public void hideCustomLoadingDialog(){
         viewDialog.hideDialog();
+    }
+
+    private void disableLoginButton(){
+        signInButton.setEnabled(false);
+    }
+
+    private void enableLoginButton(){
+        signInButton.setEnabled(true);
     }
 }
