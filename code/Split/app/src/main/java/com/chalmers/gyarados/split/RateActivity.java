@@ -9,13 +9,16 @@ import android.widget.ImageButton;
 
 public class RateActivity extends AppCompatActivity {
 
+    Button confirmButton;
+    ImageButton leaveRateButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.rate_view);
 
-        Button confirmButton = findViewById(R.id.confirmButton);
-        ImageButton leaveRateButton = findViewById(R.id.leaveProfileButton);
+        confirmButton = findViewById(R.id.confirmButton);
+        leaveRateButton = findViewById(R.id.leaveProfileButton);
     }
 
     public void leaveRateButtonPressed() {

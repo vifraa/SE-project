@@ -9,6 +9,8 @@ import android.widget.ImageButton;
 
 public class ProfileActivity extends AppCompatActivity {
 
+    ImageButton leaveProfileButton;
+
     boolean leftGroup;
 
     @Override
@@ -16,7 +18,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_view);
 
-        ImageButton leaveProfileButton = findViewById(R.id.leaveProfileButton);
+        leaveProfileButton = findViewById(R.id.leaveProfileButton);
     }
 
     public void leaveProfileButtonPressed() {
