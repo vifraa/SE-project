@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.view.Window;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.DrawableImageViewTarget;
 
 public class ViewDialog {
@@ -36,7 +35,7 @@ public class ViewDialog {
 
 
         //...now load that gif which we put inside the drawble folder here with the help of Glide
-        Glide.with(activity)
+        GlideApp.with(activity)
                 .load(R.drawable.loading)
                 .into(new DrawableImageViewTarget(gifImageView));
 

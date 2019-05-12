@@ -5,35 +5,14 @@ import com.chalmers.gyarados.split.model.Message;
 import com.chalmers.gyarados.split.model.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 ;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
-import java.util.ArrayList;
-import java.util.Date;
 
-//TODO should probably use something like
-/*
-Gson g = new Gson();
-Group group = g.fromJson(jsonString, Group.class)
-
-or with jackson
-
-ObjectMapper objectMapper = new ObjectMapper();
-Group group = objectMapper.readValue(jsonString,Group.class=
-
-but right now we do it "manually"
-
- */
 
 public class JSONHelper {
 
@@ -45,33 +24,33 @@ public class JSONHelper {
 
     /**
      * Creates a jsoin string that represents a find group message
-     * @param currentLatitude The current latitude
-     * @param currentLongitude The current longitude
-     * @param destinationLatitude The destination latitude
-     * @param destinationLongitude The destination longitude
+     *
      * @return the json string
      */
-    public String createFindGroupMessage(User user, Double currentLatitude, Double currentLongitude, Double destinationLatitude, Double destinationLongitude){
+    public String createFindGroupMessage(){
         JSONObject message = new JSONObject();
+        User currentUser = CurrentSession.getCurrentUser();
         try {
-            if(user.getName()!=null){
-                message.put("name",user.getName());
+            if(currentUser.getName()!=null){
+                message.put("name",currentUser.getName());
             }
-            if(user.getUserId()!=null){
-                message.put("userID",user.getUserId());
+            if(currentUser.getUserId()!=null){
+                message.put("userID",currentUser.getUserId());
             }
-            if(currentLatitude!=null){
-                message.put("currentLatitude",currentLatitude);
+            if(CurrentSession.getCurrentLatitude()!=null){
+                message.put("currentLatitude",CurrentSession.getCurrentLatitude());
             }
-            if(currentLongitude!=null){
-                message.put("currentLongitude",currentLongitude);
+            if(CurrentSession.getCurrentLongitude()!=null){
+                message.put("currentLongitude",CurrentSession.getCurrentLongitude());
             }
-            if(destinationLatitude!=null){
-                message.put("destinationLatitude",destinationLatitude);
+            if(CurrentSession.getDestinationLatitude()!=null){
+                message.put("destinationLatitude",CurrentSession.getDestinationLatitude());
             }
-            if(destinationLongitude!=null){
-                message.put("destinationLongitude",destinationLongitude);
+            if(CurrentSession.getDestinationLongitude()!=null){
+                message.put("destinationLongitude",CurrentSession.getDestinationLongitude());
             }
+
+            message.put("numberOfTravelers",CurrentSession.getNrOfTravelers());
         } catch (JSONException e) {
             return null;
         }

@@ -11,8 +11,9 @@ import android.support.v4.app.ActivityCompat;
 
 
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatImageButton;
 import android.util.Log;
-import android.widget.EditText;
+import android.widget.AdapterView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -23,24 +24,17 @@ import com.google.android.gms.location.LocationServices;
 import android.view.View;
 import android.widget.Button;
 
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.widget.Autocomplete;
-import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
-import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
@@ -53,6 +47,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int DEFAULT_ZOOM = 15;
     private static final String TAG = "MainActivity";
 
+
+    /**
+     * Used to receive the address of a position
+     */
     private AddressResultReceiver resultReceiver;
 
     /**
@@ -82,8 +80,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     //UI
+    /**
+     * Textview to show the current position
+     */
     private TextView currentPositionTextView; //Textview to show the current location
-    private Spinner companionSpinner;
+    /**
+     * The "Find a trip" button
+     */
     private Button findButton;
 
 
@@ -93,53 +96,48 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_view);
 
+        //UI
         findButton = findViewById(R.id.findbutton);
-        findButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,GroupActivity.class);
-                intent.putExtra("companions", companionSpinner.getSelectedItem().toString());
-                startActivity(intent);
-            }
+        disableFindButton();
+        findButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this,GroupActivity.class);
+            startActivity(intent);
         });
+
+        currentPositionTextView = findViewById(R.id.currentPositionTextView);
+        Spinner companionSpinner = findViewById(R.id.companionSpinner);
+        companionSpinner.setOnItemSelectedListener(new SpinnerListener());
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         resultReceiver=new AddressResultReceiver(new Handler());
 
-        //UI
-        currentPositionTextView = findViewById(R.id.currentPositionTextView);
-        companionSpinner = findViewById(R.id.companionSpinner);
-
-
         // Initialize Places.
         Places.initialize(getApplicationContext(), getResources().getString(R.string.google_maps_key));
+        initMapFragment();
+        initAutocompleteSupportFragment();
+
+    }
 
 
+
+    private void disableFindButton() {
+        findButton.setEnabled(false);
+    }
+    private void enableFindButton() {
+        findButton.setEnabled(true);
+    }
+
+
+
+    //-----------------------------MAP--------------------------------------------------------------
+    private void initMapFragment(){
+        //Initialize map fragment
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
-        // Initialize the AutocompleteSupportFragment.
-        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
-                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-
-        // Specify the types of place data to return.
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
-        autocompleteFragment.setCountry("SE");
-        // Set up a PlaceSelectionListener to handle the response.
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(Place place) {
-                // TODO: Get info about the selected place.
-                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
-                CurrentSession.setDesinationLatitude(place.getLatLng().latitude);
-                CurrentSession.setDestinationLongitude(place.getLatLng().longitude);
-            }
-
-            @Override
-            public void onError(@NonNull Status status) {
-                Log.i(TAG, "An error occurred: " + status);
-            }
-        });
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }else{
+            errorWhenInitializingMapFragment();
+        }
     }
 
 
@@ -168,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /**
      * Called when user answered the request permission prompt
-     * @param requestCode
+     * @param requestCode The code for the permission asked
      * @param permissions the permissions you have asked for
      * @param grantResults the results
      */
@@ -196,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     /**
      * Called when the map is ready.
      * Tries to get the permission that is needed and updates the map and the current position text field.
-     * @param googleMap
+     * @param googleMap A map ready to use
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -221,26 +219,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         try {
             if (mLocationPermissionGranted) {
                 Task locationResult = fusedLocationClient.getLastLocation();
-                locationResult.addOnCompleteListener(this, new OnCompleteListener() {
-                    @Override
-                    public void onComplete(@NonNull Task task) {
-                        if (task.isSuccessful()) {
-                            // Set the map's camera position to the current location of the device.
-                            mLastKnownLocation = (Location) task.getResult();
-                            CurrentSession.setCurrentLatitude(mLastKnownLocation.getLatitude());
-                            CurrentSession.setCurrentLongitude(mLastKnownLocation.getLongitude());
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                    new LatLng(mLastKnownLocation.getLatitude(),
-                                            mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                locationResult.addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // Set the map's camera position to the current location of the device.
+                        mLastKnownLocation = (Location) task.getResult();
+                        CurrentSession.setCurrentLatitude(mLastKnownLocation.getLatitude());
+                        CurrentSession.setCurrentLongitude(mLastKnownLocation.getLongitude());
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                new LatLng(mLastKnownLocation.getLatitude(),
+                                        mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
 
 
-                        } else {
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
-                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                    } else {
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
+                        mMap.getUiSettings().setMyLocationButtonEnabled(false);
 
-                        }
-                        StartAddressIntentService();
                     }
+                    StartAddressIntentService();
                 });
             }
         } catch(SecurityException e)  {
@@ -249,7 +244,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
-     *
+     * Updates the map
      */
     private void updateLocationUI() {
         if(mMap == null) {
@@ -270,6 +265,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Log.e("Exception: %s", e.getMessage());
         }
     }
+
+
+    //------------------------------------FETCHING THE ADDRESS--------------------------------------
 
     /**
      * Starts the intent service that tries to get the address based on our current location.
@@ -296,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         private String addressOutput;
 
-        public AddressResultReceiver(Handler handler) {
+        AddressResultReceiver(Handler handler) {
             super(handler);
         }
 
@@ -306,7 +304,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (resultData == null) {
                 return;
             }
-
             // Display the address string
             // or an error message sent from the intent service.
             addressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
@@ -322,6 +319,77 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             setAddress(addressOutput);
         }
 
+
+    }
+
+    //--------------------------------PLACE SELECTION-----------------------------------------------
+    private void initAutocompleteSupportFragment() {
+        // Initialize the AutocompleteSupportFragment.
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+        // Specify the types of place data to return.
+        if (autocompleteFragment != null) {
+            autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
+            autocompleteFragment.setCountry("SE");
+            // Set up a PlaceSelectionListener to handle the response.
+            autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener());
+
+            AppCompatImageButton clear_autocomplete = autocompleteFragment.getView().findViewById(R.id.places_autocomplete_clear_button);
+            clear_autocomplete.setOnClickListener(view -> {
+                disableFindButton();
+                autocompleteFragment.setText("");
+            });
+        }else{
+            errorWhenInitializingAutocompleteFragment();
+        }
+
+    }
+
+
+
+    private class PlaceSelectionListener implements com.google.android.libraries.places.widget.listener.PlaceSelectionListener {
+
+        @Override
+        public void onPlaceSelected(@NonNull Place place) {
+            Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+            CurrentSession.setDesinationLatitude(place.getLatLng().latitude);
+            CurrentSession.setDestinationLongitude(place.getLatLng().longitude);
+            enableFindButton();
+        }
+
+        @Override
+        public void onError(@NonNull Status status) {
+            Log.i(TAG, "An error occurred: " + status);
+        }
+    }
+    //--------------------------------SPINNER-------------------------------------------------------
+
+    /**
+     * A class that listens to a spinner
+     */
+    private class SpinnerListener implements AdapterView.OnItemSelectedListener{
+
+        private int[] items = {1,2,3};
+        @Override
+        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+            CurrentSession.setNrOfTravelers(items[i]);
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> adapterView) {
+
+        }
+    }
+
+
+    //--------------------------------ERROR---------------------------------------------------------
+
+    private void errorWhenInitializingMapFragment() {
+
+    }
+
+    private void errorWhenInitializingAutocompleteFragment() {
 
     }
 
