@@ -4,7 +4,6 @@ import org.springframework.data.annotation.Id;
 
 public class Review {
 
-    private @Id String id;
     private String comment;
     private Stars stars;
 
@@ -17,12 +16,9 @@ public class Review {
 
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+    public Review(String comment, Stars stars){
+        this.comment = comment;
+        this.stars = stars;
     }
 
     public String getComment() {
