@@ -38,4 +38,7 @@ public class ProfileButton extends AppCompatImageButton {
 
     }
 
+    public User getUser() {
+        return user;
+    }
 }

@@ -1,7 +1,10 @@
 package com.chalmers.gyarados.split;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,7 +23,7 @@ import com.chalmers.gyarados.split.model.User;
 import java.util.List;
 
 
-public class GroupActivity extends AppCompatActivity implements ClientListener {
+public class GroupActivity extends AppCompatActivity implements ClientListener, ProfileFragment.OnFragmentInteractionListener {
 
     //-------------LOGGING---------------------------
     /**
@@ -205,20 +208,28 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
     }
 
     private void addCustomButton(User u) {
-        buttonHolder.addView(new ProfileButton(getApplicationContext(),null,R.style.button,u));
-        buttonHolder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //todo open fragment
-                /*
-                Fragment fragment = CustomFragment.newInstance();
+        ProfileButton button = new ProfileButton(getApplicationContext(),null,u);
+        buttonHolder.addView(button);
+        button.setOnClickListener(new ClickListener(u));
+    }
 
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+    private class ClickListener implements View.OnClickListener {
+        private User user;
 
-                transaction.replace(R.id.container_layout, fragment).commit();
-                 */
-            }
-        });
+        public ClickListener(User user) {
+            this.user = user;
+        }
+
+        @Override
+        public void onClick(View v) {
+            ProfileFragment fragment = ProfileFragment.newInstance();
+            fragment.setUser(user);
+
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+            transaction.replace(R.id.fragmentholder, fragment).commit();
+            findViewById(R.id.fragmentholder).bringToFront();
+        }
     }
     //-------------INITIALIZING---------------------------------------
 
@@ -279,7 +290,8 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
     }
 
 
+    @Override
+    public void onFragmentInteraction(Uri uri) {
 
-
-
+    }
 }

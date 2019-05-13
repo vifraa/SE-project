@@ -60,19 +60,13 @@ public class ProfileFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
 
+
+
     }
 
     public void setUser(User user) {
         this.user = user;
-        name.setText(user.getName());
-        age.setText("22");
-        //avgRating.setText(user.getAvgRating());
-        //numOfRatings.setText(user.getNumOfRatings());
-        if (user.getProfileURL() != null && !user.getProfileURL().isEmpty()) {
-            //profileImage.setImageURI(user.getProfileURL());
-        } else {
-            profileImage.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.profile_pic_default, null));
-        }
+
 
     }
 
@@ -88,6 +82,16 @@ public class ProfileFragment extends Fragment {
         avgRating = v.findViewById(R.id.profile_avg_rating);
         numOfRatings = v.findViewById(R.id.profile_number_of_ratings);
         profileImage = v.findViewById(R.id.profile_image);
+        headerName.setText(user.getName() + "'s profile");
+        name.setText(user.getName());
+        age.setText("22");
+        //avgRating.setText(user.getAvgRating());
+        //numOfRatings.setText(user.getNumOfRatings());
+        if (user.getProfileURL() != null && !user.getProfileURL().isEmpty()) {
+            //profileImage.setImageURI(user.getProfileURL());
+        } else {
+            profileImage.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.profile_pic_default, null));
+        }
         return v;
     }
 
