@@ -200,7 +200,9 @@ public class GroupService {
         		Double groupCurrentLongitude = getGroupCurrentLongitude(group);
         		Double groupCurrentLatitude = getGroupCurrentLatitude(group);
         		Double currentDistance = calcDist(groupCurrentLatitude, groupCurrentLongitude, user.getCurrentLatitude(), user.getCurrentLongitude());
+
         		if(currentDistance <= 0.05 && currentDistance >=0 && (currentDistance < matchedDistance || matchedGroup == null)) {
+
         			matchedDistance = currentDistance;
         			matchedGroup = group;	
         		}
