@@ -5,7 +5,7 @@ import gyarados.splitbackend.chat.ChatMessage;
 import gyarados.splitbackend.group.Group;
 import gyarados.splitbackend.group.GroupService;
 import gyarados.splitbackend.user.User;
-import org.apache.coyote.http11.upgrade.InternalHttpUpgradeHandler;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
