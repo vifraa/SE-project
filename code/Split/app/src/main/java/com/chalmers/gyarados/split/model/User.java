@@ -1,24 +1,26 @@
 package com.chalmers.gyarados.split.model;
 
+import android.net.Uri;
+
 import java.util.Map;
 
 
 public class User {
 
     private String name;
-    private String profileURL;
     private String userID;
+    private String photo;
 
 
-    public User(String name, String profileURL) {
+    public User(String name, String photo) {
         this.name = name;
-        this.profileURL = profileURL;
+        this.photo = photo;
     }
 
-    public User(String name, String userID, String profileURL) {
+    public User(String name, String userID, String photo) {
         this.name = name;
         this.userID = userID;
-        this.profileURL = profileURL;
+        this.photo = photo;
     }
 
     public User(Map user) {
@@ -38,18 +40,13 @@ public class User {
         this.name = name;
     }
 
-    public String getProfileURL() {
-        return profileURL;
-    }
-
-    public void setProfileURL(String profileURL) {
-        this.profileURL = profileURL;
-    }
-
     public String getUserId() {
         return userID;
     }
 
+    public void setPhoto(String photo) {this.photo = photo;}
+
+    public String getPhoto() { return photo; }
 
     @Override
     public boolean equals(Object o) {
