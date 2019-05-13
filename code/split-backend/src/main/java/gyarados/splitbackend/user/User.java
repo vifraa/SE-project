@@ -30,14 +30,6 @@ public class User {
         return reviews.add(review);
     }
 
-    public int getNumberOfFriends() {
-        return numberOfFriends;
-    }
-
-    public void setNumberOfFriends(int numberOfFriends) {
-        this.numberOfFriends = numberOfFriends;
-    }
-    
     @Override
     public boolean equals (Object user) {
     		//if the object is compared to itself, return true
@@ -55,18 +47,6 @@ public class User {
     		 //Compare data members and return accordingly
     		 return name.equals(tempUser.name) && userID.equals(tempUser.userID);
 
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "userID='" + userID + '\'' +
-                ", name='" + name + '\'' +
-                ", currentLatitude='" + currentLatitude + '\'' +
-                ", currentLongitude='" + currentLongitude + '\'' +
-                ", destinationLatitude='" + destinationLatitude + '\'' +
-                ", destinationLongitude='" + destinationLongitude + '\'' +
-                '}';
     }
 
     // GETTERS AND SETTERS
@@ -129,7 +109,11 @@ public class User {
 
     public String getPhotoUrl() {
         return photoUrl;
+    }
 
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
 
     @Override
     public String toString() {
@@ -152,8 +136,7 @@ public class User {
         this.numberOfTravelers = numberOfTravelers;
     }
 
-    public void setPhotoUrl(String photoUri) {
-        this.photoUrl = photoUri;
-    }
+
+
 }
 
