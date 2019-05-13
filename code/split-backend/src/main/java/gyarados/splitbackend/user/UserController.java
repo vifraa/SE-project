@@ -47,10 +47,15 @@ public class UserController {
     }
 
 
-
+    /**
+     * Endpoint for saving an review to an user.
+     * @param id The id of the user we want to save to.
+     * @param review The review to save.
+     * @return The new user.
+     */
     @PostMapping("/{id}/review")
     public User postReview(@PathVariable String id, @RequestBody Review review){
-        return userService.postReview(review);
+        return userService.postReview(id,review);
     }
 
 
