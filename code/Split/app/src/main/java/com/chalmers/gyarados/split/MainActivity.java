@@ -129,6 +129,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // Specify the types of place data to return.
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
+        //autocompleteFragment.setCountry("SE");
 
         // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
