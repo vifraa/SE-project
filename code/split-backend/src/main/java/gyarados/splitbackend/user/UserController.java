@@ -22,7 +22,7 @@ public class UserController {
      * @return The users.
      */
     @GetMapping
-    List<User> all() {
+    public List<User> all() {
         return userService.all();
     }
 
@@ -32,7 +32,7 @@ public class UserController {
      * @return The user that was found.
      */
     @GetMapping("/{id}")
-    User one(@PathVariable String id) {
+    public User one(@PathVariable String id) {
         return userService.findById(id);
     }
 
@@ -42,8 +42,17 @@ public class UserController {
      * @return A map containing the user and also a boolean if the user is in a group.
      */
     @PostMapping("/handle-login")
-    Map<String, Object> handleLogin(@RequestBody User user) {
+    public Map<String, Object> handleLogin(@RequestBody User user) {
         return userService.handleLogin(user);
     }
+
+
+
+    @PostMapping("/{id}/review")
+    public User postReview(@PathVariable String id, @RequestBody Review review){
+        return userService.postReview(review);
+    }
+
+
 
 }
