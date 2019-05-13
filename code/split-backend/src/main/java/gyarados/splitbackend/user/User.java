@@ -15,6 +15,7 @@ public class User {
     private Double destinationLongitude;
     private int numberOfFriends;
     private List<Review> reviews;
+    private String photoUrl;
 
 
     public User(){
@@ -123,6 +124,12 @@ public class User {
         this.reviews = reviews;
     }
 
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
 
+    public void setPhotoUrl(String photoUri) {
+        this.photoUrl = photoUri;
+    }
 }
 
