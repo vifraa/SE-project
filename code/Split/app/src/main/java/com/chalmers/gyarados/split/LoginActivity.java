@@ -1,6 +1,7 @@
 package com.chalmers.gyarados.split;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -81,7 +82,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (acct != null) {
             String personName = acct.getDisplayName();
             String personId = acct.getId();
-            return new User(personName, personId, null);
+            Uri photo = acct.getPhotoUrl();
+            return new User(personName, personId, photo);
         }
         return null;
     }
