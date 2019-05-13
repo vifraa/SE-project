@@ -82,7 +82,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (acct != null) {
             String personName = acct.getDisplayName();
             String personId = acct.getId();
-            Uri photo = acct.getPhotoUrl();
+            String photo;
+            if(acct.getPhotoUrl() != null){
+                photo = acct.getPhotoUrl().toString();
+            }else{
+                photo = null;
+            }
+
             return new User(personName, personId, photo);
         }
         return null;
@@ -131,7 +137,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void tryToStartApplication(User user) {
-        mRestPingDisposable = RestClient.getInstance().getExampleRepository().sendRestEcho(user)
+        mRestPingDisposable = RestClient.getInstance().getExampleRepository().login(user)
                 .unsubscribeOn(Schedulers.newThread())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

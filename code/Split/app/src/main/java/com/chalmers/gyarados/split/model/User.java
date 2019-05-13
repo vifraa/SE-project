@@ -9,15 +9,15 @@ public class User {
 
     private String name;
     private String userID;
-    private Uri photo;
+    private String photo;
 
 
-    public User(String name, Uri photo) {
+    public User(String name, String photo) {
         this.name = name;
         this.photo = photo;
     }
 
-    public User(String name, String userID, Uri photo) {
+    public User(String name, String userID, String photo) {
         this.name = name;
         this.userID = userID;
         this.photo = photo;
@@ -44,9 +44,9 @@ public class User {
         return userID;
     }
 
-    public void setPhoto(Uri photo) {this.photo = photo;}
+    public void setPhoto(String photo) {this.photo = photo;}
 
-    public Uri getPhoto() { return photo; }
+    public String getPhoto() { return photo; }
 
     @Override
     public boolean equals(Object o) {
