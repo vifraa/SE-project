@@ -6,8 +6,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.chalmers.gyarados.split.model.Message;
@@ -44,9 +48,9 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
      */
     private ViewDialog viewDialog;
 
-    private TextView groupMembers;
+    //private TextView groupMembers;
 
-
+    private LinearLayout buttonHolder;
 
     //------------------OTHER PROPERTIES------------------------------------
 
@@ -69,9 +73,12 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.group_view);
 
+        buttonHolder = findViewById(R.id.button_holder);
+
+
         //initializing gui
         writtenText = findViewById(R.id.writtenText);
-        groupMembers=findViewById(R.id.groupMembers);
+        //groupMembers=findViewById(R.id.groupMembers);
         ImageButton sendButton = findViewById(R.id.sendbutton);
         ImageButton leaveButton = findViewById(R.id.leaveButton);
         sendButton.setOnClickListener(v -> onSendButtonPressed(writtenText.getText().toString()));
@@ -184,13 +191,34 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
     }
 
     public void updateMembersList(List<User> users) {
+        buttonHolder.removeAllViews();
         StringBuilder sb = new StringBuilder();
         for(User u:users){
             sb.append(u.getName());
             sb.append("\n");
+            addCustomButton(u);
         }
         sb.deleteCharAt(sb.length()-1);
-        groupMembers.setText(sb.toString());
+
+
+        //groupMembers.setText(sb.toString());
+    }
+
+    private void addCustomButton(User u) {
+        buttonHolder.addView(new ProfileButton(getApplicationContext(),null,R.style.button,u));
+        buttonHolder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //todo open fragment
+                /*
+                Fragment fragment = CustomFragment.newInstance();
+
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+                transaction.replace(R.id.container_layout, fragment).commit();
+                 */
+            }
+        });
     }
     //-------------INITIALIZING---------------------------------------
 
