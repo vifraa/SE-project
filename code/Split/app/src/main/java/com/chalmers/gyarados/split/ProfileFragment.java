@@ -87,7 +87,7 @@ public class ProfileFragment extends Fragment {
         age.setText("22");
         //avgRating.setText(user.getAvgRating());
         //numOfRatings.setText(user.getNumOfRatings());
-        if (user.getProfileURL() != null && !user.getProfileURL().isEmpty()) {
+        if (user.getPhotoUrl() != null && !user.getPhotoUrl().isEmpty()) {
             //profileImage.setImageURI(user.getProfileURL());
         } else {
             profileImage.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.profile_pic_default, null));

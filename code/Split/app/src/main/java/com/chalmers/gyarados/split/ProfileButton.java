@@ -30,7 +30,7 @@ public class ProfileButton extends AppCompatImageButton {
     private void init(User givenUser){
         this.user=givenUser;
         setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        if(user.getProfileURL() != null && !user.getProfileURL().isEmpty()){
+        if(user.getPhotoUrl() != null && !user.getPhotoUrl().isEmpty()){
             //
         }else{
             setImageResource(R.mipmap.ic_launcher);

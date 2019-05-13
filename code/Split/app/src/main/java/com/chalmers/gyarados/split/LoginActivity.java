@@ -89,7 +89,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 photo = null;
             }
 
-            return new User(personName, personId, photo);
+            return new User(personName, personId, photo,null);
         }
         return null;
     }
