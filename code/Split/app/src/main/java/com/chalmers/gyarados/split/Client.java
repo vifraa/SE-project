@@ -78,8 +78,14 @@ public class Client {
      */
     public void connectStomp(){
 
+        String uri;
         //Which ip-adress we want to connect to
-        String uri= "ws://"+Constants.IP+":"+Constants.PORT+"/split/websocket";
+        if(Constants.develop){
+            uri= "ws://"+Constants.IP+":"+Constants.PORT+"/split/websocket";
+        }else{
+            uri = "ws://"+Constants.deployedURL+"/split/websocket";
+        }
+
         Log.d(TAG,uri);
         mStompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, uri );
 
@@ -273,7 +279,7 @@ public class Client {
      * @return a json string
      */
     private String createFindGroupMessage() {
-        return jsonHelper.createFindGroupMessage(CurrentSession.getCurrentUser(),57.684027,11.975490,57.735473, 12.112732);
+        return jsonHelper.createFindGroupMessage();
     }
 
     /**

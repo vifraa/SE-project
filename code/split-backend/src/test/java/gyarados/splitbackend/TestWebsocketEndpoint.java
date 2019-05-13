@@ -5,7 +5,7 @@ import gyarados.splitbackend.chat.ChatMessage;
 import gyarados.splitbackend.group.Group;
 import gyarados.splitbackend.group.GroupService;
 import gyarados.splitbackend.user.User;
-import org.apache.coyote.http11.upgrade.InternalHttpUpgradeHandler;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -146,6 +146,62 @@ public class TestWebsocketEndpoint {
         assertEquals(message.getGroupid(), recievedMessage.getGroupid());
         assertEquals(message.getContent(), recievedMessage.getContent());
         assertEquals(message.getTimestamp(),recievedMessage.getTimestamp());
+    }
+
+    @Test
+    public void testMatchingGroup() throws URISyntaxException, InterruptedException, ExecutionException, TimeoutException {
+        StompSession stompSession = stompClient.connect(url, new StompSessionHandlerAdapter(){
+        }).get(1, SECONDS);
+
+        stompSession.subscribe(RECIEVE_GROUP_NUMBER, new SendMessageStompFrameHandler());
+
+        User user = new User();
+        user.setName("Central");
+        user.setUserID("user1");
+
+        user.setCurrentLongitude(57.68);
+        user.setCurrentLatitude(11.84);
+        user.setDestinationLongitude(57.70);
+        user.setDestinationLatitude(11.85);
+        stompSession.send(ASK_FOR_GROUP_NUMBER, user);
+
+        User userTwo = new User();
+        userTwo.setName("Molnd");
+        userTwo.setUserID("user2");
+
+        userTwo.setCurrentLongitude(57.98);
+        userTwo.setCurrentLatitude(11.84);
+        userTwo.setDestinationLongitude(57.70);
+        userTwo.setDestinationLatitude(11.85);
+        stompSession.send(ASK_FOR_GROUP_NUMBER, userTwo);
+
+
+        User userTwo3 = new User();
+        userTwo3.setName("Appp");
+        userTwo3.setUserID("user3");
+
+        userTwo3.setCurrentLongitude(55.98);
+        userTwo3.setCurrentLatitude(10.84);
+        userTwo3.setDestinationLongitude(56.70);
+        userTwo3.setDestinationLatitude(13.85);
+        stompSession.send(ASK_FOR_GROUP_NUMBER, userTwo3);
+
+        groupService.findMatchingGroup(user);
+        groupService.findMatchingGroup(userTwo);
+        groupService.findMatchingGroup(userTwo3);
+
+        System.out.println(groupService.findAll().size());
+
+        //Group group1 = groupService.findAll().get(0);
+        //Group group2 = groupService.findAll().get(1);
+
+
+        //assertNotNull(user);
+        //System.out.println(group.getUsers().size());
+        //System.out.println(groupService.findAll().size());
+
+        //stompSession.disconnect();
+
     }
 
     /*@Test

@@ -10,7 +10,7 @@ public class User {
     private Double currentLongitude;
     private Double destinationLatitude;
     private Double destinationLongitude;
-    private int numberOfFriends;
+    private int numberOfTravelers;
 
 
     public User(){}
@@ -76,15 +76,16 @@ public class User {
                 ", currentLongitude='" + currentLongitude + '\'' +
                 ", destinationLatitude='" + destinationLatitude + '\'' +
                 ", destinationLongitude='" + destinationLongitude + '\'' +
+                ", numberOfTravelers='" + numberOfTravelers + '\'' +
                 '}';
     }
 
-    public int getNumberOfFriends() {
-        return numberOfFriends;
+    public int getNumberOfTravelers() {
+        return numberOfTravelers;
     }
 
-    public void setNumberOfFriends(int numberOfFriends) {
-        this.numberOfFriends = numberOfFriends;
+    public void setNumberOfTravelers(int numberOfTravelers) {
+        this.numberOfTravelers = numberOfTravelers;
     }
     
     @Override

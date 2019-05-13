@@ -81,7 +81,6 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
         showCustomLoadingDialog();
         //Retrieving the groupID that might have been given by activity before
         String groupID=getIntent().getStringExtra("groupID");
-
         if(groupID!=null){
             client=new Client(groupID,this);
         }else{

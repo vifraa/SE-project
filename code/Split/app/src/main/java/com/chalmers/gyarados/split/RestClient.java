@@ -28,10 +28,18 @@ public class RestClient {
     private final LoginRespository mExampleRepository;
 
     private RestClient() {
-        Retrofit retrofit = new Retrofit.Builder().baseUrl("http://" + Constants.IP+ ":" + Constants.PORT+ "/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build();
+        Retrofit retrofit;
+        if(Constants.develop){
+            retrofit = new Retrofit.Builder().baseUrl("http://" + Constants.IP+ ":" + Constants.PORT+ "/").addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .build();
+        }else {
+            retrofit = new Retrofit.Builder().baseUrl("http://" + Constants.deployedURL + "/").addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .build();
+        }
+
+
         mExampleRepository = retrofit.create(LoginRespository.class);
     }
 
