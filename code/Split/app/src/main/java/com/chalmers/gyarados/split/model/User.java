@@ -27,6 +27,7 @@ public class User {
     public User(Map user) {
         name=(String)user.get("name");
         userID=(String)user.get("userID");
+        photoUrl=(String)user.get("photoUrl");
     }
 
     public void setId(String id) {

@@ -226,7 +226,7 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
             fragment.setUser(user);
 
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
+            transaction.addToBackStack(null);
             transaction.replace(R.id.fragmentholder, fragment).commit();
             findViewById(R.id.fragmentholder).bringToFront();
         }
@@ -251,7 +251,10 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
         hideCustomDialogIfNeeded();
     }
 
+    @Override
+    public void userInfoReceived(User myData) {
 
+    }
 
 
     //-------------------------ERROR HANDLING------------------------------
