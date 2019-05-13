@@ -21,7 +21,7 @@ public class RatingActivity extends AppCompatActivity implements ClientListener 
     protected void onCreate(Bundle savedInstanceState) {
 
         rateConfirmButton = findViewById(R.id.confirmButton);
-        //disableConfirmButton();
+        disableConfirmButton();
         leaveRateButton = findViewById(R.id.leaveRateButton);
         ratingRecyclerView = findViewById(R.id.rating_recycler_view);
 
@@ -43,10 +43,10 @@ public class RatingActivity extends AppCompatActivity implements ClientListener 
         super.onCreate(savedInstanceState);
     }
 
-    /*public void disableConfirmButton() {
+    public void disableConfirmButton() {
         rateConfirmButton.setEnabled(false);
     }
-*/
+
     private void enableConfirmButton() {
         rateConfirmButton.setEnabled(true);
     }
@@ -86,7 +86,4 @@ public class RatingActivity extends AppCompatActivity implements ClientListener 
 
     }
 
-
-    private void disableConfirmButton() {
-    }
 }
