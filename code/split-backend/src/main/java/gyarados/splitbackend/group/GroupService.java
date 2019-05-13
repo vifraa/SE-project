@@ -186,9 +186,9 @@ public class GroupService {
             }
 
                 //Add Exception Handling
-            if(group.getUsers().size() + user.getNumberOfFriends() < group.getMAX_GROUP_SIZE()
+            if(group.getUsers().size() + user.getNumberOfTravelers() < group.getMAX_GROUP_SIZE()
                     && group.getUsers().size() > 0
-                    && destinationDistance <= 0.1 && destinationDistance >= 0) {
+                    && destinationDistance <= 0.05 && destinationDistance >= 0) {
                 potentialGroups.add(group);
             }
 
@@ -200,7 +200,9 @@ public class GroupService {
         		Double groupCurrentLongitude = getGroupCurrentLongitude(group);
         		Double groupCurrentLatitude = getGroupCurrentLatitude(group);
         		Double currentDistance = calcDist(groupCurrentLatitude, groupCurrentLongitude, user.getCurrentLatitude(), user.getCurrentLongitude());
-        		if(currentDistance < matchedDistance || matchedGroup == null) {
+
+        		if(currentDistance <= 0.05 && currentDistance >=0 && (currentDistance < matchedDistance || matchedGroup == null)) {
+
         			matchedDistance = currentDistance;
         			matchedGroup = group;	
         		}
