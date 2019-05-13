@@ -2,6 +2,9 @@ package gyarados.splitbackend.user;
 
 import org.springframework.data.annotation.Id;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class User {
 
     private @Id String userID;
@@ -11,9 +14,18 @@ public class User {
     private Double destinationLatitude;
     private Double destinationLongitude;
     private int numberOfTravelers;
+ 
+    private List<Review> reviews;
 
 
-    public User(){}
+    public User(){
+        reviews = new ArrayList<>();
+    }
+
+
+    public boolean addReview(Review review){
+        return reviews.add(review);
+    }
 
     // GETTERS AND SETTERS
 
@@ -65,8 +77,6 @@ public class User {
         this.destinationLongitude = destinationLongitude;
     }
 
-
-
     @Override
     public String toString() {
         return "User{" +
@@ -105,6 +115,15 @@ public class User {
     		 //Compare data members and return accordingly
     		 return name.equals(tempUser.name) && userID.equals(tempUser.userID);
 
+    public List<Review> getReviews() {
+        return reviews;
     }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
+    }
+
+
+
 }
 
