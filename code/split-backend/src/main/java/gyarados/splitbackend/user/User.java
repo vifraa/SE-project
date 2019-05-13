@@ -13,7 +13,7 @@ public class User {
     private Double currentLongitude;
     private Double destinationLatitude;
     private Double destinationLongitude;
-    private int numberOfFriends;
+
     private List<Review> reviews;
     private String photoUrl;
 
@@ -21,6 +21,9 @@ public class User {
     public User(){
         reviews = new ArrayList<>();
     }
+
+
+    private int numberOfTravelers;
 
 
     public boolean addReview(Review review){
@@ -126,6 +129,27 @@ public class User {
 
     public String getPhotoUrl() {
         return photoUrl;
+
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userID='" + userID + '\'' +
+                ", name='" + name + '\'' +
+                ", currentLatitude='" + currentLatitude + '\'' +
+                ", currentLongitude='" + currentLongitude + '\'' +
+                ", destinationLatitude='" + destinationLatitude + '\'' +
+                ", destinationLongitude='" + destinationLongitude + '\'' +
+                ", numberOfTravelers='" + numberOfTravelers + '\'' +
+                '}';
+    }
+
+    public int getNumberOfTravelers() {
+        return numberOfTravelers;
+    }
+
+    public void setNumberOfTravelers(int numberOfTravelers) {
+        this.numberOfTravelers = numberOfTravelers;
     }
 
     public void setPhotoUrl(String photoUri) {

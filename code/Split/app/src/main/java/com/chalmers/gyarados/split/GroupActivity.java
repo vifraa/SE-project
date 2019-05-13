@@ -1,13 +1,20 @@
 package com.chalmers.gyarados.split;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.chalmers.gyarados.split.model.Message;
@@ -16,7 +23,7 @@ import com.chalmers.gyarados.split.model.User;
 import java.util.List;
 
 
-public class GroupActivity extends AppCompatActivity implements ClientListener {
+public class GroupActivity extends AppCompatActivity implements ClientListener, ProfileFragment.OnFragmentInteractionListener {
 
     //-------------LOGGING---------------------------
     /**
@@ -44,9 +51,9 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
      */
     private ViewDialog viewDialog;
 
-    private TextView groupMembers;
+    //private TextView groupMembers;
 
-
+    private LinearLayout buttonHolder;
 
     //------------------OTHER PROPERTIES------------------------------------
 
@@ -69,9 +76,12 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.group_view);
 
+        buttonHolder = findViewById(R.id.button_holder);
+
+
         //initializing gui
         writtenText = findViewById(R.id.writtenText);
-        groupMembers=findViewById(R.id.groupMembers);
+        //groupMembers=findViewById(R.id.groupMembers);
         ImageButton sendButton = findViewById(R.id.sendbutton);
         ImageButton leaveButton = findViewById(R.id.leaveButton);
         sendButton.setOnClickListener(v -> onSendButtonPressed(writtenText.getText().toString()));
@@ -81,11 +91,6 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
         showCustomLoadingDialog();
         //Retrieving the groupID that might have been given by activity before
         String groupID=getIntent().getStringExtra("groupID");
-        Double currentLatitude=getIntent().getDoubleExtra("currentLatitude",0);
-        Double currentLongitude=getIntent().getDoubleExtra("currentLongitude",0);
-        Double destinationLatitude=getIntent().getDoubleExtra("destinationLatitude",0);
-        Double destinationLongitude=getIntent().getDoubleExtra("destinationLongitude",0);
-
         if(groupID!=null){
             client=new Client(groupID,this);
         }else{
@@ -189,13 +194,42 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
     }
 
     public void updateMembersList(List<User> users) {
+        buttonHolder.removeAllViews();
         StringBuilder sb = new StringBuilder();
         for(User u:users){
             sb.append(u.getName());
             sb.append("\n");
+            addCustomButton(u);
         }
         sb.deleteCharAt(sb.length()-1);
-        groupMembers.setText(sb.toString());
+
+
+        //groupMembers.setText(sb.toString());
+    }
+
+    private void addCustomButton(User u) {
+        ProfileButton button = new ProfileButton(getApplicationContext(),null,u);
+        buttonHolder.addView(button);
+        button.setOnClickListener(new ClickListener(u));
+    }
+
+    private class ClickListener implements View.OnClickListener {
+        private User user;
+
+        public ClickListener(User user) {
+            this.user = user;
+        }
+
+        @Override
+        public void onClick(View v) {
+            ProfileFragment fragment = ProfileFragment.newInstance();
+            fragment.setUser(user);
+
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+            transaction.replace(R.id.fragmentholder, fragment).commit();
+            findViewById(R.id.fragmentholder).bringToFront();
+        }
     }
     //-------------INITIALIZING---------------------------------------
 
@@ -256,7 +290,8 @@ public class GroupActivity extends AppCompatActivity implements ClientListener {
     }
 
 
+    @Override
+    public void onFragmentInteraction(Uri uri) {
 
-
-
+    }
 }
