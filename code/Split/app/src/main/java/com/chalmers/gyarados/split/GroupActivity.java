@@ -64,6 +64,7 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
 
     private boolean fromMainActivity;
+    private String groupID;
 
     //-------------------ANDROID METHODS---------------------------------------------
     /**
@@ -78,7 +79,6 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
         buttonHolder = findViewById(R.id.button_holder);
 
-
         //initializing gui
         writtenText = findViewById(R.id.writtenText);
         //groupMembers=findViewById(R.id.groupMembers);
@@ -90,7 +90,7 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
         viewDialog = new ViewDialog(this);
         showCustomLoadingDialog();
         //Retrieving the groupID that might have been given by activity before
-        String groupID=getIntent().getStringExtra("groupID");
+        groupID=getIntent().getStringExtra("groupID");
         if(groupID!=null){
             client=new Client(groupID,this);
         }else{
@@ -142,8 +142,11 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
     //-----------------LEAVING----------------------------------------
     
-    private void leaveGroup(){
-        client.leaveGroup();
+    private void transferToRatingView(){
+        //client.leaveGroup();
+        Intent intent = new Intent(GroupActivity.this,RatingActivity.class);
+        intent.putExtra("GroupID", groupID);
+        startActivity(intent);
     }
 
     //-----------------GUI METHODS----------------------------------
@@ -189,8 +192,8 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
     }
 
     public void onLeaveButtonPressed(){
-        leaveGroup();
-        returnToPreviousActivity();
+        transferToRatingView();
+        //returnToPreviousActivity();
     }
 
     public void updateMembersList(List<User> users) {
