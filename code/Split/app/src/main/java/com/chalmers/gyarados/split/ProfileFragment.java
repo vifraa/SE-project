@@ -95,7 +95,7 @@ public class ProfileFragment extends Fragment {
         //avgRating.setText(user.getAvgRating());
         //numOfRatings.setText(user.getNumOfRatings());
         if (user.getPhotoUrl() != null && !user.getPhotoUrl().isEmpty()) {
-            //profileImage.setImageURI(user.getProfileURL());
+            profileImage.setImageURI(Uri.parse(user.getPhotoUrl()));
         } else {
             profileImage.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.profile_pic_default, null));
         }
