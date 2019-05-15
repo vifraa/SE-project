@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.chalmers.gyarados.split.model.Group;
 import com.chalmers.gyarados.split.model.Message;
+import com.chalmers.gyarados.split.model.User;
 
 import io.reactivex.CompletableTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -78,8 +79,14 @@ public class Client {
      */
     public void connectStomp(){
 
+        String uri;
         //Which ip-adress we want to connect to
-        String uri= "ws://"+Constants.IP+":"+Constants.PORT+"/split/websocket";
+        if(Constants.develop){
+            uri= "ws://"+Constants.IP+":"+Constants.PORT+"/split/websocket";
+        }else{
+            uri = "ws://"+Constants.deployedURL+"/split/websocket";
+        }
+
         Log.d(TAG,uri);
         mStompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, uri );
 
@@ -273,7 +280,7 @@ public class Client {
      * @return a json string
      */
     private String createFindGroupMessage() {
-        return jsonHelper.createFindGroupMessage(CurrentSession.getCurrentUser(),CurrentSession.getCurrentLatitude(),CurrentSession.getCurrentLongitude(),CurrentSession.getDesinationLatitude(),CurrentSession.getDestinationLongitude());
+        return jsonHelper.createFindGroupMessage();
     }
 
     /**
@@ -294,6 +301,17 @@ public class Client {
                 .subscribe(()
                                 -> Log.d(TAG, "Leave message send successfully"),
                         throwable -> clientListener.errorWhileSendingMessage(throwable)));
+    }
+
+    private void askForUserInfo(User user){
+        RestClient.getInstance().getUserRepository().getUser(user.getUserId())
+                .unsubscribeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(myData -> {clientListener.userInfoReceived(myData);}, throwable -> {
+        Log.d(TAG, throwable.toString());
+
+    });
     }
 
     /**

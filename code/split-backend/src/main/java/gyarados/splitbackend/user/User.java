@@ -2,6 +2,9 @@ package gyarados.splitbackend.user;
 
 import org.springframework.data.annotation.Id;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class User {
 
     private @Id String userID;
@@ -10,10 +13,41 @@ public class User {
     private Double currentLongitude;
     private Double destinationLatitude;
     private Double destinationLongitude;
-    private int numberOfFriends;
+
+    private List<Review> reviews;
+    private String photoUrl;
 
 
-    public User(){}
+    public User(){
+        reviews = new ArrayList<>();
+    }
+
+
+    private int numberOfTravelers;
+
+
+    public boolean addReview(Review review){
+        return reviews.add(review);
+    }
+
+    @Override
+    public boolean equals (Object user) {
+    		//if the object is compared to itself, return true
+    		if(user == this) {
+    			return true;
+    			}
+    		// Check if user is an instance of User or not
+    		if (!(user instanceof User)) { 
+    	            return false; 
+    	        }
+    		 
+    		//Typecast User so that we can compare data members
+    		 User tempUser = (User) user;
+    		 
+    		 //Compare data members and return accordingly
+    		 return userID.equals(tempUser.userID);
+
+    }
 
     // GETTERS AND SETTERS
 
@@ -65,7 +99,21 @@ public class User {
         this.destinationLongitude = destinationLongitude;
     }
 
+    public List<Review> getReviews() {
+        return reviews;
+    }
 
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
 
     @Override
     public String toString() {
@@ -76,34 +124,19 @@ public class User {
                 ", currentLongitude='" + currentLongitude + '\'' +
                 ", destinationLatitude='" + destinationLatitude + '\'' +
                 ", destinationLongitude='" + destinationLongitude + '\'' +
+                ", numberOfTravelers='" + numberOfTravelers + '\'' +
                 '}';
     }
 
-    public int getNumberOfFriends() {
-        return numberOfFriends;
+    public int getNumberOfTravelers() {
+        return numberOfTravelers;
     }
 
-    public void setNumberOfFriends(int numberOfFriends) {
-        this.numberOfFriends = numberOfFriends;
+    public void setNumberOfTravelers(int numberOfTravelers) {
+        this.numberOfTravelers = numberOfTravelers;
     }
-    
-    @Override
-    public boolean equals (Object user) {
-    		//if the object is compared to itself, return true
-    		if(user == this) {
-    			return true;
-    			}
-    		// Check if user is an instance of User or not
-    		if (!(user instanceof User)) { 
-    	            return false; 
-    	        }
-    		 
-    		//Typecast User so that we can compare data members
-    		 User tempUser = (User) user;
-    		 
-    		 //Compare data members and return accordingly
-    		 return name.equals(tempUser.name) && userID.equals(tempUser.userID);
 
-    }
+
+
 }
 

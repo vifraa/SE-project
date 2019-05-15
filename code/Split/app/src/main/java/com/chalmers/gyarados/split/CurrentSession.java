@@ -8,6 +8,7 @@ public class CurrentSession {
     private static Double currentLongitude;
     private static Double desinationLatitude;
     private static Double destinationLongitude;
+    private static int nrOfTravelers=1;
 
     public static Double getCurrentLatitude() {
         return currentLatitude;
@@ -25,7 +26,7 @@ public class CurrentSession {
         CurrentSession.currentLongitude = currentLongitude;
     }
 
-    public static Double getDesinationLatitude() {
+    public static Double getDestinationLatitude() {
         return desinationLatitude;
     }
 
@@ -47,5 +48,13 @@ public class CurrentSession {
 
     public static void setCurrentUser(User currentUser) {
         CurrentSession.currentUser = currentUser;
+    }
+
+    public static int getNrOfTravelers() {
+        return nrOfTravelers;
+    }
+
+    public static void setNrOfTravelers(int nrOfTravelers) {
+        CurrentSession.nrOfTravelers = nrOfTravelers;
     }
 }

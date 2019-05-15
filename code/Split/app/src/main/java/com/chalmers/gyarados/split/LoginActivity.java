@@ -1,6 +1,7 @@
 package com.chalmers.gyarados.split;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,32 +32,31 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private GoogleSignInClient signInClient;
 
+    private ViewDialog viewDialog;
+
     private TextView statusTextView;
+
+    private SignInButton signInButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_view);
 
-        SignInButton signInButton = findViewById(R.id.sign_in_button);
+        signInButton = findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(this);
-
         signInButton.setSize(SignInButton.SIZE_STANDARD);
+        disableLoginButton();
+
+
+        viewDialog = new ViewDialog(this);
 
         statusTextView = findViewById(R.id.onErrorTextView);
-
-        //todo start loading screen
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
 
         signInClient = GoogleSignIn.getClient(this, gso);
-
-
-
-
-
-
     }
 
     private void signIn() {
@@ -82,7 +82,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (acct != null) {
             String personName = acct.getDisplayName();
             String personId = acct.getId();
-            return new User(personName, personId, null);
+            String photo;
+            if(acct.getPhotoUrl() != null){
+                photo = acct.getPhotoUrl().toString();
+            }else{
+                photo = null;
+            }
+
+            return new User(personName, personId, photo,null);
         }
         return null;
     }
@@ -99,10 +106,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             handleSignInResult(task);
         }
     }
+
+
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-
             // Signed in successfully, show authenticated UI.
             updateUI(account);
         } catch (ApiException e) {
@@ -114,18 +122,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void updateUI(GoogleSignInAccount account) {
+
         if (account != null) {
+            showCustomLoadingDialog();
             showStatus("Connecting to server...");
             User user = createUser(account);
             tryToStartApplication(user);
 
         } else {
+            enableLoginButton();
             // do nothing
         }
+
     }
 
     private void tryToStartApplication(User user) {
-        mRestPingDisposable = RestClient.getInstance().getExampleRepository().sendRestEcho(user)
+        mRestPingDisposable = RestClient.getInstance().getUserRepository().login(user)
                 .unsubscribeOn(Schedulers.newThread())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -147,14 +159,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             }
                         }else{
                             showStatus("Couldn't fetch data from");
+                            enableLoginButton();
                         }
                     }else{
                         showStatus("Couldn't fetch data from");
+                        enableLoginButton();
                     }
+
+                    hideCustomDialogIfNeeded();
 
 
                 }, throwable -> {
                     Log.d(TAG, throwable.toString());
+                    hideCustomDialogIfNeeded();
+                    enableLoginButton();
                     showStatus("Couldn't connect to server");
                 });
 
@@ -192,4 +210,28 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         statusTextView.setText(null);
     }
 
+    private void hideCustomDialogIfNeeded() {
+        if(viewDialog.isShowing()){
+            hideCustomLoadingDialog();
+        }
+    }
+
+    public void showCustomLoadingDialog() {
+        //if(!viewDialog.isShowing()){
+        viewDialog.showDialog();
+        //}
+
+    }
+
+    public void hideCustomLoadingDialog(){
+        viewDialog.hideDialog();
+    }
+
+    private void disableLoginButton(){
+        signInButton.setEnabled(false);
+    }
+
+    private void enableLoginButton(){
+        signInButton.setEnabled(true);
+    }
 }

@@ -25,17 +25,27 @@ public class RestClient {
         return instance;
     }
 
-    private final LoginRespository mExampleRepository;
+    private final UserRespository userRepository;
+    private final GroupRepository groupRepository;
 
     private RestClient() {
-        Retrofit retrofit = new Retrofit.Builder().baseUrl("http://" + Constants.IP+ ":" + Constants.PORT+ "/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build();
-        mExampleRepository = retrofit.create(LoginRespository.class);
+        Retrofit retrofit;
+        if(Constants.develop){
+            retrofit = new Retrofit.Builder().baseUrl("http://" + Constants.IP+ ":" + Constants.PORT+ "/").addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .build();
+        }else {
+            retrofit = new Retrofit.Builder().baseUrl("http://" + Constants.deployedURL + "/").addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .build();
+        }
+
+        groupRepository = retrofit.create(GroupRepository.class);
+        userRepository = retrofit.create(UserRespository.class);
     }
 
-    public LoginRespository getExampleRepository() {
-        return mExampleRepository;
+    public GroupRepository getGroupRepository() {return groupRepository; }
+    public UserRespository getUserRepository() {
+        return userRepository;
     }
 }

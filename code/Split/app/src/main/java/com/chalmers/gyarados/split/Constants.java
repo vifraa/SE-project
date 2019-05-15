@@ -1,8 +1,10 @@
 package com.chalmers.gyarados.split;
 
 public final class Constants {
-    public static final String IP = "split-240011.appspot.com";
+    public static final String IP = "192.168.0.209";
     public static final String PORT = "8080";
+    public static final Boolean develop = false;
+    public static final String deployedURL = "split.frnzn.com";
     public static final int SUCCESS_RESULT = 0;
     public static final int FAILURE_RESULT = 1;
     private static final String PACKAGE_NAME =
