@@ -1,8 +1,14 @@
 package gyarados.splitbackend.group;
 
+import com.mongodb.WriteResult;
+import com.mongodb.client.result.UpdateResult;
 import gyarados.splitbackend.chat.ChatMessage;
 import gyarados.splitbackend.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,8 +22,11 @@ public class GroupService {
 
     // Repository to work with the Group collection in the database.
     @Autowired
-    private GroupRepository repository;
+    private GroupRepository groupRepository;
 
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     /**
      * findById finds and returns an Group that matches the id.
@@ -27,7 +36,7 @@ public class GroupService {
      * @throws GroupNotFoundException if there is no group with the given id.
      */
     public Group findById(String id) throws GroupNotFoundException{
-        return repository.findById(id).orElseThrow(() -> new GroupNotFoundException(id));
+        return groupRepository.findById(id).orElseThrow(() -> new GroupNotFoundException(id));
     }
 
     /**
@@ -36,7 +45,7 @@ public class GroupService {
      * @return The groups.
      */
     public List<Group> findAll() {
-        return repository.findAll();
+        return groupRepository.findAll();
     }
 
     /**
@@ -46,14 +55,14 @@ public class GroupService {
      * @return The created group.
      */
     public Group add(Group group) {
-        return repository.save(group);
+        return groupRepository.save(group);
     }
 
     /**
      * Deletes an group from the collection.
      * @param group The group to delete.
      */
-    public void delete(Group group) { repository.delete(group);}
+    public void delete(Group group) { groupRepository.delete(group);}
     /**
      * addUserToGroup adds an user to the group specified by the groupID parameter.
      *
@@ -62,9 +71,9 @@ public class GroupService {
      * @return The group after the operation.
      */
     public Group addUserToGroup(String groupID, User user) {
-        Group group = repository.findById(groupID).orElseThrow(() -> new GroupNotFoundException(groupID));
+        Group group = groupRepository.findById(groupID).orElseThrow(() -> new GroupNotFoundException(groupID));
         group.addUser(user);
-        return repository.save(group);
+        return groupRepository.save(group);
     }
 
     /**
@@ -73,7 +82,7 @@ public class GroupService {
      * @return True if found in a group. Otherwise false.
      */
     public String userIsInGroup(User user){
-        List<Group> groups = repository.findAll();
+        List<Group> groups = groupRepository.findAll();
 
         for (Group group: groups){
             if(group.getUsers().contains(user)){
@@ -91,9 +100,9 @@ public class GroupService {
      * @return The group after the operation.
      */
     public Group addChatMessageToGroup(String groupID, ChatMessage message) {
-        Group group = repository.findById(groupID).orElseThrow(() -> new GroupNotFoundException(groupID));
+        Group group = groupRepository.findById(groupID).orElseThrow(() -> new GroupNotFoundException(groupID));
         group.addMessage(message);
-        return repository.save(group);
+        return groupRepository.save(group);
     }
 
     /**
@@ -200,7 +209,9 @@ public class GroupService {
         		Double groupCurrentLongitude = getGroupCurrentLongitude(group);
         		Double groupCurrentLatitude = getGroupCurrentLatitude(group);
         		Double currentDistance = calcDist(groupCurrentLatitude, groupCurrentLongitude, user.getCurrentLatitude(), user.getCurrentLongitude());
+
         		if(currentDistance <= 0.05 && currentDistance >=0 && (currentDistance < matchedDistance || matchedGroup == null)) {
+
         			matchedDistance = currentDistance;
         			matchedGroup = group;	
         		}
@@ -209,7 +220,7 @@ public class GroupService {
          }
 	    if(matchedGroup == null){
 	        Group newGroup = new Group();
-	        matchedGroup  = repository.save(newGroup);
+	        matchedGroup  = groupRepository.save(newGroup);
 
         }
         return matchedGroup;
@@ -222,14 +233,32 @@ public class GroupService {
 
         //fixme perhaps old groups should be saved somewhere else instead of removed?
         if (group.isEmpty()){
-            repository.deleteById(groupid);
+            groupRepository.deleteById(groupid);
             return null;
         }else{
-            return repository.save(group);
+            return groupRepository.save(group);
         }
 
 
     }
+
+
+    public void updateUserInGroup(User user, String groupId){
+        Group group = findById(groupId);
+        group.removeUser(user);
+        group.addUser(user);
+
+        Query query = new Query(new Criteria().andOperator(
+                Criteria.where("_id").is(groupId),
+                Criteria.where("users").elemMatch(Criteria.where("_id").is(user.getUserID()))
+        ));
+
+        Update update = new Update().set("users.$.photoUrl", user.getPhotoUrl());
+
+        UpdateResult ur = mongoTemplate.updateFirst(query,update, "group");
+    }
+
+
 }
 
 

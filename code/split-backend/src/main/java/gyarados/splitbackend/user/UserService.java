@@ -1,6 +1,7 @@
 package gyarados.splitbackend.user;
 
 
+import gyarados.splitbackend.group.Group;
 import gyarados.splitbackend.group.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,19 +55,43 @@ public class UserService {
             returnMap.put("hasGroup", false);
             returnMap.put("groupID", null);
         }else {
+
+            existingUser.setPhotoUrl(user.getPhotoUrl());
+            existingUser.setName(user.getName());
+            User updatedUser = repository.save(existingUser);
+
             // User exists. Check if it has a group.
             String groupID = groupService.userIsInGroup(existingUser);
-            returnMap.put("user", existingUser);
+            returnMap.put("user", updatedUser);
             if(groupID == null){
                 // No group found.s
                 returnMap.put("hasGroup", false);
                 returnMap.put("groupID", null);
             }else{
                 // Group found.
+                groupService.updateUserInGroup(user,groupID);
+
                 returnMap.put("hasGroup", true);
                 returnMap.put("groupID", groupID);
             }
         }
         return returnMap;
+    }
+
+
+    /**
+     * postReview saves an given review to an user based on the inputted ID.
+     * @param id The id of the user.
+     * @param review The review to save.
+     * @return The new user with the saved review.
+     */
+    public User postReview(String id, Review review){
+        User user = repository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+
+        boolean added = user.addReview(review);
+        if(!added){
+            throw new RuntimeException("Could not add the review to user: " + user.getUserID());
+        }
+        return repository.save(user);
     }
 }

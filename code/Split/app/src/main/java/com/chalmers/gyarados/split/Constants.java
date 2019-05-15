@@ -1,9 +1,9 @@
 package com.chalmers.gyarados.split;
 
 public final class Constants {
-    public static final String IP = "192.168.1.87";
+    public static final String IP = "192.168.43.65";
     public static final String PORT = "8080";
-    public static final Boolean develop = false;
+    public static final Boolean develop = true;
     public static final String deployedURL = "split.frnzn.com";
     public static final int SUCCESS_RESULT = 0;
     public static final int FAILURE_RESULT = 1;

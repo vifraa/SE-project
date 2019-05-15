@@ -25,7 +25,8 @@ public class RestClient {
         return instance;
     }
 
-    private final LoginRespository mExampleRepository;
+    private final UserRespository userRepository;
+    private final GroupRepository groupRepository;
 
     private RestClient() {
         Retrofit retrofit;
@@ -39,11 +40,12 @@ public class RestClient {
                     .build();
         }
 
-
-        mExampleRepository = retrofit.create(LoginRespository.class);
+        groupRepository = retrofit.create(GroupRepository.class);
+        userRepository = retrofit.create(UserRespository.class);
     }
 
-    public LoginRespository getExampleRepository() {
-        return mExampleRepository;
+    public GroupRepository getGroupRepository() {return groupRepository; }
+    public UserRespository getUserRepository() {
+        return userRepository;
     }
 }

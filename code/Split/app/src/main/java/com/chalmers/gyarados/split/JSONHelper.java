@@ -49,6 +49,9 @@ public class JSONHelper {
             if(CurrentSession.getDestinationLongitude()!=null){
                 message.put("destinationLongitude",CurrentSession.getDestinationLongitude());
             }
+            if(CurrentSession.getCurrentPhotoUri()!=null){
+                message.put("photoUrl",CurrentSession.getCurrentPhotoUri());
+            }
 
             message.put("numberOfTravelers",CurrentSession.getNrOfTravelers());
         } catch (JSONException e) {
