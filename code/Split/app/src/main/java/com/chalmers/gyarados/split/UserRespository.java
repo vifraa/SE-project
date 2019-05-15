@@ -1,5 +1,6 @@
 package com.chalmers.gyarados.split;
 
+import com.chalmers.gyarados.split.model.Group;
 import com.chalmers.gyarados.split.model.Review;
 import com.chalmers.gyarados.split.model.User;
 
@@ -23,4 +24,5 @@ public interface UserRespository {
 
     @GET("users/{id}")
     Single<User> getUser(@Path("id") String userID);
+
 }
