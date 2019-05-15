@@ -1,6 +1,7 @@
 package com.chalmers.gyarados.split;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -81,7 +82,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (acct != null) {
             String personName = acct.getDisplayName();
             String personId = acct.getId();
-            return new User(personName, personId, null);
+            String photo;
+            if(acct.getPhotoUrl() != null){
+                photo = acct.getPhotoUrl().toString();
+            }else{
+                photo = null;
+            }
+
+            return new User(personName, personId, photo,null);
         }
         return null;
     }
@@ -129,7 +137,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void tryToStartApplication(User user) {
-        mRestPingDisposable = RestClient.getInstance().getExampleRepository().sendRestEcho(user)
+        mRestPingDisposable = RestClient.getInstance().getUserRepository().login(user)
                 .unsubscribeOn(Schedulers.newThread())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -210,7 +218,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     public void showCustomLoadingDialog() {
         //if(!viewDialog.isShowing()){
-            viewDialog.showDialog();
+        viewDialog.showDialog();
         //}
 
     }
