@@ -18,10 +18,12 @@ public class RatingAdapter extends RecyclerView.Adapter {
     private Context context;
     private List<User> userList;
     private ReviewHolder viewHolder;
+
     public RatingAdapter (Context context, List<User> userList){
         this.context = context;
         this.userList = userList;
     }
+
     @NonNull
     @Override
     public ReviewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
@@ -31,7 +33,7 @@ public class RatingAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-        User user =userList.get(i);
+        User user = userList.get(i);
         ((ReviewHolder)viewHolder).bind(user);
 
     }
@@ -58,6 +60,11 @@ public class RatingAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return 0;
+        return userList.size();
+    }
+
+    public void addItem(User user) {
+        userList.add(user);
+        notifyItemInserted(getItemCount()-1);
     }
 }

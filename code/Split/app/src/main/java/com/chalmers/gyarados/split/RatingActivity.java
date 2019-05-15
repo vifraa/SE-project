@@ -67,35 +67,40 @@ public class RatingActivity extends AppCompatActivity  {
 
         rateConfirmButton.setOnClickListener(v -> {
             for (User g: groupMembers){
+                review = new Review(g);
+                review.setFloatStars(numStars);
+                review.setReviewMsg(feedbackComment);
                 RestClient.getInstance().getUserRepository().giveReview(g.getUserId(),review);
             }
             Intent intent = new Intent(RatingActivity.this,MainActivity.class);
             startActivity(intent);
         });
 
-
-
         leaveRateButton.setOnClickListener(v -> {
-            Intent intent = new Intent(RatingActivity.this,MainActivity.class);
-            startActivity(intent);
-        });
-
-        ratingRecyclerView.setOnClickListener(v -> {
             Intent intent = new Intent(RatingActivity.this,MainActivity.class);
             startActivity(intent);
         });
 
         feedbackText.setOnClickListener(v -> {
             feedbackComment = feedbackText.getText().toString();
-            review.setReviewMsg(feedbackComment);
+            //user = RatingAdapter.getSomeShit();
+            //addFeedbackCommentToUser(feedbackComment, user);
+            //review.setReviewMsg(feedbackComment);
         });
 
         ratingBar.setOnClickListener(v-> {
             enableConfirmButton();
             numStars = ratingBar.getRating();
-            review.setFloatStars(numStars);
+            addFeedbackRatingToUser();
+            //review.setFloatStars(numStars);
 
         });
+    }
+
+    private void addFeedbackCommentToUser(String feedbackComment, User user) {
+    }
+
+    private void addFeedbackRatingToUser() {
     }
 
     public void disableConfirmButton() {
