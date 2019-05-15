@@ -30,11 +30,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <RatingBar
-        android:id="@+id/ratingBar"
+        android:id="@+id/feedbackRatingBar"
         android:layout_width="wrap_content"
         android:layout_height="45dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
+        android:numStars="5"
+        android:stepSize="1"
         app:layout_constraintStart_toEndOf="@+id/image_rating_profile"
         app:layout_constraintTop_toBottomOf="@+id/feedback_name" />
 

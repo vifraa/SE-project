@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RatingBar;
@@ -13,20 +14,18 @@ import android.widget.TextView;
 import com.chalmers.gyarados.split.model.Review;
 import com.chalmers.gyarados.split.model.User;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-public class RatingActivity extends AppCompatActivity  {
+public class RatingActivity extends AppCompatActivity implements ReviewHolderListner {
     private Button rateConfirmButton;
     private RecyclerView ratingRecyclerView;
     private ImageButton leaveRateButton;
-    private RatingBar ratingBar;
-    private TextView feedbackText;
-    private float numStars;
-    private String feedbackComment;
-    private Review review;
     private String groupID;
     private RestClient client;
     private RatingAdapter ratingAdapter;
@@ -35,18 +34,18 @@ public class RatingActivity extends AppCompatActivity  {
     private CurrentSession session;
     private String myID;
 
+    private Map<String,Review> reviewMap;
+
     //ratingRecyclerView.addView();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.feedback_view);
+        reviewMap=new HashMap<String,Review>();
         myID = session.getCurrentUser().getUserId();
-        rateConfirmButton = findViewById(R.id.confirmButton);
-        disableConfirmButton();
-        leaveRateButton = findViewById(R.id.leaveRateButton);
-        ratingBar = findViewById(R.id.ratingBar);
-        feedbackText.findViewById(R.id.feedbackCommentTextField);
         groupID = getIntent().getStringExtra("GroupID");
-        client.getInstance().getGroupRepository().getGroup(groupID)
+        groupMembers=new ArrayList<>();
+        RestClient.getInstance().getGroupRepository().getGroup(groupID)
                 .unsubscribeOn(Schedulers.newThread())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -55,22 +54,37 @@ public class RatingActivity extends AppCompatActivity  {
                         users = myData.getUsers();
                         for (User u: users) {
                             if (u.getUserId() != myID)
+                                reviewMap.put(u.getUserId(),new Review(u));
                                 groupMembers.add(u);
                         }
                         initRatingView(groupMembers);
                     };
                 }, throwable -> {
-                        //Log.d(TAG, throwable.toString());
+                        Log.d("hej", throwable.toString());
 
                         //showStatus("");
                     });
 
+        rateConfirmButton = findViewById(R.id.confirmRateButton);
+        disableConfirmButton();
+        leaveRateButton = findViewById(R.id.leaveRateButton);
+
         rateConfirmButton.setOnClickListener(v -> {
-            for (User g: groupMembers){
-                review = new Review(g);
-                review.setFloatStars(numStars);
-                review.setReviewMsg(feedbackComment);
-                RestClient.getInstance().getUserRepository().giveReview(g.getUserId(),review);
+            for (Map.Entry<String,Review> entry:reviewMap.entrySet()){
+                Review review =entry.getValue();
+                if(review.getReviewMsg()!=null || review.getStars()!=null){
+                    RestClient.getInstance().getUserRepository().giveReview(entry.getKey(),review).unsubscribeOn(Schedulers.newThread())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe((d)->{
+                                Log.d("hej",d.getName());
+                            }, throwable -> {
+                                Log.d("hej",throwable.getMessage());
+                            });
+                }
+                //review.setFloatStars(numStars);
+                //review.setReviewMsg(feedbackComment);
+
             }
             Intent intent = new Intent(RatingActivity.this,MainActivity.class);
             startActivity(intent);
@@ -79,21 +93,6 @@ public class RatingActivity extends AppCompatActivity  {
         leaveRateButton.setOnClickListener(v -> {
             Intent intent = new Intent(RatingActivity.this,MainActivity.class);
             startActivity(intent);
-        });
-
-        feedbackText.setOnClickListener(v -> {
-            feedbackComment = feedbackText.getText().toString();
-            //user = RatingAdapter.getSomeShit();
-            //addFeedbackCommentToUser(feedbackComment, user);
-            //review.setReviewMsg(feedbackComment);
-        });
-
-        ratingBar.setOnClickListener(v-> {
-            enableConfirmButton();
-            numStars = ratingBar.getRating();
-            addFeedbackRatingToUser();
-            //review.setFloatStars(numStars);
-
         });
     }
 
@@ -112,10 +111,25 @@ public class RatingActivity extends AppCompatActivity  {
     }
 
     public void initRatingView(List<User> userList) {
+        if(userList.size() < 1) {
+
+        }
         ratingRecyclerView = findViewById(R.id.rating_recycler_view);
-        ratingAdapter = new RatingAdapter(this,userList);
-        ratingRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        ratingAdapter = new RatingAdapter(this, userList, this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        ratingRecyclerView.setLayoutManager(linearLayoutManager);
         ratingRecyclerView.setAdapter(ratingAdapter);
     }
 
+    @Override
+    public void feedbackRecieved(String userID, String feedbackComment) {
+        reviewMap.get(userID).setReviewMsg(feedbackComment);
+
+    }
+
+    @Override
+    public void ratingRecieved(String userID, float rating) {
+        reviewMap.get(userID).setFloatStars(rating);
+        enableConfirmButton();
+    }
 }

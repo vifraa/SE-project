@@ -66,6 +66,17 @@ public class Review {
 
     public void setFloatStars(float floatStars){
         this.floatStars = floatStars;
+        if (floatStars <= 1.01)
+            this.stars = Stars.ONE;
+        else if (floatStars <= 2.01)
+            this.stars = Stars.TWO;
+        else if (floatStars <= 3.01)
+            this.stars = Stars.THREE;
+        else if (floatStars <= 4.01)
+            this.stars = Stars.FOUR;
+        else if (floatStars <= 5.01)
+            this.stars = Stars.FIVE;
+
     }
 
     public void setStars(Stars nrOfStars) {

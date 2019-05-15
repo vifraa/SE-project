@@ -326,4 +326,8 @@ public class Client {
             mStompClient.disconnect();
         }
     }
+
+    public String getGroupId(){
+        return groupID;
+    }
 }

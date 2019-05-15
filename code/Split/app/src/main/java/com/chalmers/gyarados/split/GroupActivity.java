@@ -143,9 +143,9 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
     //-----------------LEAVING----------------------------------------
     
     private void transferToRatingView(){
-        //client.leaveGroup();
+        client.leaveGroup();
         Intent intent = new Intent(GroupActivity.this,RatingActivity.class);
-        intent.putExtra("GroupID", groupID);
+        intent.putExtra("GroupID", client.getGroupId());
         startActivity(intent);
     }
 
