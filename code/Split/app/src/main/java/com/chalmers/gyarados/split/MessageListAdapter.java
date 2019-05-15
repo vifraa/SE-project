@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.chalmers.gyarados.split.model.Message;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -133,7 +134,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
             nameText.setText(message.getSender().getName());
             String photoUrl = message.getSender().getPhotoUrl();
             if(photoUrl!=null){
-                profileImage.setImageURI(Uri.parse(photoUrl));
+                Picasso.with(mContext).load(photoUrl).into(profileImage);
             }else{
                 profileImage.setImageDrawable(
                         ResourcesCompat.getDrawable(mContext.getResources(),R.drawable.profile_pic_default,null));

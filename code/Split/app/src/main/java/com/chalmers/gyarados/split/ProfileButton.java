@@ -1,6 +1,8 @@
 package com.chalmers.gyarados.split;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.v7.widget.AppCompatImageButton;
 import android.util.AttributeSet;
@@ -8,6 +10,11 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.chalmers.gyarados.split.model.User;
+import com.squareup.picasso.Picasso;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class ProfileButton extends AppCompatImageButton {
 
@@ -32,7 +39,9 @@ public class ProfileButton extends AppCompatImageButton {
         this.user=givenUser;
         setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         if(user.getPhotoUrl() != null && !user.getPhotoUrl().isEmpty()){
-            setImageURI(Uri.parse(user.getPhotoUrl()));
+            Picasso.with(getContext()).load(user.getPhotoUrl()).into(this);
+
+            //setImageURI(Uri.parse(user.getPhotoUrl()));
         }else{
             setImageResource(R.mipmap.ic_launcher);
         }

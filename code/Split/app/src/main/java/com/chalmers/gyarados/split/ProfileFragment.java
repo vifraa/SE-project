@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.chalmers.gyarados.split.model.Review;
 import com.chalmers.gyarados.split.model.User;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,7 +124,8 @@ public class ProfileFragment extends Fragment {
         //avgRating.setText(user.getAvgRating());
         //numOfRatings.setText(user.getNumOfRatings());
         if (user.getPhotoUrl() != null && !user.getPhotoUrl().isEmpty()) {
-            profileImage.setImageURI(Uri.parse(user.getPhotoUrl()));
+            Picasso.with(getContext()).load(user.getPhotoUrl()).into(profileImage);
+            //profileImage.setImageURI(Uri.parse(user.getPhotoUrl()));
         } else {
             profileImage.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.profile_pic_default, null));
         }
