@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +14,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.load.engine.Resource;
+import com.chalmers.gyarados.split.model.Review;
 import com.chalmers.gyarados.split.model.User;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,6 +40,9 @@ public class ProfileFragment extends Fragment {
     TextView avgRating;
     TextView numOfRatings;
     ImageView profileImage;
+
+    private RecyclerView mMessageRecycler;
+    private ReviewListAdapter reviewListAdapter;
 
     private OnFragmentInteractionListener mListener;
 
@@ -78,7 +87,7 @@ public class ProfileFragment extends Fragment {
         leaveProfileButton = v.findViewById(R.id.leaveProfileButton);
         headerName = v.findViewById(R.id.profile_headername);
         name = v.findViewById(R.id.profile_username);
-        age = v.findViewById(R.id.profile_age);
+        //age = v.findViewById(R.id.profile_age);
         avgRating = v.findViewById(R.id.profile_avg_rating);
         numOfRatings = v.findViewById(R.id.profile_number_of_ratings);
         profileImage = v.findViewById(R.id.profile_image);
@@ -89,19 +98,65 @@ public class ProfileFragment extends Fragment {
 
         headerName.setText(user.getName() + "'s profile");
         name.setText(user.getName());
-        age.setText("22");
+        //age.setText("22");
+
+        List<Review> userReviews = user.getReviews();
+        if(userReviews==null){
+            userReviews=new ArrayList<>();
+
+        }
+        double avgRatingNumber = calculateAverageReview(userReviews);
+
+        if(avgRatingNumber!=-1){
+            String avgText = "Average rating: " + String.valueOf(avgRatingNumber);
+            avgRating.setText(avgText);
+        }else{
+            avgRating.setText("No average rating");
+        }
+        String nrOfReviews = "# of ratings: " + String.valueOf(userReviews.size());
+        numOfRatings.setText(nrOfReviews);
+        mMessageRecycler = (RecyclerView) v.findViewById(R.id.rating_recycler);
+        reviewListAdapter = new ReviewListAdapter(userReviews);
+        mMessageRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+        mMessageRecycler.setAdapter(reviewListAdapter);
 
 
         //avgRating.setText(user.getAvgRating());
         //numOfRatings.setText(user.getNumOfRatings());
         if (user.getPhotoUrl() != null && !user.getPhotoUrl().isEmpty()) {
-            profileImage.setImageURI(Uri.parse(user.getPhotoUrl()));
+            Picasso.with(getContext()).load(user.getPhotoUrl()).into(profileImage);
+            //profileImage.setImageURI(Uri.parse(user.getPhotoUrl()));
         } else {
             profileImage.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.profile_pic_default, null));
         }
 
 
+
+
         return v;
+    }
+
+    private int calculateAverageReview(List<Review> userReviews) {
+        if(userReviews.isEmpty()){
+            return -1;
+        }else{
+            int total=0;
+            for(Review r:userReviews){
+                total+=getNumberOfStars(r.getStars());
+            }
+            return total/userReviews.size();
+        }
+    }
+
+    private int getNumberOfStars(Review.Stars stars) {
+        switch (stars){
+            case ONE:return 1;
+            case TWO: return 2;
+            case THREE: return 3;
+            case FOUR: return 4;
+            case FIVE: return 5;
+        }
+        return -1;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
