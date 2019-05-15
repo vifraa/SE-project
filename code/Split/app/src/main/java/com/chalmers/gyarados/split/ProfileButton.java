@@ -18,7 +18,9 @@ import java.net.URL;
 
 public class ProfileButton extends AppCompatImageButton {
 
+    private static final int IMAGE_SIZE = 150;
     private User user;
+
 
     public ProfileButton(Context context, User user) {
         super(context);
@@ -36,10 +38,11 @@ public class ProfileButton extends AppCompatImageButton {
     }
 
     private void init(User givenUser){
+        setPadding(0,0,20,0);
         this.user=givenUser;
         setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         if(user.getPhotoUrl() != null && !user.getPhotoUrl().isEmpty()){
-            Picasso.with(getContext()).load(user.getPhotoUrl()).into(this);
+            Picasso.with(getContext()).load(user.getPhotoUrl()).resize(IMAGE_SIZE,IMAGE_SIZE).into(this);
 
             //setImageURI(Uri.parse(user.getPhotoUrl()));
         }else{

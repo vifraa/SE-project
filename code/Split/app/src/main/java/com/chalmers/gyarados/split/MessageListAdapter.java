@@ -102,10 +102,6 @@ public class MessageListAdapter extends RecyclerView.Adapter {
             }
         }
 
-
-
-
-
     }
 
     public void addItem(Message message) {
