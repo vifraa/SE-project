@@ -3,7 +3,7 @@ package com.chalmers.gyarados.split.model;
 public class Review {
 
     private String reviewId;
-    private enum Stars {
+    public enum Stars {
         ONE, TWO, THREE, FOUR, FIVE
     }
     private User user;
