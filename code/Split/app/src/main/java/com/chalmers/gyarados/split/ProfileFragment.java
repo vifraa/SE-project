@@ -98,7 +98,7 @@ public class ProfileFragment extends Fragment {
         headerName.setText(user.getName() + "'s profile");
         name.setText(user.getName());
         //age.setText("22");
-        
+
         List<Review> userReviews = user.getReviews();
         if(userReviews==null){
             userReviews=new ArrayList<>();
