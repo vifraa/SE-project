@@ -69,4 +69,21 @@ public class UserService {
         }
         return returnMap;
     }
+
+
+    /**
+     * postReview saves an given review to an user based on the inputted ID.
+     * @param id The id of the user.
+     * @param review The review to save.
+     * @return The new user with the saved review.
+     */
+    public User postReview(String id, Review review){
+        User user = repository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+
+        boolean added = user.addReview(review);
+        if(!added){
+            throw new RuntimeException("Could not add the review to user: " + user.getUserID());
+        }
+        return repository.save(user);
+    }
 }
