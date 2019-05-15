@@ -6,24 +6,38 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.RatingBar;
+import android.widget.TextView;
 
 import com.chalmers.gyarados.split.model.Message;
+import com.chalmers.gyarados.split.model.Review;
 import com.chalmers.gyarados.split.model.User;
 
 import java.util.List;
 
-public class RatingActivity extends AppCompatActivity implements ClientListener {
+public class RatingActivity extends AppCompatActivity  {
     private Button rateConfirmButton;
     private RecyclerView ratingRecyclerView;
     private ImageButton leaveRateButton;
+    private RatingBar ratingBar;
+    private TextView feedbackText;
+    private int numStars;
+    private String feedbackComment;
+    private Review review;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         rateConfirmButton = findViewById(R.id.confirmButton);
         disableConfirmButton();
         leaveRateButton = findViewById(R.id.leaveRateButton);
         ratingRecyclerView = findViewById(R.id.rating_recycler_view);
+        ratingBar = findViewById(R.id.ratingBar);
+        feedbackText.findViewById(R.id.feedbackCommentTextField);
+        //RestClient.getInstance().getGroupRepository().getGroup();
+        //RestClient.getInstance().getUserRepository().giveReview();
 
         rateConfirmButton.setOnClickListener(v -> {
             Intent intent = new Intent(RatingActivity.this,MainActivity.class);
@@ -40,7 +54,14 @@ public class RatingActivity extends AppCompatActivity implements ClientListener 
             startActivity(intent);
         });
 
-        super.onCreate(savedInstanceState);
+        feedbackText.setOnClickListener(v -> {
+            feedbackComment = feedbackText.getText().toString();
+        });
+
+        ratingBar.setOnClickListener(v-> {
+            enableConfirmButton();
+            numStars = ratingBar.getNumStars();
+        });
     }
 
     public void disableConfirmButton() {
@@ -49,41 +70,6 @@ public class RatingActivity extends AppCompatActivity implements ClientListener 
 
     private void enableConfirmButton() {
         rateConfirmButton.setEnabled(true);
-    }
-
-    @Override
-    public void updateMembersList(List<User> users) {
-
-    }
-
-    @Override
-    public void newGroupMessageReceived(Message message) {
-
-    }
-
-    @Override
-    public void errorOnSubcribingOnTopic(Throwable throwable) {
-
-    }
-
-    @Override
-    public void errorOnLifeCycle(Throwable throwable) {
-
-    }
-
-    @Override
-    public void errorWhileSendingMessage(Throwable throwable) {
-
-    }
-
-    @Override
-    public void onOldMessagesReceived(List<Message> messages) {
-
-    }
-
-    @Override
-    public void onClientReady() {
-
     }
 
 }
