@@ -19,4 +19,6 @@ interface ClientListener {
     void onOldMessagesReceived(List<Message> messages);
 
     void onClientReady();
+
+    void userInfoReceived(User myData);
 }

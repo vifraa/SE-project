@@ -9,4 +9,7 @@
     <string name="invalid_lat_long_used">Longitude and latitude are invalid</string>
     <string name="no_address_found">No adress found</string>
     <string name="where">Where do you want to go?</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
