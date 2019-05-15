@@ -82,16 +82,25 @@ public class ProfileFragment extends Fragment {
         avgRating = v.findViewById(R.id.profile_avg_rating);
         numOfRatings = v.findViewById(R.id.profile_number_of_ratings);
         profileImage = v.findViewById(R.id.profile_image);
+
+        leaveProfileButton.setOnClickListener(view -> getFragmentManager().beginTransaction()
+                .remove(ProfileFragment.this).commit());
+
+
         headerName.setText(user.getName() + "'s profile");
         name.setText(user.getName());
         age.setText("22");
+
+
         //avgRating.setText(user.getAvgRating());
         //numOfRatings.setText(user.getNumOfRatings());
         if (user.getPhotoUrl() != null && !user.getPhotoUrl().isEmpty()) {
-            //profileImage.setImageURI(user.getProfileURL());
+            profileImage.setImageURI(Uri.parse(user.getPhotoUrl()));
         } else {
             profileImage.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.profile_pic_default, null));
         }
+
+
         return v;
     }
 
