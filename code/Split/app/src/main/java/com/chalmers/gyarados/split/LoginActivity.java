@@ -137,7 +137,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void tryToStartApplication(User user) {
-        mRestPingDisposable = RestClient.getInstance().getExampleRepository().login(user)
+        mRestPingDisposable = RestClient.getInstance().getUserRepository().login(user)
                 .unsubscribeOn(Schedulers.newThread())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

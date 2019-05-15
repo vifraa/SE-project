@@ -304,7 +304,7 @@ public class Client {
     }
 
     private void askForUserInfo(User user){
-        RestClient.getInstance().getExampleRepository().getUser(user.getUserId())
+        RestClient.getInstance().getUserRepository().getUser(user.getUserId())
                 .unsubscribeOn(Schedulers.newThread())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
