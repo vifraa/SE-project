@@ -314,7 +314,7 @@ public class Client {
                         throwable -> clientListener.errorWhileSendingMessage(throwable)));
     }
 
-    private void askForUserInfo(User user){
+    public void askForUserInfo(User user){
         RestClient.getInstance().getUserRepository().getUser(user.getUserId())
                 .unsubscribeOn(Schedulers.newThread())
                 .subscribeOn(Schedulers.io())
