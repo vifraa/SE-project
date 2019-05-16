@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import com.chalmers.gyarados.split.model.Message;
 import com.chalmers.gyarados.split.model.Review;
 
 import java.util.List;
@@ -52,7 +51,7 @@ public class ReviewListAdapter extends RecyclerView.Adapter {
 
         void bind(Review review) {
             ratingBar.setRating(getNumberOfStars(review.getStars()));
-            comment.setText(review.getReviewMsg());
+            comment.setText(review.getComment());
 
 
         }

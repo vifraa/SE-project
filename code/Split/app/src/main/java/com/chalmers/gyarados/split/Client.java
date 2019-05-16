@@ -352,6 +352,10 @@ public class Client {
     }
 
 
+    public String getGroupId() {
+        return groupID;
+    }
+
 
     private void closedEventLifeCycle() {
         if(firstConnect){
@@ -368,6 +372,7 @@ public class Client {
         }else{
             clientListener.errorOnLifeCycle();
         }
+
 
     }
 }
