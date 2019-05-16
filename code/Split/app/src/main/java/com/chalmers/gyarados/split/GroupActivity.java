@@ -3,19 +3,15 @@ package com.chalmers.gyarados.split;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.chalmers.gyarados.split.model.Message;
 import com.chalmers.gyarados.split.model.User;
@@ -123,13 +119,17 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
      */
     public void newGroupMessageReceived(Message message) {
         hideCustomDialogIfNeeded();
-        if(message.getType().equals(MessageType.JOIN )|| message.getType().equals(MessageType.LEAVE)){
-            client.askForGroupInfo();
+        if(message.getType().equals(MessageType.JOIN )){
+            client.askForUserInfo(message.getSender());
+        }else if(message.getType().equals(MessageType.LEAVE)){
+            removeProfileButton(message.getSender());
         }
         mMessageAdapter.addItem(message);
 
         mMessageRecycler.scrollToPosition(mMessageAdapter.getItemCount()-1);
     }
+
+
 
     //-------------SENDING MESSAGE------------------------------
 
@@ -194,23 +194,27 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
     }
 
     public void updateMembersList(List<User> users) {
-        buttonHolder.removeAllViews();
-        StringBuilder sb = new StringBuilder();
         for(User u:users){
-            sb.append(u.getName());
-            sb.append("\n");
-            addCustomButton(u);
+            client.askForUserInfo(u);
         }
-        sb.deleteCharAt(sb.length()-1);
-
-
-        //groupMembers.setText(sb.toString());
     }
 
-    private void addCustomButton(User u) {
+    private void addProfileButton(User u) {
         ProfileButton button = new ProfileButton(getApplicationContext(),null,u);
         buttonHolder.addView(button);
         button.setOnClickListener(new ClickListener(u));
+    }
+
+    private void removeProfileButton(User user) {
+        int size = buttonHolder.getChildCount();
+        for(int i = 0; i<size;i++){
+            ProfileButton b = (ProfileButton)buttonHolder.getChildAt(i);
+            if (b.getUser().getUserId().equals(user.getUserId())){
+                buttonHolder.removeViewAt(i);
+                break;
+            }
+        }
+
     }
 
     private class ClickListener implements View.OnClickListener {
@@ -252,16 +256,38 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
     }
 
     @Override
-    public void userInfoReceived(User myData) {
-
+    public void userInfoReceived(User user) {
+        addProfileButton(user);
     }
+
+
 
 
     //-------------------------ERROR HANDLING------------------------------
 
+    @Override
+    public void errorOnLifeCycleFirstConnect() {
+        hideCustomDialogIfNeeded();
+        client.disconnect();
+        returnToPreviousActivity();
+    }
+
+    @Override
+    public void onConnectionClosedFirstConnect() {
+        hideCustomDialogIfNeeded();
+        client.disconnect();
+        returnToPreviousActivity();
+    }
+
+    @Override
+    public void onConnectionClosed() {
+        //todo what if this happens....
+    }
+
     public void errorWhileSendingMessage(Throwable throwable) {
         hideCustomDialogIfNeeded();
         Log.e(TAG, "Error while sending message", throwable);
+        //todo what if this happens...
 
     }
 
@@ -269,15 +295,13 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
     public void errorOnSubcribingOnTopic(Throwable throwable) {
         hideCustomDialogIfNeeded();
         Log.e(TAG, "Error on subscribe topic", throwable);
-        client.disconnect();
-        returnToPreviousActivity();
+        //todo what if this happens...
+        //client.disconnect();
+        //returnToPreviousActivity();
 
     }
-    public void errorOnLifeCycle(Throwable throwable) {
-        hideCustomDialogIfNeeded();
-        Log.e(TAG, "Error on subscribe lifestyle", throwable);
-        client.disconnect();
-        returnToPreviousActivity();
+    public void errorOnLifeCycle() {
+        //todo what if this happens...
     }
 
 

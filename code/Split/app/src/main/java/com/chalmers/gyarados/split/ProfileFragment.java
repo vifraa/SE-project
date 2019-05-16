@@ -18,6 +18,7 @@ import com.chalmers.gyarados.split.model.Review;
 import com.chalmers.gyarados.split.model.User;
 import com.squareup.picasso.Picasso;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,7 +109,8 @@ public class ProfileFragment extends Fragment {
         double avgRatingNumber = calculateAverageReview(userReviews);
 
         if(avgRatingNumber!=-1){
-            String avgText = "Average rating: " + String.valueOf(avgRatingNumber);
+            DecimalFormat decimalFormat = new DecimalFormat("0.00");
+            String avgText = "Average rating: " + decimalFormat.format(avgRatingNumber);
             avgRating.setText(avgText);
         }else{
             avgRating.setText("No average rating");
@@ -124,8 +126,7 @@ public class ProfileFragment extends Fragment {
         //avgRating.setText(user.getAvgRating());
         //numOfRatings.setText(user.getNumOfRatings());
         if (user.getPhotoUrl() != null && !user.getPhotoUrl().isEmpty()) {
-            Picasso.with(getContext()).load(user.getPhotoUrl()).into(profileImage);
-            //profileImage.setImageURI(Uri.parse(user.getPhotoUrl()));
+            ImageConverter.loadRoundedImage(getContext(),user.getPhotoUrl(),profileImage);
         } else {
             profileImage.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.profile_pic_default, null));
         }
@@ -136,15 +137,17 @@ public class ProfileFragment extends Fragment {
         return v;
     }
 
-    private int calculateAverageReview(List<Review> userReviews) {
+    private double calculateAverageReview(List<Review> userReviews) {
         if(userReviews.isEmpty()){
             return -1;
         }else{
-            int total=0;
+            double total=0;
             for(Review r:userReviews){
                 total+=getNumberOfStars(r.getStars());
             }
-            return total/userReviews.size();
+
+
+            return (total/userReviews.size());
         }
     }
 
