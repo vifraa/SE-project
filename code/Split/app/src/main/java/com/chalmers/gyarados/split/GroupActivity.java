@@ -195,16 +195,9 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
     public void updateMembersList(List<User> users) {
         buttonHolder.removeAllViews();
-        StringBuilder sb = new StringBuilder();
         for(User u:users){
-            sb.append(u.getName());
-            sb.append("\n");
             addCustomButton(u);
         }
-        sb.deleteCharAt(sb.length()-1);
-
-
-        //groupMembers.setText(sb.toString());
     }
 
     private void addCustomButton(User u) {
@@ -257,11 +250,33 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
     }
 
 
+
+
     //-------------------------ERROR HANDLING------------------------------
+
+    @Override
+    public void errorOnLifeCycleFirstConnect() {
+        hideCustomDialogIfNeeded();
+        client.disconnect();
+        returnToPreviousActivity();
+    }
+
+    @Override
+    public void onConnectionClosedFirstConnect() {
+        hideCustomDialogIfNeeded();
+        client.disconnect();
+        returnToPreviousActivity();
+    }
+
+    @Override
+    public void onConnectionClosed() {
+        //todo what if this happens....
+    }
 
     public void errorWhileSendingMessage(Throwable throwable) {
         hideCustomDialogIfNeeded();
         Log.e(TAG, "Error while sending message", throwable);
+        //todo what if this happens...
 
     }
 
@@ -269,15 +284,13 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
     public void errorOnSubcribingOnTopic(Throwable throwable) {
         hideCustomDialogIfNeeded();
         Log.e(TAG, "Error on subscribe topic", throwable);
-        client.disconnect();
-        returnToPreviousActivity();
+        //todo what if this happens...
+        //client.disconnect();
+        //returnToPreviousActivity();
 
     }
-    public void errorOnLifeCycle(Throwable throwable) {
-        hideCustomDialogIfNeeded();
-        Log.e(TAG, "Error on subscribe lifestyle", throwable);
-        client.disconnect();
-        returnToPreviousActivity();
+    public void errorOnLifeCycle() {
+        //todo what if this happens...
     }
 
 

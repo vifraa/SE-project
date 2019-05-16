@@ -24,6 +24,8 @@ public class Client {
     private static final String CHAT_ASK_FOR_GROUP_INFO = "/getInfo";
     private static final String CHAT_LEAVING_GROUP_SUFFIX = "/leave";
 
+    private boolean firstConnect = true;
+
 
     /**
      * The object we use to communicate with the server
@@ -82,13 +84,16 @@ public class Client {
         String uri;
         //Which ip-adress we want to connect to
         if(Constants.develop){
-            uri= "ws://"+Constants.IP+":"+Constants.PORT+"/split/websocket";
+            uri= "ws://"+Constants.IP+":"+Constants.PORT+"/split";
         }else{
             uri = "ws://"+Constants.deployedURL+"/split/websocket";
         }
 
         Log.d(TAG,uri);
         mStompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, uri );
+
+        //Needed to keep connection alive
+        mStompClient.withClientHeartbeat(25000).withServerHeartbeat(25000);
 
 
         if(groupID!=null){
@@ -135,25 +140,31 @@ public class Client {
                     switch (lifecycleEvent.getType()) {
                         case OPENED:
                             Log.d(TAG,"Stomp connection opened");
+                            if(firstConnect){
+                                firstConnect=false;
+                            }
                             break;
                         case ERROR:
                             Log.e(TAG, "Stomp connection error", lifecycleEvent.getException());
                             break;
                         case CLOSED:
                             Log.d(TAG,"Stomp connection closed");
+                            closedEventLifeCycle();
                             break;
                         case FAILED_SERVER_HEARTBEAT:
                             Log.d(TAG,"Stomp failed server heartbeat");
                             break;
                     }
                 }, throwable -> {
-                    clientListener.errorOnLifeCycle(throwable);
+                    errorOnLifeCycle(throwable);
+
 
                 });
 
         compositeDisposable.add(dispLifecycle);
 
     }
+
 
 
 
@@ -325,5 +336,25 @@ public class Client {
             sendLeaveMessage(CHAT_PREFIX + groupID + CHAT_LEAVING_GROUP_SUFFIX);
             mStompClient.disconnect();
         }
+    }
+
+
+
+    private void closedEventLifeCycle() {
+        if(firstConnect){
+            clientListener.onConnectionClosedFirstConnect();
+        }else{
+            clientListener.onConnectionClosed();
+        }
+
+    }
+
+    private void errorOnLifeCycle(Throwable throwable) {
+        if(firstConnect){
+            clientListener.errorOnLifeCycleFirstConnect();
+        }else{
+            clientListener.errorOnLifeCycle();
+        }
+
     }
 }
