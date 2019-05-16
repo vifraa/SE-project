@@ -37,10 +37,11 @@
         android:layout_marginLeft="8dp"
         android:numStars="5"
         android:stepSize="1"
+        android:progressTint="@color/quantum_yellow"
         app:layout_constraintStart_toEndOf="@+id/image_rating_profile"
         app:layout_constraintTop_toBottomOf="@+id/feedback_name" />
 
-    <TextView
+    <EditText
         android:id="@+id/feedbackCommentTextField"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -49,10 +50,10 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:text="TextView"
-        android:textSize="14dp"
+        android:ems="10"
+        android:hint="write comment"
+        android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/image_rating_profile" />
 

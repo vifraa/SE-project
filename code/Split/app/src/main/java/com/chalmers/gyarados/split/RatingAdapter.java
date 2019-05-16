@@ -3,9 +3,12 @@ package com.chalmers.gyarados.split;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -44,7 +47,8 @@ public class RatingAdapter extends RecyclerView.Adapter {
     }
 
     private class ReviewHolder extends RecyclerView.ViewHolder {
-        TextView feedbackTextView, feedbackName;
+        EditText feedbackTextView;
+        TextView feedbackName;
         ImageView imageRatingProfile;
         RatingBar ratingBar;
         private ReviewHolderListner listener;
@@ -57,8 +61,21 @@ public class RatingAdapter extends RecyclerView.Adapter {
             feedbackName = itemView.findViewById(R.id.feedback_name);
             ratingBar = itemView.findViewById(R.id.feedbackRatingBar);
 
-            feedbackTextView.setOnClickListener(v -> {
-                listener.feedbackRecieved(user.getUserId(), feedbackTextView.getText().toString());
+            feedbackTextView.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    listener.feedbackRecieved(user.getUserId(), s.toString());
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
             });
             ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
                 @Override

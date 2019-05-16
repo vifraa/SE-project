@@ -53,12 +53,13 @@ public class RatingActivity extends AppCompatActivity implements ReviewHolderLis
                     if (myData != null) {
                         users = myData.getUsers();
                         for (User u: users) {
-                            if (u.getUserId() != myID)
-                                reviewMap.put(u.getUserId(),new Review(u));
+                            if (u.getUserId().equals(myID)) {
+                                reviewMap.put(u.getUserId(), new Review(u));
                                 groupMembers.add(u);
-                        }
+                            }
+                        };
                         initRatingView(groupMembers);
-                    };
+                    }
                 }, throwable -> {
                         Log.d("hej", throwable.toString());
 
@@ -77,9 +78,8 @@ public class RatingActivity extends AppCompatActivity implements ReviewHolderLis
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe((d)->{
-                                Log.d("hej",d.getName());
                             }, throwable -> {
-                                Log.d("hej",throwable.getMessage());
+                                Log.d("Throwable",throwable.getMessage());
                             });
                 }
                 //review.setFloatStars(numStars);
