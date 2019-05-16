@@ -8,8 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.RatingBar;
-import android.widget.TextView;
 
 import com.chalmers.gyarados.split.model.Review;
 import com.chalmers.gyarados.split.model.User;
@@ -53,12 +51,17 @@ public class RatingActivity extends AppCompatActivity implements ReviewHolderLis
                     if (myData != null) {
                         users = myData.getUsers();
                         for (User u: users) {
-                            if (u.getUserId().equals(CurrentSession.getCurrentUser().getUserId())) {
+                            if (!u.getUserId().equals(CurrentSession.getCurrentUser().getUserId())) {
                                 reviewMap.put(u.getUserId(), new Review(u));
                                 groupMembers.add(u);
                             }
                         };
-                        initRatingView(groupMembers);
+                        if(groupMembers.isEmpty()) {
+                            goToNextActivity();
+                        }
+                        else {
+                            initRatingView(groupMembers);
+                        }
                     }
                 }, throwable -> {
                         Log.d("hej", throwable.toString());
@@ -73,7 +76,7 @@ public class RatingActivity extends AppCompatActivity implements ReviewHolderLis
         rateConfirmButton.setOnClickListener(v -> {
             for (Map.Entry<String,Review> entry:reviewMap.entrySet()){
                 Review review =entry.getValue();
-                if(review.getReviewMsg()!=null || review.getStars()!=null){
+                if(review.getComment()!=null || review.getStars()!=null){
                     RestClient.getInstance().getUserRepository().giveReview(entry.getKey(),review).unsubscribeOn(Schedulers.newThread())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
@@ -83,23 +86,21 @@ public class RatingActivity extends AppCompatActivity implements ReviewHolderLis
                             });
                 }
                 //review.setFloatStars(numStars);
-                //review.setReviewMsg(feedbackComment);
+                //review.setComment(feedbackComment);
 
             }
-            Intent intent = new Intent(RatingActivity.this,MainActivity.class);
-            startActivity(intent);
+            goToNextActivity();
         });
 
         leaveRateButton.setOnClickListener(v -> {
-            Intent intent = new Intent(RatingActivity.this,MainActivity.class);
-            startActivity(intent);
+            goToNextActivity();
         });
     }
 
-    private void addFeedbackCommentToUser(String feedbackComment, User user) {
-    }
-
-    private void addFeedbackRatingToUser() {
+    private void goToNextActivity() {
+        Intent intent = new Intent(RatingActivity.this,MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     public void disableConfirmButton() {
@@ -123,7 +124,7 @@ public class RatingActivity extends AppCompatActivity implements ReviewHolderLis
 
     @Override
     public void feedbackRecieved(String userID, String feedbackComment) {
-        reviewMap.get(userID).setReviewMsg(feedbackComment);
+        reviewMap.get(userID).setComment(feedbackComment);
 
     }
 

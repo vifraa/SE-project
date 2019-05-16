@@ -44,6 +44,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".RatingActivity"
+            android:windowSoftInputMode="adjustNothing"
             android:screenOrientation="portrait" />
         <activity
             android:name=".LoginActivity"

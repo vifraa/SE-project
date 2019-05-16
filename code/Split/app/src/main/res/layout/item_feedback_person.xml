@@ -37,7 +37,7 @@
         android:layout_marginLeft="8dp"
         android:numStars="5"
         android:stepSize="1"
-        android:progressTint="@color/quantum_yellow"
+        android:theme="@style/RatingBar"
         app:layout_constraintStart_toEndOf="@+id/image_rating_profile"
         app:layout_constraintTop_toBottomOf="@+id/feedback_name" />
 
@@ -52,7 +52,8 @@
         android:layout_marginRight="8dp"
         android:ems="10"
         android:hint="write comment"
-        android:inputType="textPersonName"
+        android:inputType="textAutoCorrect|textMultiLine"
+        android:singleLine="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/image_rating_profile" />

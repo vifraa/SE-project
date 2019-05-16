@@ -3,12 +3,11 @@ package com.chalmers.gyarados.split.model;
 public class Review {
 
 
-    private String reviewId;
     public enum Stars {
         ONE, TWO, THREE, FOUR, FIVE
     }
     private User user;
-    private String reviewMsg;
+    private String comment;
     private Stars stars;
     private float floatStars;
 
@@ -22,14 +21,14 @@ public class Review {
 
     }
 
-    public Review(User user, Stars stars, String reviewMsg ) {
+    public Review(User user, Stars stars, String comment) {
         this.user = user;
         this.stars = stars;
-        this.reviewMsg = reviewMsg;
+        this.comment = comment;
 
     }
 
-    public Review(User user, float floatStars, String reviewMsg ) {
+    public Review(User user, float floatStars, String comment) {
         this.user = user;
         this.floatStars = floatStars;
         if (floatStars <= 1.01)
@@ -45,7 +44,7 @@ public class Review {
         else
             System.out.println("Error: stars out of bound!");
 
-        this.reviewMsg = reviewMsg;
+        this.comment = comment;
     }
 
     public Review(User user, float floatStars) {
@@ -63,7 +62,7 @@ public class Review {
             this.stars = Stars.FIVE;
         else
             System.out.println("Error: stars out of bound!");
-        this.reviewMsg = reviewMsg;
+        this.comment = comment;
     }
 
     public void setFloatStars(float floatStars){
@@ -85,8 +84,8 @@ public class Review {
         this.stars = nrOfStars;
     }
 
-    public void setReviewMsg(String reviewMsg) {
-        this.reviewMsg = reviewMsg;
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public Stars getStars() {
@@ -97,8 +96,8 @@ public class Review {
         return user;
     }
 
-    public String getReviewMsg() {
-        return reviewMsg;
+    public String getComment() {
+        return comment;
     }
 
     public float getFloatStars() {
