@@ -44,11 +44,8 @@ public class ProfileButton extends AppCompatImageButton {
         setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         if(user.getPhotoUrl() != null && !user.getPhotoUrl().isEmpty()){
             ImageConverter.loadRoundedImage(getContext(),user.getPhotoUrl(),this,IMAGE_SIZE,IMAGE_SIZE);
-            //Picasso.with(getContext()).load(user.getPhotoUrl()).resize(IMAGE_SIZE,IMAGE_SIZE).transform(new CircleTransform()).into(this);
-
-            //setImageURI(Uri.parse(user.getPhotoUrl()));
         }else{
-            setImageResource(R.mipmap.ic_launcher);
+            setImageResource(R.drawable.profile_pic_default);
         }
 
     }

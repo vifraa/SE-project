@@ -24,7 +24,7 @@ public class Client {
     private static final String CHAT_ASK_FOR_GROUP_INFO = "/getInfo";
     private static final String CHAT_LEAVING_GROUP_SUFFIX = "/leave";
 
-    private boolean firstConnect = true;
+
 
 
     /**
@@ -56,10 +56,21 @@ public class Client {
      */
     private ClientListener clientListener;
 
-
+    /**
+     * The group id the client are using, can be given from activity before
+     */
     private String groupID;
 
+    /**
+     * Used to know if the user has entered an old or new chat
+     */
     private boolean firstTime;
+    /**
+     * Used to know if the client has been connected before
+     */
+    private boolean firstConnect = true;
+
+    private Disposable mRestPingDisposable;
 
 
     public Client(String groupID, ClientListener clientListener) {
@@ -300,6 +311,7 @@ public class Client {
     public void disconnect() {
         mStompClient.disconnect();
         if (compositeDisposable != null) compositeDisposable.dispose();
+        if (mRestPingDisposable != null) mRestPingDisposable.dispose();
     }
 
     /**
@@ -315,7 +327,7 @@ public class Client {
     }
 
     public void askForUserInfo(User user){
-        RestClient.getInstance().getUserRepository().getUser(user.getUserId())
+       mRestPingDisposable= RestClient.getInstance().getUserRepository().getUser(user.getUserId())
                 .unsubscribeOn(Schedulers.newThread())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -332,6 +344,7 @@ public class Client {
         if (compositeDisposable != null){
             compositeDisposable.dispose();
         }
+        if (mRestPingDisposable != null) mRestPingDisposable.dispose();
         if(mStompClient.isConnected()) {
             sendLeaveMessage(CHAT_PREFIX + groupID + CHAT_LEAVING_GROUP_SUFFIX);
             mStompClient.disconnect();
