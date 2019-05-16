@@ -39,10 +39,12 @@ public class ProfileButton extends AppCompatImageButton {
 
     private void init(User givenUser){
         setPadding(0,0,20,0);
+
         this.user=givenUser;
         setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         if(user.getPhotoUrl() != null && !user.getPhotoUrl().isEmpty()){
-            Picasso.with(getContext()).load(user.getPhotoUrl()).resize(IMAGE_SIZE,IMAGE_SIZE).into(this);
+            ImageConverter.loadRoundedImage(getContext(),user.getPhotoUrl(),this,IMAGE_SIZE,IMAGE_SIZE);
+            //Picasso.with(getContext()).load(user.getPhotoUrl()).resize(IMAGE_SIZE,IMAGE_SIZE).transform(new CircleTransform()).into(this);
 
             //setImageURI(Uri.parse(user.getPhotoUrl()));
         }else{
