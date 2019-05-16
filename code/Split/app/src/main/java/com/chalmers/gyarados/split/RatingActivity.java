@@ -53,7 +53,7 @@ public class RatingActivity extends AppCompatActivity implements ReviewHolderLis
                     if (myData != null) {
                         users = myData.getUsers();
                         for (User u: users) {
-                            if (u.getUserId().equals(myID)) {
+                            if (u.getUserId().equals(CurrentSession.getCurrentUser().getUserId())) {
                                 reviewMap.put(u.getUserId(), new Review(u));
                                 groupMembers.add(u);
                             }

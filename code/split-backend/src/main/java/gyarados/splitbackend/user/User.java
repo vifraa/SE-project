@@ -45,7 +45,7 @@ public class User {
     		 User tempUser = (User) user;
     		 
     		 //Compare data members and return accordingly
-    		 return name.equals(tempUser.name) && userID.equals(tempUser.userID);
+    		 return userID.equals(tempUser.userID);
 
     }
 

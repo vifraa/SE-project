@@ -1,6 +1,7 @@
 package gyarados.splitbackend.user;
 
 
+import gyarados.splitbackend.group.Group;
 import gyarados.splitbackend.group.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,15 +55,22 @@ public class UserService {
             returnMap.put("hasGroup", false);
             returnMap.put("groupID", null);
         }else {
+
+            existingUser.setPhotoUrl(user.getPhotoUrl());
+            existingUser.setName(user.getName());
+            User updatedUser = repository.save(existingUser);
+
             // User exists. Check if it has a group.
             String groupID = groupService.userIsInGroup(existingUser);
-            returnMap.put("user", existingUser);
+            returnMap.put("user", updatedUser);
             if(groupID == null){
                 // No group found.s
                 returnMap.put("hasGroup", false);
                 returnMap.put("groupID", null);
             }else{
                 // Group found.
+                groupService.updateUserInGroup(user,groupID);
+
                 returnMap.put("hasGroup", true);
                 returnMap.put("groupID", groupID);
             }
