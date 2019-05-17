@@ -52,7 +52,7 @@
         android:layout_marginRight="8dp"
         android:ems="10"
         android:background="@color/white"
-        android:hint="  write comment"
+        android:hint="  Write a comment"
         android:inputType="textAutoCorrect|textMultiLine"
         android:maxLength="240"
         android:singleLine="false"
