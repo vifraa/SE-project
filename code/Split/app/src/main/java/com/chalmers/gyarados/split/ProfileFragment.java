@@ -128,7 +128,7 @@ public class ProfileFragment extends Fragment {
         if (user.getPhotoUrl() != null && !user.getPhotoUrl().isEmpty()) {
             ImageConverter.loadRoundedImage(getContext(),user.getPhotoUrl(),profileImage);
         } else {
-            profileImage.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.profile_pic_default, null));
+            ImageConverter.loadRoundedDrawable(getContext(),R.drawable.profile_pic_default,profileImage);
         }
 
 
@@ -143,7 +143,10 @@ public class ProfileFragment extends Fragment {
         }else{
             double total=0;
             for(Review r:userReviews){
-                total+=getNumberOfStars(r.getStars());
+                if(r.getStars()!=null){
+                    total+=getNumberOfStars(r.getStars());
+                }
+
             }
 
 

@@ -88,7 +88,12 @@ public class RatingAdapter extends RecyclerView.Adapter {
 
         void bind(User user) {
             feedbackName.setText(user.getName());
-            ImageConverter.loadRoundedImage(context,user.getPhotoUrl(),imageRatingProfile);
+            if(user.getPhotoUrl()!=null){
+                ImageConverter.loadRoundedImage(context,user.getPhotoUrl(),imageRatingProfile);
+            }else{
+                ImageConverter.loadRoundedDrawable(context,R.drawable.profile_pic_default,imageRatingProfile);
+            }
+
             this.user = user;
         }
 

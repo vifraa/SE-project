@@ -50,7 +50,10 @@ public class ReviewListAdapter extends RecyclerView.Adapter {
         }
 
         void bind(Review review) {
-            ratingBar.setRating(getNumberOfStars(review.getStars()));
+            if(review.getStars()!=null){
+                ratingBar.setRating(getNumberOfStars(review.getStars()));
+            }
+
             comment.setText(review.getComment());
 
 
