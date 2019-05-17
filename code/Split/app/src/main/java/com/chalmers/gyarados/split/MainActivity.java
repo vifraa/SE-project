@@ -123,9 +123,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void disableFindButton() {
         findButton.setEnabled(false);
+        findButton.setBackgroundResource(R.drawable.disabled_button);
     }
     private void enableFindButton() {
         findButton.setEnabled(true);
+        findButton.setBackgroundResource(R.drawable.confirm_button);
     }
 
 
