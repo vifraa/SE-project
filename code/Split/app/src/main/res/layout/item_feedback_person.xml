@@ -13,7 +13,6 @@
         android:layout_width="74dp"
         android:layout_height="74dp"
         android:layout_marginLeft="8dp"
-        android:background="@drawable/circle"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -53,6 +52,7 @@
         android:ems="10"
         android:hint="write comment"
         android:inputType="textAutoCorrect|textMultiLine"
+        android:maxLength="240"
         android:singleLine="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

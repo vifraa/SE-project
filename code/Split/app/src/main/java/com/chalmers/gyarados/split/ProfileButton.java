@@ -45,7 +45,7 @@ public class ProfileButton extends AppCompatImageButton {
         if(user.getPhotoUrl() != null && !user.getPhotoUrl().isEmpty()){
             ImageConverter.loadRoundedImage(getContext(),user.getPhotoUrl(),this,IMAGE_SIZE,IMAGE_SIZE);
         }else{
-            setImageResource(R.drawable.profile_pic_default);
+            ImageConverter.loadRoundedDrawable(getContext(),R.drawable.profile_pic_default,this,IMAGE_SIZE,IMAGE_SIZE);
         }
 
     }

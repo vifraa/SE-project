@@ -147,6 +147,7 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
         Intent intent = new Intent(GroupActivity.this,RatingActivity.class);
         intent.putExtra("GroupID", client.getGroupId());
         startActivity(intent);
+        finish();
     }
 
     //-----------------GUI METHODS----------------------------------
@@ -158,7 +159,9 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
     private void initMessageView(List<Message> messages) {
         mMessageRecycler = (RecyclerView) findViewById(R.id.reyclerview_message_list);
         mMessageAdapter = new MessageListAdapter(this, messages);
-        mMessageRecycler.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager manager=new LinearLayoutManager(this);
+        manager.setStackFromEnd(true);
+        mMessageRecycler.setLayoutManager(manager);
         mMessageRecycler.setAdapter(mMessageAdapter);
     }
     private void hideCustomDialogIfNeeded() {
