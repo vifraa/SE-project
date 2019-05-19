@@ -116,6 +116,7 @@
             android:layout_weight="1"
             android:background="@color/white"
             android:ems="10"
+            android:textCursorDrawable="@null"
             android:fontFamily="sans-serif"
             android:inputType="textAutoCorrect|textMultiLine|textCapSentences"
             android:shadowColor="#555555"
