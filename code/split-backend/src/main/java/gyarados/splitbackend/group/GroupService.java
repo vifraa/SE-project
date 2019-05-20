@@ -260,6 +260,17 @@ public class GroupService {
     }
 
 
+    /**
+     * findAllPrevious returns a groups all previous users.
+     * @param id The id of the group.
+     * @return The list of previous users.
+     */
+    public List<User> findAllPrevious(String id){
+        Group group = findById(id);
+        return group.getPreviousUsers();
+    }
+
+
 }
 
 
