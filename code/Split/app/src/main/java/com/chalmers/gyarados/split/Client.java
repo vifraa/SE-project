@@ -6,7 +6,13 @@ import com.chalmers.gyarados.split.model.Group;
 import com.chalmers.gyarados.split.model.Message;
 import com.chalmers.gyarados.split.model.User;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Completable;
 import io.reactivex.CompletableTransformer;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -70,7 +76,10 @@ public class Client {
      */
     private boolean firstConnect = true;
 
+    private List<String> subscriptions;
+
     private Disposable mRestPingDisposable;
+    private boolean reconnecting;
 
 
     public Client(String groupID, ClientListener clientListener) {
@@ -78,12 +87,15 @@ public class Client {
         this.clientListener = clientListener;
         compositeDisposable = new CompositeDisposable();
         jsonHelper=new JSONHelper();
+        subscriptions = new ArrayList<>();
     }
 
     public Client(ClientListener clientListener) {
         this.clientListener = clientListener;
         compositeDisposable = new CompositeDisposable();
         jsonHelper=new JSONHelper();
+        subscriptions = new ArrayList<>();
+
     }
 
     /**
@@ -93,6 +105,7 @@ public class Client {
     public void connectStomp(){
 
         String uri;
+
         //Which ip-adress we want to connect to
         if(Constants.develop){
             uri= "ws://"+Constants.IP+":"+Constants.PORT+"/split";
@@ -105,6 +118,7 @@ public class Client {
 
         //Needed to keep connection alive
         mStompClient.withClientHeartbeat(25000).withServerHeartbeat(25000);
+
 
 
         if(groupID!=null){
@@ -144,6 +158,8 @@ public class Client {
 
         mStompClient.connect();
 
+
+
         //Subscribes on the connection status
         Disposable dispLifecycle = mStompClient.lifecycle().subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -151,9 +167,12 @@ public class Client {
                     switch (lifecycleEvent.getType()) {
                         case OPENED:
                             Log.d(TAG,"Stomp connection opened");
+                            reconnecting=false;
                             if(firstConnect){
                                 firstConnect=false;
                             }
+
+                            clientListener.onConnectionOpened();
                             break;
                         case ERROR:
                             Log.e(TAG, "Stomp connection error", lifecycleEvent.getException());
@@ -161,6 +180,9 @@ public class Client {
                         case CLOSED:
                             Log.d(TAG,"Stomp connection closed");
                             closedEventLifeCycle();
+
+
+
                             break;
                         case FAILED_SERVER_HEARTBEAT:
                             Log.d(TAG,"Stomp failed server heartbeat");
@@ -199,6 +221,10 @@ public class Client {
 
 
         compositeDisposable.add(dispTopic);
+    }
+
+    private void addToSubscription(String subscription){
+        subscriptions.add(subscription);
     }
 
     /**
@@ -358,12 +384,23 @@ public class Client {
 
 
     private void closedEventLifeCycle() {
-        if(firstConnect){
-            clientListener.onConnectionClosedFirstConnect();
-        }else{
-            clientListener.onConnectionClosed();
+        if(!mStompClient.isConnected()){
+            if(firstConnect){
+                clientListener.onConnectionClosedFirstConnect();
+            }else if(!reconnecting){
+                reconnecting=true;
+                clientListener.onConnectionClosed();
+            }else{
+                reconnecting=false;
+                clientListener.onReConnectingFailed();
+            }
         }
 
+    }
+
+    public void tryToReconnect(){
+        reconnecting=true;
+        reconnect();
     }
 
     private void errorOnLifeCycle(Throwable throwable) {
@@ -376,7 +413,9 @@ public class Client {
 
     }
 
-    public void reconnect() {
-        mStompClient.reconnect();
+    private void reconnect() {
+        subscribeOnGroup();
+        mStompClient.connect();
+
     }
 }

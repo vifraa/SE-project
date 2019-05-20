@@ -13,11 +13,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.chalmers.gyarados.split.model.Message;
 import com.chalmers.gyarados.split.model.User;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Completable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 
 public class GroupActivity extends AppCompatActivity implements ClientListener, ProfileFragment.OnFragmentInteractionListener {
@@ -53,16 +58,16 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
      */
     private LinearLayout buttonHolder;
 
-    /**
-     * Button showed when you need to reconnect
-     */
-    private Button reconnectButton;
+    
+
+    private TextView connection_status_textview;
     //------------------OTHER PROPERTIES------------------------------------
 
     /**
      * USed to connect to server and send messages
      */
     private Client client;
+
 
 
     private boolean fromMainActivity;
@@ -80,15 +85,7 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
         setContentView(R.layout.group_view);
 
         buttonHolder = findViewById(R.id.button_holder);
-        reconnectButton=findViewById(R.id.reconnect_button);
-        reconnectButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                client.reconnect();
-                reconnectButton.setEnabled(false);
-                reconnectButton.setVisibility(View.INVISIBLE);
-            }
-        });
+        connection_status_textview = findViewById(R.id.connection_status_textview);
         //initializing gui
         writtenText = findViewById(R.id.writtenText);
         //groupMembers=findViewById(R.id.groupMembers);
@@ -303,9 +300,28 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
     @Override
     public void onConnectionClosed() {
-        reconnectButton.setVisibility(View.VISIBLE);
-        reconnectButton.setEnabled(true);
-        //todo what if this happens....
+        tryToReconnect();
+
+    }
+
+    private void tryToReconnect(){
+        //Show status bar
+        connection_status_textview.setVisibility(View.VISIBLE);
+        Completable.timer(2, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(client::tryToReconnect);
+    }
+
+
+
+    @Override
+    public void onConnectionOpened() {
+        //Hide status bar
+        connection_status_textview.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onReConnectingFailed() {
+        //Show reconnect button
     }
 
     public void errorWhileSendingMessage(Throwable throwable) {

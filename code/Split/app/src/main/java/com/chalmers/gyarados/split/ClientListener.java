@@ -27,4 +27,8 @@ interface ClientListener {
     void onConnectionClosedFirstConnect();
 
     void onConnectionClosed();
+
+    void onConnectionOpened();
+
+    void onReConnectingFailed();
 }
