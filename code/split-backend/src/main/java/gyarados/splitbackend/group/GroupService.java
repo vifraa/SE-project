@@ -74,6 +74,7 @@ public class GroupService {
         Group group = groupRepository.findById(groupID).orElseThrow(() -> new GroupNotFoundException(groupID));
         group.addUser(user);
         return groupRepository.save(group);
+        
     }
 
     /**

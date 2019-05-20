@@ -17,6 +17,7 @@ public class Group{
     private String direction;
     private List<ChatMessage> messages;
     private List<User> users;
+    private List<User> previousUsers;
     private final int MAX_GROUP_SIZE = 4;
 
 
@@ -35,6 +36,7 @@ public class Group{
 
     public void addUser(User user){
         users.add(user);
+        previousUsers.add(user);
     }
 
     public void removeUser(User user) {
@@ -72,6 +74,15 @@ public class Group{
     public void setUsers(List<User> users) {
         this.users = users;
     }
+    
+    public void setPreviousUser(List<User> previousUsers) {
+    		this.previousUsers = previousUsers;
+    }
+    
+    public List<User> getPreviousUsers() {
+		return previousUsers;
+    }
+
 
     @Override
     public String toString() {
