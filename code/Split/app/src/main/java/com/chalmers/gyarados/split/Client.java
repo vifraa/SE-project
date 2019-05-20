@@ -375,4 +375,8 @@ public class Client {
 
 
     }
+
+    public void reconnect() {
+        mStompClient.reconnect();
+    }
 }

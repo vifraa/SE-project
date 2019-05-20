@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -47,10 +48,15 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
      */
     private ViewDialog viewDialog;
 
-    //private TextView groupMembers;
-
+    /**
+     * Contains the profilebuttons
+     */
     private LinearLayout buttonHolder;
 
+    /**
+     * Button showed when you need to reconnect
+     */
+    private Button reconnectButton;
     //------------------OTHER PROPERTIES------------------------------------
 
     /**
@@ -74,7 +80,15 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
         setContentView(R.layout.group_view);
 
         buttonHolder = findViewById(R.id.button_holder);
-
+        reconnectButton=findViewById(R.id.reconnect_button);
+        reconnectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                client.reconnect();
+                reconnectButton.setEnabled(false);
+                reconnectButton.setVisibility(View.INVISIBLE);
+            }
+        });
         //initializing gui
         writtenText = findViewById(R.id.writtenText);
         //groupMembers=findViewById(R.id.groupMembers);
@@ -266,6 +280,8 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
 
 
+
+
     //-------------------------ERROR HANDLING------------------------------
 
     @Override
@@ -284,6 +300,8 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
     @Override
     public void onConnectionClosed() {
+        reconnectButton.setVisibility(View.VISIBLE);
+        reconnectButton.setEnabled(true);
         //todo what if this happens....
     }
 
