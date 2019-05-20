@@ -198,6 +198,8 @@ public class GroupService {
             	totalGroupMembers += u.getNumberOfTravelers();
             }
             	
+            
+            
                 //Add Exception Handling
             if(totalGroupMembers + user.getNumberOfTravelers() <= group.getMAX_GROUP_SIZE()
                     && group.getUsers().size() > 0
