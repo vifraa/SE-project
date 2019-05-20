@@ -5,9 +5,10 @@
     <color name="colorPrimaryDark">#2BD665</color>
     <color name="colorAccent">#A4F8F8F8</color>
     <color name="colorPrimary">#73F19F</color>
-    <color name="yellow">#F1FF1B</color>
+    <color name="yellow">#FDF150</color>
     <color name="brown">#FA7A3402</color>
     <color name="secondaryText">#686868</color>
+    <color name="grayStars">#C4C4C4</color>
     <color name="red">#FF5252</color>
     <color name="blue">#5E9EFF</color>
     <color name="pink">#E91E63</color>
