@@ -29,6 +29,7 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
 
     //------------------GUI-------------------------------
+
     /**
      * Used to show messages
      */
@@ -80,8 +81,12 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
         //groupMembers=findViewById(R.id.groupMembers);
         ImageButton sendButton = findViewById(R.id.sendbutton);
         ImageButton leaveButton = findViewById(R.id.leaveButton);
+        ImageButton taxiButton = findViewById(R.id.taxiButton);
         sendButton.setOnClickListener(v -> onSendButtonPressed(writtenText.getText().toString()));
         leaveButton.setOnClickListener(l -> onLeaveButtonPressed());
+        taxiButton.setOnClickListener(v -> {
+            onTaxiButtonPressed();
+        });
 
         viewDialog = new ViewDialog(this);
         showCustomLoadingDialog();
@@ -95,6 +100,14 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
         }
 
         client.connectStomp();
+    }
+
+    private void onTaxiButtonPressed() {
+        String url = "https://www.taxigoteborg.se/Sv/Boka-taxi";
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
+        startActivity(intent);
     }
 
     /**
