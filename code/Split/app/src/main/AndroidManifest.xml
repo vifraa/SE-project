@@ -43,6 +43,10 @@
         <activity android:name=".GroupActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".RatingActivity"
+            android:windowSoftInputMode="adjustNothing"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".LoginActivity"
             android:screenOrientation="portrait">
             <intent-filter>

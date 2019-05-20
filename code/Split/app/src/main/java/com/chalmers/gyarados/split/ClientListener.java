@@ -12,11 +12,19 @@ interface ClientListener {
 
     void errorOnSubcribingOnTopic(Throwable throwable);
 
-    void errorOnLifeCycle(Throwable throwable);
+    void errorOnLifeCycle();
 
     void errorWhileSendingMessage(Throwable throwable);
 
     void onOldMessagesReceived(List<Message> messages);
 
     void onClientReady();
+
+    void userInfoReceived(User myData);
+
+    void errorOnLifeCycleFirstConnect();
+
+    void onConnectionClosedFirstConnect();
+
+    void onConnectionClosed();
 }

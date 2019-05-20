@@ -57,4 +57,8 @@ public class CurrentSession {
     public static void setNrOfTravelers(int nrOfTravelers) {
         CurrentSession.nrOfTravelers = nrOfTravelers;
     }
+
+    public static String getCurrentPhotoUri() {
+        return getCurrentUser().getPhotoUrl();
+    }
 }

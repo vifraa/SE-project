@@ -1,5 +1,8 @@
 package com.chalmers.gyarados.split;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -25,25 +28,30 @@ public class RestClient {
         return instance;
     }
 
-    private final LoginRespository mExampleRepository;
+    private final UserRespository userRepository;
+    private final GroupRepository groupRepository;
 
     private RestClient() {
         Retrofit retrofit;
+        Gson gson=new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
         if(Constants.develop){
-            retrofit = new Retrofit.Builder().baseUrl("http://" + Constants.IP+ ":" + Constants.PORT+ "/").addConverterFactory(GsonConverterFactory.create())
+            retrofit = new Retrofit.Builder().baseUrl("http://" + Constants.IP+ ":" + Constants.PORT+ "/").addConverterFactory(GsonConverterFactory.create(gson))
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .build();
         }else {
-            retrofit = new Retrofit.Builder().baseUrl("http://" + Constants.deployedURL + "/").addConverterFactory(GsonConverterFactory.create())
+
+            retrofit = new Retrofit.Builder().baseUrl("http://" + Constants.deployedURL + "/").addConverterFactory(GsonConverterFactory.create(gson))
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .build();
         }
 
-
-        mExampleRepository = retrofit.create(LoginRespository.class);
+        groupRepository = retrofit.create(GroupRepository.class);
+        userRepository = retrofit.create(UserRespository.class);
     }
 
-    public LoginRespository getExampleRepository() {
-        return mExampleRepository;
+    public GroupRepository getGroupRepository() {return groupRepository; }
+    public UserRespository getUserRepository() {
+        return userRepository;
     }
 }
