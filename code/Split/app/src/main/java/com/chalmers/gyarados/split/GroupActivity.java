@@ -58,7 +58,7 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
      */
     private LinearLayout buttonHolder;
 
-    
+
 
     private TextView connection_status_textview;
     //------------------OTHER PROPERTIES------------------------------------
@@ -321,7 +321,9 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
     @Override
     public void onReConnectingFailed() {
-        //Show reconnect button
+        //Just try again?...
+        Completable.timer(10, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(client::tryToReconnect);
     }
 
     public void errorWhileSendingMessage(Throwable throwable) {

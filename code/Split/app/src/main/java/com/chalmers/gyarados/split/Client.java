@@ -415,6 +415,7 @@ public class Client {
 
     private void reconnect() {
         subscribeOnGroup();
+        //TODO fetch messages that might have been missed?
         mStompClient.connect();
 
     }
