@@ -25,6 +25,7 @@ public class Group{
     public Group(){
         messages = new ArrayList<>();
         users = new ArrayList<>();
+        previousUsers = new ArrayList<>();
     }
 
 
