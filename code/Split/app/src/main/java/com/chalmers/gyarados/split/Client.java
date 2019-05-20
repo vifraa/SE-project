@@ -95,7 +95,7 @@ public class Client {
         String uri;
         //Which ip-adress we want to connect to
         if(Constants.develop){
-            uri= "ws://"+Constants.IP+":"+Constants.PORT+"/split";
+            uri= "ws://"+Constants.IP+":"+Constants.PORT+"/split/websocket";
         }else{
             uri = "ws://"+Constants.deployedURL+"/split/websocket";
         }
