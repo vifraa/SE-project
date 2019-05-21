@@ -9,7 +9,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -279,9 +278,6 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
 
 
-
-
-
     //-------------------------ERROR HANDLING------------------------------
 
     @Override
@@ -315,15 +311,41 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
     @Override
     public void onConnectionOpened() {
-        //Hide status bar
-        connection_status_textview.setVisibility(View.GONE);
     }
 
     @Override
     public void onReConnectingFailed() {
-        //Just try again?...
-        Completable.timer(10, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(client::tryToReconnect);
+        //Just try again and again every 10 seconds...
+        new CountDownTimer(10L, TimeUnit.SECONDS) {
+
+            @Override
+            public void onTick(long tickValue) {
+                String toShow = getString(R.string.trying_to_reconnect) + (int)tickValue;
+                connection_status_textview.setText(toShow);
+            }
+
+            @Override
+            public void onFinish() {
+                String toShow = getString(R.string.reconnecting);
+                connection_status_textview.setText(toShow);
+                client.tryToReconnect();
+            }
+        }.start();
+    }
+
+
+
+    @Override
+    public void onReconnectingSucces() {
+        connection_status_textview.setVisibility(View.GONE);
+        client.askForMessagesAfter(mMessageAdapter.getLastMessageTimestamp());
+    }
+
+    @Override
+    public void onMessagesReceivedWhenDisconnected(List<Message> messages) {
+        for (Message m:messages){
+            mMessageAdapter.addItem(m);
+        }
     }
 
     public void errorWhileSendingMessage(Throwable throwable) {
@@ -343,6 +365,7 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
     }
     public void errorOnLifeCycle() {
+        Log.e(TAG, "Lifecycle error");
         //todo what if this happens...
     }
 

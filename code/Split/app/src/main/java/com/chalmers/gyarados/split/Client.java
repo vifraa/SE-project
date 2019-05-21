@@ -7,6 +7,7 @@ import com.chalmers.gyarados.split.model.Message;
 import com.chalmers.gyarados.split.model.User;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -108,7 +109,7 @@ public class Client {
 
         //Which ip-adress we want to connect to
         if(Constants.develop){
-            uri= "ws://"+Constants.IP+":"+Constants.PORT+"/split";
+            uri= "ws://"+Constants.IP+":"+Constants.PORT+"/split/websocket";
         }else{
             uri = "ws://"+Constants.deployedURL+"/split/websocket";
         }
@@ -167,7 +168,11 @@ public class Client {
                     switch (lifecycleEvent.getType()) {
                         case OPENED:
                             Log.d(TAG,"Stomp connection opened");
-                            reconnecting=false;
+                            if(reconnecting){
+                                reconnecting=false;
+                                clientListener.onReconnectingSucces();
+                            }
+
                             if(firstConnect){
                                 firstConnect=false;
                             }
@@ -180,9 +185,6 @@ public class Client {
                         case CLOSED:
                             Log.d(TAG,"Stomp connection closed");
                             closedEventLifeCycle();
-
-
-
                             break;
                         case FAILED_SERVER_HEARTBEAT:
                             Log.d(TAG,"Stomp failed server heartbeat");
@@ -385,15 +387,20 @@ public class Client {
 
     private void closedEventLifeCycle() {
         if(!mStompClient.isConnected()){
+            Log.d(TAG,"Not connected");
             if(firstConnect){
                 clientListener.onConnectionClosedFirstConnect();
             }else if(!reconnecting){
+                Log.d(TAG,"Not reconnecting before");
                 reconnecting=true;
                 clientListener.onConnectionClosed();
             }else{
+                Log.d(TAG,"already reconnecting");
                 reconnecting=false;
                 clientListener.onReConnectingFailed();
             }
+        }else{
+            Log.d(TAG,"Connected...");
         }
 
     }
@@ -415,8 +422,22 @@ public class Client {
 
     private void reconnect() {
         subscribeOnGroup();
-        //TODO fetch messages that might have been missed?
         mStompClient.connect();
 
     }
+
+    public void askForMessagesAfter(Date date) {
+        //todo this doesnt work
+       /* mRestPingDisposable=RestClient.getInstance().getGroupRepository().getMessagesAfterDate(groupID,date)
+                .unsubscribeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(listWithMessages -> {clientListener.onMessagesReceivedWhenDisconnected(listWithMessages);}
+                , throwable -> {
+                    Log.d(TAG, throwable.toString());
+
+                });*/
+    }
+
+
 }
