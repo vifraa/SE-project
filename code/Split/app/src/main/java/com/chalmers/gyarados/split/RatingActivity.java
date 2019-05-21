@@ -104,11 +104,14 @@ public class RatingActivity extends AppCompatActivity implements ReviewHolderLis
     }
 
     public void disableConfirmButton() {
+
         rateConfirmButton.setEnabled(false);
+        rateConfirmButton.setBackgroundResource(R.drawable.disabled_button);
     }
 
     private void enableConfirmButton() {
         rateConfirmButton.setEnabled(true);
+        rateConfirmButton.setBackgroundResource(R.drawable.confirm_button);
     }
 
     public void initRatingView(List<User> userList) {
