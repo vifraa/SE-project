@@ -6,14 +6,11 @@ import com.chalmers.gyarados.split.model.Group;
 import com.chalmers.gyarados.split.model.Message;
 import com.chalmers.gyarados.split.model.User;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Completable;
+import java.util.Date;
+
+
 import io.reactivex.CompletableTransformer;
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -50,10 +47,6 @@ public class Client {
     private static final String TAG = "ClientActivity";
 
     /**
-     * The group the server gives to me
-     */
-
-    /**
      * An object that helps us creating messages in json format
      */
     private JSONHelper jsonHelper;
@@ -77,7 +70,7 @@ public class Client {
      */
     private boolean firstConnect = true;
 
-    private List<String> subscriptions;
+
 
     private Disposable mRestPingDisposable;
     private boolean reconnecting;
@@ -88,14 +81,13 @@ public class Client {
         this.clientListener = clientListener;
         compositeDisposable = new CompositeDisposable();
         jsonHelper=new JSONHelper();
-        subscriptions = new ArrayList<>();
+
     }
 
     public Client(ClientListener clientListener) {
         this.clientListener = clientListener;
         compositeDisposable = new CompositeDisposable();
         jsonHelper=new JSONHelper();
-        subscriptions = new ArrayList<>();
 
     }
 
@@ -138,28 +130,23 @@ public class Client {
                         clientListener.updateMembersList(myGroup.getUsers());
                         groupID=myGroup.getId();
 
+                        //Lets subscribe on our group
                         subscribeOnGroup();
 
+                        //Lets tell the listener that the we are ready
                         clientListener.onOldMessagesReceived(myGroup.getMessages());
                         clientListener.onClientReady();
 
 
-                    }, throwable -> {
-                        clientListener.errorOnSubcribingOnTopic(throwable);
-
-                    });
+                    }, throwable -> clientListener.errorOnSubcribingOnTopic(throwable));
 
             compositeDisposable.add(dispTopic);
 
-            //We want to ask the server for a group number.
+            //We want to ask the server for a group.
             sendFindGroupMessage(createFindGroupMessage());
         }
 
-
-
         mStompClient.connect();
-
-
 
         //Subscribes on the connection status
         Disposable dispLifecycle = mStompClient.lifecycle().subscribeOn(Schedulers.io())
@@ -170,7 +157,7 @@ public class Client {
                             Log.d(TAG,"Stomp connection opened");
                             if(reconnecting){
                                 reconnecting=false;
-                                clientListener.onReconnectingSucces();
+                                clientListener.onReconnectingSuccess();
                             }
 
                             if(firstConnect){
@@ -190,11 +177,7 @@ public class Client {
                             Log.d(TAG,"Stomp failed server heartbeat");
                             break;
                     }
-                }, throwable -> {
-                    errorOnLifeCycle(throwable);
-
-
-                });
+                }, this::errorOnLifeCycle);
 
         compositeDisposable.add(dispLifecycle);
 
@@ -225,9 +208,6 @@ public class Client {
         compositeDisposable.add(dispTopic);
     }
 
-    private void addToSubscription(String subscription){
-        subscriptions.add(subscription);
-    }
 
     /**
      * Called when a new message has been sent to the group
@@ -256,7 +236,7 @@ public class Client {
 
     /**
      * Called when the client recevies new info about the group
-     * @param groupInfoInJson
+     * @param groupInfoInJson information about a group in json
      */
     private void newGroupInfoReceived(String groupInfoInJson) {
         Group group = jsonHelper.convertJsonToGroup(groupInfoInJson);
@@ -359,10 +339,8 @@ public class Client {
                 .unsubscribeOn(Schedulers.newThread())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(myData -> {clientListener.userInfoReceived(myData);}, throwable -> {
-        Log.d(TAG, throwable.toString());
-
-    });
+                .subscribe(myData -> {clientListener.userInfoReceived(myData);}
+                , throwable -> Log.d(TAG, throwable.toString()));
     }
 
     /**
@@ -427,7 +405,7 @@ public class Client {
     }
 
     public void askForMessagesAfter(Date date) {
-        //todo this doesnt work
+        //todo this doesnt work yet
        /* mRestPingDisposable=RestClient.getInstance().getGroupRepository().getMessagesAfterDate(groupID,date)
                 .unsubscribeOn(Schedulers.newThread())
                 .subscribeOn(Schedulers.io())

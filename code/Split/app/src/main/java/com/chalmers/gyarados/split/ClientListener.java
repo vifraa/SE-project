@@ -32,7 +32,7 @@ interface ClientListener {
 
     void onReConnectingFailed();
 
-    void onReconnectingSucces();
+    void onReconnectingSuccess();
 
     void onMessagesReceivedWhenDisconnected(List<Message> listWithMessages);
 }
