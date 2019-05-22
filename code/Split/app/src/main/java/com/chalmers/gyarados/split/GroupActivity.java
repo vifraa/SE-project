@@ -64,7 +64,6 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
 
     private boolean fromMainActivity;
-    private String groupID;
 
     //-------------------ANDROID METHODS---------------------------------------------
     /**
@@ -94,8 +93,8 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
         viewDialog = new ViewDialog(this);
         showCustomLoadingDialog();
         //Retrieving the groupID that might have been given by activity before
-        groupID=getIntent().getStringExtra("groupID");
-        if(groupID!=null){
+        String groupID = getIntent().getStringExtra("groupID");
+        if(groupID !=null){
             client=new Client(groupID,this);
         }else{
             fromMainActivity=true;
@@ -158,15 +157,9 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
     //-----------------LEAVING----------------------------------------
     
-
-
-
-
-
-
     private void transferToNextView(){
         client.leaveGroup();
-        RestClient.getInstance().getGroupRepository().getPreviousMembers(groupID)
+        RestClient.getInstance().getGroupRepository().getPreviousMembers(client.getGroupId())
                 .unsubscribeOn(Schedulers.newThread())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
