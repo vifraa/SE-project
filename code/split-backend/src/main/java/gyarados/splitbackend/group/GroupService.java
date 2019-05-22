@@ -11,7 +11,9 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -259,6 +261,17 @@ public class GroupService {
     }
 
 
+    public List<ChatMessage> getMessagesBefore(String groupId, LocalDateTime date) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(groupId));
+        query.addCriteria(Criteria.where("messages").elemMatch(Criteria.where("timestamp").gt(date)));
+        List<ChatMessage> result = mongoTemplate.find(query,ChatMessage.class);
+        if(result!=null){
+            return result;
+        }else{
+            return new ArrayList<>();
+        }
+    }
 }
 
 
