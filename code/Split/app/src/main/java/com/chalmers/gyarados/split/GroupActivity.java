@@ -20,6 +20,9 @@ import com.chalmers.gyarados.split.model.User;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+
 
 public class GroupActivity extends AppCompatActivity implements ClientListener, ProfileFragment.OnFragmentInteractionListener {
 
@@ -172,13 +175,28 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
 
     //-----------------LEAVING----------------------------------------
-    
-    private void transferToRatingView(){
+
+    private void transferToNextView(){
         client.leaveGroup();
-        Intent intent = new Intent(GroupActivity.this,RatingActivity.class);
-        intent.putExtra("GroupID", client.getGroupId());
-        startActivity(intent);
-        finish();
+        RestClient.getInstance().getGroupRepository().getPreviousMembers(client.getGroupId())
+                .unsubscribeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(myData -> {
+                    if (myData != null) {
+
+                        if (myData.size()<=1) {
+                            returnToPreviousActivity();
+                        } else {
+                            Intent intent = new Intent(GroupActivity.this,RatingActivity.class);
+                            intent.putExtra("GroupID", client.getGroupId());
+                            startActivity(intent);
+                            finish();
+                        }
+                    };
+                }, throwable -> {
+                    Log.d("hej", throwable.toString());
+                });
     }
 
     //-----------------GUI METHODS----------------------------------
@@ -225,7 +243,8 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
     }
 
     public void onLeaveButtonPressed(){
-        transferToRatingView();
+        transferToNextView();
+        //returnToPreviousActivity();
     }
 
     public void updateMembersList(List<User> users) {

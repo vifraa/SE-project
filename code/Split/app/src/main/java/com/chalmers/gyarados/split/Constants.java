@@ -1,7 +1,7 @@
 package com.chalmers.gyarados.split;
 
 public final class Constants {
-    public static final String IP = "192.168.43.73";
+    public static final String IP = "192.168.43.233";
     public static final String PORT = "8080";
     public static final Boolean develop = false;
     public static final String deployedURL = "split.frnzn.com";
