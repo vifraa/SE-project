@@ -156,7 +156,7 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
 
     //-----------------LEAVING----------------------------------------
-    
+
     private void transferToNextView(){
         client.leaveGroup();
         RestClient.getInstance().getGroupRepository().getPreviousMembers(client.getGroupId())
@@ -167,18 +167,17 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
                     if (myData != null) {
 
                         if (myData.size()<=1) {
-                            Intent intent = new Intent(GroupActivity.this,MainActivity.class);
-                            startActivity(intent);
+                            returnToPreviousActivity();
                         } else {
                             Intent intent = new Intent(GroupActivity.this,RatingActivity.class);
                             intent.putExtra("GroupID", client.getGroupId());
                             startActivity(intent);
+                            finish();
                         }
                     };
                 }, throwable -> {
                     Log.d("hej", throwable.toString());
                 });
-    finish();
     }
 
     //-----------------GUI METHODS----------------------------------
