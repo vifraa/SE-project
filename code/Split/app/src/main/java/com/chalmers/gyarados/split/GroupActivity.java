@@ -29,7 +29,20 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
 
     //------------------GUI-------------------------------
+    /**
+     * Used to send messages
+     */
+    private ImageButton sendButton;
 
+    /**
+     * Used to leave the group
+     */
+    private ImageButton leaveButton;
+
+    /**
+     * Takes the user to a taxi service website
+     */
+    private ImageButton taxiButton;
     /**
      * Used to show messages
      */
@@ -79,9 +92,9 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
         //initializing gui
         writtenText = findViewById(R.id.writtenText);
         //groupMembers=findViewById(R.id.groupMembers);
-        ImageButton sendButton = findViewById(R.id.sendbutton);
-        ImageButton leaveButton = findViewById(R.id.leaveButton);
-        ImageButton taxiButton = findViewById(R.id.taxiButton);
+        sendButton = findViewById(R.id.sendbutton);
+        leaveButton = findViewById(R.id.leaveButton);
+        taxiButton = findViewById(R.id.taxiButton);
         sendButton.setOnClickListener(v -> onSendButtonPressed(writtenText.getText().toString()));
         leaveButton.setOnClickListener(l -> onLeaveButtonPressed());
         taxiButton.setOnClickListener(v -> {
@@ -236,6 +249,22 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
     }
 
+    private void disableLeaveButton() {
+        leaveButton.setEnabled(false);
+    }
+
+    private void enableLeaveButton() {
+        leaveButton.setEnabled(true);
+    }
+
+    private void disableSendButton() {
+        sendButton.setEnabled(false);
+    }
+
+    private void enableSendButton() {
+        sendButton.setEnabled(true);
+    }
+
     private class ClickListener implements View.OnClickListener {
         private User user;
 
@@ -278,7 +307,6 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
     public void userInfoReceived(User user) {
         addProfileButton(user);
     }
-
 
 
 
