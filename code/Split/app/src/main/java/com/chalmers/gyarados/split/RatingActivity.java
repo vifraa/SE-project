@@ -43,13 +43,13 @@ public class RatingActivity extends AppCompatActivity implements ReviewHolderLis
         myID = session.getCurrentUser().getUserId();
         groupID = getIntent().getStringExtra("GroupID");
         groupMembers=new ArrayList<>();
-        RestClient.getInstance().getGroupRepository().getGroup(groupID)
+        RestClient.getInstance().getGroupRepository().getPreviousMembers(groupID)
                 .unsubscribeOn(Schedulers.newThread())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(myData -> {
                     if (myData != null) {
-                        users = myData.getUsers();
+                        users = myData;
                         for (User u: users) {
                             if (!u.getUserId().equals(CurrentSession.getCurrentUser().getUserId())) {
                                 reviewMap.put(u.getUserId(), new Review(u));
