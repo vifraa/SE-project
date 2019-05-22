@@ -74,6 +74,7 @@ public class GroupService {
         Group group = groupRepository.findById(groupID).orElseThrow(() -> new GroupNotFoundException(groupID));
         group.addUser(user);
         return groupRepository.save(group);
+        
     }
 
     /**
@@ -231,14 +232,7 @@ public class GroupService {
         Group group = findById(groupid);
         group.removeUser(user);
 
-        //fixme perhaps old groups should be saved somewhere else instead of removed?
-        if (group.isEmpty()){
-            groupRepository.deleteById(groupid);
-            return null;
-        }else{
-            return groupRepository.save(group);
-        }
-
+        return groupRepository.save(group);
 
     }
 
@@ -256,6 +250,17 @@ public class GroupService {
         Update update = new Update().set("users.$.photoUrl", user.getPhotoUrl());
 
         UpdateResult ur = mongoTemplate.updateFirst(query,update, "group");
+    }
+
+
+    /**
+     * findAllPrevious returns a groups all previous users.
+     * @param id The id of the group.
+     * @return The list of previous users.
+     */
+    public List<User> findAllPrevious(String id){
+        Group group = findById(id);
+        return group.getPreviousUsers();
     }
 
 
