@@ -18,6 +18,9 @@ import com.chalmers.gyarados.split.model.User;
 
 import java.util.List;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+
 
 public class GroupActivity extends AppCompatActivity implements ClientListener, ProfileFragment.OnFragmentInteractionListener {
 
@@ -61,7 +64,6 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
 
     private boolean fromMainActivity;
-    private String groupID;
 
     //-------------------ANDROID METHODS---------------------------------------------
     /**
@@ -91,8 +93,8 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
         viewDialog = new ViewDialog(this);
         showCustomLoadingDialog();
         //Retrieving the groupID that might have been given by activity before
-        groupID=getIntent().getStringExtra("groupID");
-        if(groupID!=null){
+        String groupID = getIntent().getStringExtra("groupID");
+        if(groupID !=null){
             client=new Client(groupID,this);
         }else{
             fromMainActivity=true;
@@ -154,13 +156,28 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
 
     //-----------------LEAVING----------------------------------------
-    
-    private void transferToRatingView(){
+
+    private void transferToNextView(){
         client.leaveGroup();
-        Intent intent = new Intent(GroupActivity.this,RatingActivity.class);
-        intent.putExtra("GroupID", client.getGroupId());
-        startActivity(intent);
-        finish();
+        RestClient.getInstance().getGroupRepository().getPreviousMembers(client.getGroupId())
+                .unsubscribeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(myData -> {
+                    if (myData != null) {
+
+                        if (myData.size()<=1) {
+                            returnToPreviousActivity();
+                        } else {
+                            Intent intent = new Intent(GroupActivity.this,RatingActivity.class);
+                            intent.putExtra("GroupID", client.getGroupId());
+                            startActivity(intent);
+                            finish();
+                        }
+                    };
+                }, throwable -> {
+                    Log.d("hej", throwable.toString());
+                });
     }
 
     //-----------------GUI METHODS----------------------------------
@@ -208,7 +225,7 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
     }
 
     public void onLeaveButtonPressed(){
-        transferToRatingView();
+        transferToNextView();
         //returnToPreviousActivity();
     }
 

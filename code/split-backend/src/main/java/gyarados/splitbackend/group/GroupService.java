@@ -200,9 +200,15 @@ public class GroupService {
             if(groupDestLongitude!=null || groupDestLatitude!=null){
                 destinationDistance=calcDist(groupDestLatitude, groupDestLongitude, user.getDestinationLatitude(), user.getDestinationLongitude());
             }
-
+            int totalGroupMembers = 0;
+            for (User u: group.getUsers()) {
+            	totalGroupMembers += u.getNumberOfTravelers();
+            }
+            	
+            
+            
                 //Add Exception Handling
-            if(group.getUsers().size() + user.getNumberOfTravelers() < group.getMAX_GROUP_SIZE()
+            if(totalGroupMembers + user.getNumberOfTravelers() <= group.getMAX_GROUP_SIZE()
                     && group.getUsers().size() > 0
                     && destinationDistance <= 0.05 && destinationDistance >= 0) {
                 potentialGroups.add(group);
