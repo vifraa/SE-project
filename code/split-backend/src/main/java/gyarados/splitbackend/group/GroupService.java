@@ -232,14 +232,7 @@ public class GroupService {
         Group group = findById(groupid);
         group.removeUser(user);
 
-        //fixme perhaps old groups should be saved somewhere else instead of removed?
-        if (group.isEmpty()){
-            groupRepository.deleteById(groupid);
-            return null;
-        }else{
-            return groupRepository.save(group);
-        }
-
+        return groupRepository.save(group);
 
     }
 
