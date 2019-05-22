@@ -57,9 +57,37 @@
             android:layout_marginBottom="8dp"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/leaveButton"
+            app:layout_constraintEnd_toStartOf="@+id/taxiButton"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"></LinearLayout>
+
+        <ImageButton
+            android:id="@+id/taxiButton"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:adjustViewBounds="true"
+            android:background="@color/colorPrimary"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toStartOf="@+id/leaveButton"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/taxi_icon" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="45dp"
+            android:layout_marginEnd="18dp"
+            android:layout_marginRight="18dp"
+            android:fontFamily="@font/paytoneone"
+            android:text="Book cab"
+            android:textColor="@color/white"
+            android:textSize="@dimen/font_size_small"
+            app:layout_constraintEnd_toStartOf="@+id/leaveButton"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
     </android.support.constraint.ConstraintLayout>
