@@ -48,8 +48,8 @@
 
     <ImageView
         android:id="@+id/profile_image"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_marginTop="100dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -75,34 +75,19 @@
         app:layout_constraintTop_toBottomOf="@+id/profile_image" />
 
     <TextView
-        android:id="@+id/profile_age"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginLeft="32dp"
-        android:layout_marginTop="24dp"
-        android:fontFamily="@font/paytoneone"
-        android:gravity="center"
-        android:text="Age - 22 years"
-        android:textColor="@color/secondaryText"
-        android:textSize="@dimen/font_size_medium"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_username" />
-
-    <TextView
         android:id="@+id/profile_avg_rating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginLeft="32dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="15dp"
         android:fontFamily="@font/paytoneone"
         android:gravity="center"
         android:text="Avg rating - 4.2"
         android:textColor="@color/secondaryText"
         android:textSize="@dimen/font_size_medium"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_age" />
+        app:layout_constraintTop_toBottomOf="@+id/profile_username" />
 
     <TextView
         android:id="@+id/profile_number_of_ratings"
@@ -129,12 +114,23 @@
         app:layout_constraintTop_toBottomOf="@+id/profile_number_of_ratings">
 
         <android.support.v7.widget.RecyclerView
+            android:id="@+id/rating_recycler"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/top_gradient"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/image_rating_profile" />
+
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

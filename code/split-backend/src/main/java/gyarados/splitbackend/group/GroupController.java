@@ -1,5 +1,6 @@
 package gyarados.splitbackend.group;
 
+import gyarados.splitbackend.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,5 +35,9 @@ public class GroupController {
     public Group one(@PathVariable String id){
         return groupService.findById(id);
     }
+
+
+    @GetMapping("/{id}/review")
+    public List<User> allPrevious(@PathVariable String id) { return groupService.findAllPrevious(id);}
 
 }

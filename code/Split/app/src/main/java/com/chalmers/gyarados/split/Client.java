@@ -25,6 +25,8 @@ public class Client {
     private static final String CHAT_LEAVING_GROUP_SUFFIX = "/leave";
 
 
+
+
     /**
      * The object we use to communicate with the server
      */
@@ -54,10 +56,21 @@ public class Client {
      */
     private ClientListener clientListener;
 
-
+    /**
+     * The group id the client are using, can be given from activity before
+     */
     private String groupID;
 
+    /**
+     * Used to know if the user has entered an old or new chat
+     */
     private boolean firstTime;
+    /**
+     * Used to know if the client has been connected before
+     */
+    private boolean firstConnect = true;
+
+    private Disposable mRestPingDisposable;
 
 
     public Client(String groupID, ClientListener clientListener) {
@@ -89,6 +102,9 @@ public class Client {
 
         Log.d(TAG,uri);
         mStompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, uri );
+
+        //Needed to keep connection alive
+        mStompClient.withClientHeartbeat(25000).withServerHeartbeat(25000);
 
 
         if(groupID!=null){
@@ -135,25 +151,31 @@ public class Client {
                     switch (lifecycleEvent.getType()) {
                         case OPENED:
                             Log.d(TAG,"Stomp connection opened");
+                            if(firstConnect){
+                                firstConnect=false;
+                            }
                             break;
                         case ERROR:
                             Log.e(TAG, "Stomp connection error", lifecycleEvent.getException());
                             break;
                         case CLOSED:
                             Log.d(TAG,"Stomp connection closed");
+                            closedEventLifeCycle();
                             break;
                         case FAILED_SERVER_HEARTBEAT:
                             Log.d(TAG,"Stomp failed server heartbeat");
                             break;
                     }
                 }, throwable -> {
-                    clientListener.errorOnLifeCycle(throwable);
+                    errorOnLifeCycle(throwable);
+
 
                 });
 
         compositeDisposable.add(dispLifecycle);
 
     }
+
 
 
 
@@ -289,6 +311,7 @@ public class Client {
     public void disconnect() {
         mStompClient.disconnect();
         if (compositeDisposable != null) compositeDisposable.dispose();
+        if (mRestPingDisposable != null) mRestPingDisposable.dispose();
     }
 
     /**
@@ -303,8 +326,8 @@ public class Client {
                         throwable -> clientListener.errorWhileSendingMessage(throwable)));
     }
 
-    private void askForUserInfo(User user){
-        RestClient.getInstance().getUserRepository().getUser(user.getUserId())
+    public void askForUserInfo(User user){
+       mRestPingDisposable= RestClient.getInstance().getUserRepository().getUser(user.getUserId())
                 .unsubscribeOn(Schedulers.newThread())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -321,9 +344,35 @@ public class Client {
         if (compositeDisposable != null){
             compositeDisposable.dispose();
         }
+        if (mRestPingDisposable != null) mRestPingDisposable.dispose();
         if(mStompClient.isConnected()) {
             sendLeaveMessage(CHAT_PREFIX + groupID + CHAT_LEAVING_GROUP_SUFFIX);
             mStompClient.disconnect();
         }
+    }
+
+
+    public String getGroupId() {
+        return groupID;
+    }
+
+
+    private void closedEventLifeCycle() {
+        if(firstConnect){
+            clientListener.onConnectionClosedFirstConnect();
+        }else{
+            clientListener.onConnectionClosed();
+        }
+
+    }
+
+    private void errorOnLifeCycle(Throwable throwable) {
+        if(firstConnect){
+            clientListener.errorOnLifeCycleFirstConnect();
+        }else{
+            clientListener.errorOnLifeCycle();
+        }
+
+
     }
 }
