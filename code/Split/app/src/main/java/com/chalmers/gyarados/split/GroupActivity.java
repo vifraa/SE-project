@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.chalmers.gyarados.split.model.Message;
+import com.chalmers.gyarados.split.model.Review;
 import com.chalmers.gyarados.split.model.User;
 
 import java.util.List;
@@ -297,13 +298,27 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
         @Override
         public void onClick(View v) {
-            ProfileFragment fragment = ProfileFragment.newInstance();
-            fragment.setUser(user);
 
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.addToBackStack(null);
-            transaction.replace(R.id.fragmentholder, fragment).commit();
-            findViewById(R.id.fragmentholder).bringToFront();
+            RestClient.getInstance().getUserRepository().getUser(user.getUserId())
+                    .unsubscribeOn(Schedulers.newThread())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(newUser -> {
+                        ProfileFragment fragment = ProfileFragment.newInstance();
+                        if (newUser != null) {
+                            User profileUser = newUser;
+                            fragment.setUser(profileUser);
+                        }
+                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                        transaction.addToBackStack(null);
+                        transaction.replace(R.id.fragmentholder, fragment).commit();
+                        findViewById(R.id.fragmentholder).bringToFront();
+                    }, throwable -> {
+
+
+
+                    });
+
         }
     }
     //-------------INITIALIZING---------------------------------------
