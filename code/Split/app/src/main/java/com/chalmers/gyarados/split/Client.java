@@ -405,16 +405,17 @@ public class Client {
     }
 
     public void askForMessagesAfter(Date date) {
-        //todo this doesnt work yet
-       /* mRestPingDisposable=RestClient.getInstance().getGroupRepository().getMessagesAfterDate(groupID,date)
+
+       mRestPingDisposable=RestClient.getInstance().getGroupRepository().getMessagesAfterDate(groupID,date.toString())
                 .unsubscribeOn(Schedulers.newThread())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(listWithMessages -> {clientListener.onMessagesReceivedWhenDisconnected(listWithMessages);}
+                .subscribe(listWithMessages ->
+                        {clientListener.onMessagesReceivedWhenDisconnected(listWithMessages);}
                 , throwable -> {
                     Log.d(TAG, throwable.toString());
 
-                });*/
+                });
     }
 
 
