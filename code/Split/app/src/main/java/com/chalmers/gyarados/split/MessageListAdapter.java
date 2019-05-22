@@ -80,6 +80,12 @@ public class MessageListAdapter extends RecyclerView.Adapter {
         }
     }
 
+    public void clear() {
+        int size = mMessageList.size();
+        mMessageList.clear();
+        notifyItemRangeRemoved(0, size);
+    }
+
     @Override
     public int getItemCount() {
         return mMessageList.size();

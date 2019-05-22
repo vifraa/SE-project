@@ -404,9 +404,9 @@ public class Client {
 
     }
 
-    public void askForMessagesAfter(Date date) {
+    public void askForMessages() {
 
-       mRestPingDisposable=RestClient.getInstance().getGroupRepository().getMessagesAfterDate(groupID,date.toString())
+       mRestPingDisposable=RestClient.getInstance().getGroupRepository().getGroupChatMessage(groupID)
                 .unsubscribeOn(Schedulers.newThread())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -417,6 +417,8 @@ public class Client {
 
                 });
     }
+
+
 
 
 }

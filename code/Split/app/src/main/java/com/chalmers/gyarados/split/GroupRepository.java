@@ -16,6 +16,6 @@ public interface GroupRepository {
     @GET("groups/{id}")
     Single<Group> getGroup(@Path("id") String groupID);
 
-    @GET("groups/{id}/message_after_date/{date}")
-    Single<List<Message>> getMessagesAfterDate(@Path("id") String groupId, @Path("date") String date);
+    @GET("groups/{id}/messages")
+    Single<List<Message>> getGroupChatMessage(@Path("id") String id);
 }
