@@ -16,6 +16,5 @@ public class SplitBackendApplication {
 		SpringApplication.run(SplitBackendApplication.class, args);
 	}
 
-
-
+	
 }

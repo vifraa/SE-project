@@ -20,6 +20,9 @@ import com.chalmers.gyarados.split.model.User;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+
 
 public class GroupActivity extends AppCompatActivity implements ClientListener, ProfileFragment.OnFragmentInteractionListener {
 
@@ -31,6 +34,20 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
 
     //------------------GUI-------------------------------
+    /**
+     * Used to send messages
+     */
+    private ImageButton sendButton;
+
+    /**
+     * Used to leave the group
+     */
+    private ImageButton leaveButton;
+
+    /**
+     * Takes the user to a taxi service website
+     */
+    private ImageButton taxiButton;
     /**
      * Used to show messages
      */
@@ -64,10 +81,6 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
      */
     private Client client;
 
-
-    private ImageButton sendButton;
-    private ImageButton leaveButton;
-
     private boolean fromMainActivity;
 
     //-------------------ANDROID METHODS---------------------------------------------
@@ -85,10 +98,15 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
         buttonHolder = findViewById(R.id.button_holder);
         connection_status_textview = findViewById(R.id.connection_status_textview);
         writtenText = findViewById(R.id.writtenText);
+        //groupMembers=findViewById(R.id.groupMembers);
         sendButton = findViewById(R.id.sendbutton);
         leaveButton = findViewById(R.id.leaveButton);
+        taxiButton = findViewById(R.id.taxiButton);
         sendButton.setOnClickListener(v -> onSendButtonPressed(writtenText.getText().toString()));
         leaveButton.setOnClickListener(l -> onLeaveButtonPressed());
+        taxiButton.setOnClickListener(v -> {
+            onTaxiButtonPressed();
+        });
         viewDialog = new ViewDialog(this);
         showCustomLoadingDialog();
 
@@ -103,6 +121,14 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
         //CONNECT CLIENT
         client.connectStomp();
+    }
+
+    private void onTaxiButtonPressed() {
+        String url = "https://www.taxigoteborg.se/Sv/Boka-taxi";
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
+        startActivity(intent);
     }
 
     /**
@@ -149,13 +175,28 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
 
     //-----------------LEAVING----------------------------------------
-    
-    private void transferToRatingView(){
+
+    private void transferToNextView(){
         client.leaveGroup();
-        Intent intent = new Intent(GroupActivity.this,RatingActivity.class);
-        intent.putExtra("GroupID", client.getGroupId());
-        startActivity(intent);
-        finish();
+        RestClient.getInstance().getGroupRepository().getPreviousMembers(client.getGroupId())
+                .unsubscribeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(myData -> {
+                    if (myData != null) {
+
+                        if (myData.size()<=1) {
+                            returnToPreviousActivity();
+                        } else {
+                            Intent intent = new Intent(GroupActivity.this,RatingActivity.class);
+                            intent.putExtra("GroupID", client.getGroupId());
+                            startActivity(intent);
+                            finish();
+                        }
+                    };
+                }, throwable -> {
+                    Log.d("hej", throwable.toString());
+                });
     }
 
     //-----------------GUI METHODS----------------------------------
@@ -202,7 +243,8 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
     }
 
     public void onLeaveButtonPressed(){
-        transferToRatingView();
+        transferToNextView();
+        //returnToPreviousActivity();
     }
 
     public void updateMembersList(List<User> users) {
@@ -229,7 +271,24 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
     }
 
+    private void disableLeaveButton() {
+        leaveButton.setEnabled(false);
+    }
+
+    private void enableLeaveButton() {
+        leaveButton.setEnabled(true);
+    }
+
+    private void disableSendButton() {
+        sendButton.setEnabled(false);
+    }
+
+    private void enableSendButton() {
+        sendButton.setEnabled(true);
+    }
+
     private class ProfileClickListener implements View.OnClickListener {
+
         private User user;
 
         ProfileClickListener(User user) {

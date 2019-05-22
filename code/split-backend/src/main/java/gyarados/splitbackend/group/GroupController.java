@@ -1,6 +1,9 @@
 package gyarados.splitbackend.group;
 
 import gyarados.splitbackend.chat.ChatMessage;
+
+import gyarados.splitbackend.user.User;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
@@ -42,8 +45,14 @@ public class GroupController {
 
 
 
+
     @GetMapping("/{id}/messages")
     public List<ChatMessage> getGroupChatMessages(@PathVariable String id){
         return groupService.getGroupChatMessages(id);
-    }
+
+
+    @GetMapping("/{id}/review")
+    public List<User> allPrevious(@PathVariable String id) { return groupService.findAllPrevious(id);}
+
+
 }
