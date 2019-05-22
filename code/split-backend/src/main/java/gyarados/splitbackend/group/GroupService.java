@@ -188,6 +188,12 @@ public class GroupService {
 
         // 1) List all possible groups within a maximum destination distance from users preferred distance
         for (Group group: allGroups) {
+
+            // Dont join a group where the user previously has been in.
+            if(group.getPreviousUsers().contains(user)){
+                continue;
+            }
+
             Double groupDestLongitude = getGroupDestinationLongitude(group);
             Double groupDestLatitude = getGroupDestinationLatitude(group);
             Double destinationDistance = -1.0;
@@ -232,6 +238,8 @@ public class GroupService {
         Group group = findById(groupid);
         group.removeUser(user);
 
+        // When a group contains 0 members it should probably be moved to another collection.
+        // Otherwise we loop through empty lists when trying to find a group which makes n of O(n) greater.
         return groupRepository.save(group);
 
     }
