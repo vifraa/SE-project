@@ -404,7 +404,11 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
     public void onReconnectingSuccess() {
         connection_status_textview.setVisibility(View.GONE);
         enableActionsOnConnect();
-        client.askForMessagesAfter(mMessageAdapter.getLastMessageTimestamp());
+        //client.askForMessages();
+        mMessageAdapter.clear();
+        buttonHolder.removeAllViews();
+
+        client.askForGroupInfo();
     }
 
     /**
@@ -413,9 +417,8 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
      */
     @Override
     public void onMessagesReceivedWhenDisconnected(List<Message> messages) {
-        for (Message m:messages){
-            mMessageAdapter.addItem(m);
-        }
+
+
     }
 
     /**

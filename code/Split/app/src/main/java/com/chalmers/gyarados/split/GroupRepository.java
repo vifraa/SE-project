@@ -21,11 +21,13 @@ public interface GroupRepository {
     Single<Group> getGroup(@Path("id") String groupID);
 
 
-    @GET("groups/{id}/message_after_date/{date}")
-    Single<List<Message>> getMessagesAfterDate(@Path("id") String groupId, @Path("date") String date);
+    @GET("groups/{id}/messages")
+    Single<List<Message>> getGroupChatMessage(@Path("id") String id);
+
 
     // Returns an list of the previous users.
     @GET("groups/{id}/review")
     Single<List<User>> getPreviousMembers(@Path("id") String groupID);
+
 
 }

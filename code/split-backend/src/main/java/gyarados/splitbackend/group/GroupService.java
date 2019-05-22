@@ -269,16 +269,13 @@ public class GroupService {
     }
 
 
-    public List<ChatMessage> getMessagesBefore(String groupId, LocalDateTime date) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where("_id").is(groupId));
-        query.addCriteria(Criteria.where("messages").elemMatch(Criteria.where("timestamp").gt(date)));
-        List<ChatMessage> result = mongoTemplate.find(query,ChatMessage.class);
-        if(result!=null){
-            return result;
-        }else{
-            return new ArrayList<>();
-        }
+    /**
+     * getGroupChatMessages returns an list of a groups previous chat messages.
+     * @param id The id of the group.
+     * @return The list of messages.
+     */
+    public List<ChatMessage> getGroupChatMessages(String id){
+        return findById(id).getMessages();
     }
 
     /**
@@ -290,9 +287,6 @@ public class GroupService {
         Group group = findById(id);
         return group.getPreviousUsers();
     }
-
-
-
 }
 
 
