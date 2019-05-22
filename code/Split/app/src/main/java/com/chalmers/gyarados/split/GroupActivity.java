@@ -262,10 +262,12 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
     private void disableSendButton() {
         sendButton.setEnabled(false);
+        sendButton.setBackgroundResource(R.drawable.send_button_gray);
     }
 
     private void enableSendButton() {
         sendButton.setEnabled(true);
+        sendButton.setBackgroundResource(R.drawable.send_button_white);
     }
 
     private class ProfileClickListener implements View.OnClickListener {

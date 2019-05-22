@@ -195,7 +195,6 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="fill"
-            android:backgroundTint="@color/colorPrimary"
             android:background="@drawable/sendbutton"
             tools:layout_editor_absoluteX="366dp"
             tools:layout_editor_absoluteY="560dp" />
