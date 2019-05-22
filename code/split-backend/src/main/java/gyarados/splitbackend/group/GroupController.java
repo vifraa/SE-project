@@ -47,9 +47,9 @@ public class GroupController {
 
 
     @GetMapping("/{id}/messages")
-    public List<ChatMessage> getGroupChatMessages(@PathVariable String id){
+    public List<ChatMessage> getGroupChatMessages(@PathVariable String id) {
         return groupService.getGroupChatMessages(id);
-
+    }
 
     @GetMapping("/{id}/review")
     public List<User> allPrevious(@PathVariable String id) { return groupService.findAllPrevious(id);}
