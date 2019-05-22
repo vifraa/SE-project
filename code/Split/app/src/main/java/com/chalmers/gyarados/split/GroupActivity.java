@@ -12,11 +12,13 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.chalmers.gyarados.split.model.Message;
 import com.chalmers.gyarados.split.model.User;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -32,7 +34,20 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
 
     //------------------GUI-------------------------------
+    /**
+     * Used to send messages
+     */
+    private ImageButton sendButton;
 
+    /**
+     * Used to leave the group
+     */
+    private ImageButton leaveButton;
+
+    /**
+     * Takes the user to a taxi service website
+     */
+    private ImageButton taxiButton;
     /**
      * Used to show messages
      */
@@ -51,17 +66,20 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
      */
     private ViewDialog viewDialog;
 
-    //private TextView groupMembers;
-
+    /**
+     * Contains the profilebuttons
+     */
     private LinearLayout buttonHolder;
 
+
+
+    private TextView connection_status_textview;
     //------------------OTHER PROPERTIES------------------------------------
 
     /**
      * USed to connect to server and send messages
      */
     private Client client;
-
 
     private boolean fromMainActivity;
 
@@ -76,22 +94,22 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.group_view);
 
+        //INITIALIZING GUI
         buttonHolder = findViewById(R.id.button_holder);
-
-        //initializing gui
+        connection_status_textview = findViewById(R.id.connection_status_textview);
         writtenText = findViewById(R.id.writtenText);
         //groupMembers=findViewById(R.id.groupMembers);
-        ImageButton sendButton = findViewById(R.id.sendbutton);
-        ImageButton leaveButton = findViewById(R.id.leaveButton);
-        ImageButton taxiButton = findViewById(R.id.taxiButton);
+        sendButton = findViewById(R.id.sendbutton);
+        leaveButton = findViewById(R.id.leaveButton);
+        taxiButton = findViewById(R.id.taxiButton);
         sendButton.setOnClickListener(v -> onSendButtonPressed(writtenText.getText().toString()));
         leaveButton.setOnClickListener(l -> onLeaveButtonPressed());
         taxiButton.setOnClickListener(v -> {
             onTaxiButtonPressed();
         });
-
         viewDialog = new ViewDialog(this);
         showCustomLoadingDialog();
+
         //Retrieving the groupID that might have been given by activity before
         String groupID = getIntent().getStringExtra("groupID");
         if(groupID !=null){
@@ -101,6 +119,7 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
             client = new Client(this);
         }
 
+        //CONNECT CLIENT
         client.connectStomp();
     }
 
@@ -130,7 +149,7 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
     //-------------RECEIVING MESSAGE-------------------------------
     /**
      * This method is called when the user receives a new message that belongs to the group
-     * @param message
+     * @param message a message
      */
     public void newGroupMessageReceived(Message message) {
         hideCustomDialogIfNeeded();
@@ -187,7 +206,7 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
      * @param messages The messages that are to be added to the message view.
      */
     private void initMessageView(List<Message> messages) {
-        mMessageRecycler = (RecyclerView) findViewById(R.id.reyclerview_message_list);
+        mMessageRecycler = findViewById(R.id.reyclerview_message_list);
         mMessageAdapter = new MessageListAdapter(this, messages);
         LinearLayoutManager manager=new LinearLayoutManager(this);
         manager.setStackFromEnd(true);
@@ -201,7 +220,6 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
     }
 
     public void showCustomLoadingDialog() {
-
         //..show gif
         viewDialog.showDialog();
     }
@@ -238,7 +256,7 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
     private void addProfileButton(User u) {
         ProfileButton button = new ProfileButton(getApplicationContext(),null,u);
         buttonHolder.addView(button);
-        button.setOnClickListener(new ClickListener(u));
+        button.setOnClickListener(new ProfileClickListener(u));
     }
 
     private void removeProfileButton(User user) {
@@ -253,10 +271,27 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
     }
 
-    private class ClickListener implements View.OnClickListener {
+    private void disableLeaveButton() {
+        leaveButton.setEnabled(false);
+    }
+
+    private void enableLeaveButton() {
+        leaveButton.setEnabled(true);
+    }
+
+    private void disableSendButton() {
+        sendButton.setEnabled(false);
+    }
+
+    private void enableSendButton() {
+        sendButton.setEnabled(true);
+    }
+
+    private class ProfileClickListener implements View.OnClickListener {
+
         private User user;
 
-        public ClickListener(User user) {
+        ProfileClickListener(User user) {
             this.user = user;
         }
 
@@ -276,7 +311,7 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
     /**
      * Called when client has found a group and received all old messages
-     * @param messages
+     * @param messages a list with messages
      */
     @Override
     public void onOldMessagesReceived(List<Message> messages) {
@@ -291,6 +326,11 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
         hideCustomDialogIfNeeded();
     }
 
+    /**
+     * Called when info about a user is received.
+     * Update the profile button!
+     * @param user the user we have received information about
+     */
     @Override
     public void userInfoReceived(User user) {
         addProfileButton(user);
@@ -298,9 +338,11 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
 
 
-
     //-------------------------ERROR HANDLING------------------------------
 
+    /**
+     * If there is some kind of error on the clients lifecycle, lets just go back to previous activity
+     */
     @Override
     public void errorOnLifeCycleFirstConnect() {
         hideCustomDialogIfNeeded();
@@ -308,6 +350,9 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
         returnToPreviousActivity();
     }
 
+    /**
+     * If we cant establish a connection on the first try, lets just go back to previous activity
+     */
     @Override
     public void onConnectionClosedFirstConnect() {
         hideCustomDialogIfNeeded();
@@ -315,11 +360,68 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
         returnToPreviousActivity();
     }
 
+    /**
+     * When the connection between the server and client closes.
+     * Tries to reconnect.
+     */
     @Override
     public void onConnectionClosed() {
-        //todo what if this happens....
+        disableActionsOnDisconnect();
+        tryToReconnect();
+
     }
 
+    private void tryToReconnect(){
+        //Show status bar
+        connection_status_textview.setVisibility(View.VISIBLE);
+        new ReconnectCountDown(2L, TimeUnit.SECONDS).start();
+    }
+
+
+    /**
+     * When the client has managed to open a connection to the server
+     */
+    @Override
+    public void onConnectionOpened() {
+        //Do nothing right now
+    }
+
+
+    /**
+     * When the reconnection fails
+     */
+    @Override
+    public void onReConnectingFailed() {
+        //Just try again and again every 10 seconds...
+        new ReconnectCountDown(10L, TimeUnit.SECONDS).start();
+    }
+
+
+    /**
+     * When the reconnection is successful
+     */
+    @Override
+    public void onReconnectingSuccess() {
+        connection_status_textview.setVisibility(View.GONE);
+        enableActionsOnConnect();
+        client.askForMessagesAfter(mMessageAdapter.getLastMessageTimestamp());
+    }
+
+    /**
+     * Handles the messages sent to the group while disconnected
+     * @param messages a list with messages
+     */
+    @Override
+    public void onMessagesReceivedWhenDisconnected(List<Message> messages) {
+        for (Message m:messages){
+            mMessageAdapter.addItem(m);
+        }
+    }
+
+    /**
+     * If there is an error when sending a message...
+     * @param throwable the error
+     */
     public void errorWhileSendingMessage(Throwable throwable) {
         hideCustomDialogIfNeeded();
         Log.e(TAG, "Error while sending message", throwable);
@@ -327,20 +429,30 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
     }
 
-
+    /**
+     * Handles the event that the client fails to subscribe on a topic
+     * @param throwable The error
+     */
     public void errorOnSubcribingOnTopic(Throwable throwable) {
         hideCustomDialogIfNeeded();
         Log.e(TAG, "Error on subscribe topic", throwable);
         //todo what if this happens...
-        //client.disconnect();
-        //returnToPreviousActivity();
+
 
     }
+
+    /**
+     * If there is some kind of error on the client lifecycle, this will be called
+     */
     public void errorOnLifeCycle() {
+        Log.e(TAG, "Lifecycle error");
         //todo what if this happens...
     }
 
 
+    /**
+     * Returns to previous activity.
+     */
     private void returnToPreviousActivity(){
         if(fromMainActivity){
             finish();
@@ -352,9 +464,47 @@ public class GroupActivity extends AppCompatActivity implements ClientListener, 
 
     }
 
+    /**
+     *Disables the possibility to leave group and sending messages
+     */
+    private void disableActionsOnDisconnect(){
+        leaveButton.setEnabled(false);
+        sendButton.setEnabled(false);
+    }
+
+    /**
+     *Enables the possibility to leave group and sending messages
+     */
+    private void enableActionsOnConnect(){
+        leaveButton.setEnabled(true);
+        sendButton.setEnabled(true);
+    }
+
 
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    /**
+     * A class that takes care of counting down when trying to reconnect.
+     */
+    private class ReconnectCountDown extends CountDownTimer{
+        ReconnectCountDown(Long startValue, TimeUnit timeUnit) {
+            super(startValue, timeUnit);
+        }
+
+        @Override
+        public void onTick(long tickValue) {
+            String toShow = getString(R.string.trying_to_reconnect) + (int)tickValue;
+            connection_status_textview.setText(toShow);
+        }
+
+        @Override
+        public void onFinish() {
+            String toShow = getString(R.string.reconnecting);
+            connection_status_textview.setText(toShow);
+            client.tryToReconnect();
+        }
     }
 }

@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.chalmers.gyarados.split.model.Message;
 import com.squareup.picasso.Picasso;
 
+import java.util.Date;
 import java.util.List;
 
 public class MessageListAdapter extends RecyclerView.Adapter {
@@ -29,6 +30,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
     public MessageListAdapter(Context context, List<Message> messageList) {
         mContext = context;
         mMessageList = messageList;
+
     }
 
     @NonNull
@@ -107,6 +109,10 @@ public class MessageListAdapter extends RecyclerView.Adapter {
     public void addItem(Message message) {
         mMessageList.add(message);
         notifyItemInserted(mMessageList.size()-1);
+    }
+
+    public Date getLastMessageTimestamp() {
+        return mMessageList.get(mMessageList.size()-1).getTimestamp();
     }
 
     private class ReceivedMessageHolder extends RecyclerView.ViewHolder{

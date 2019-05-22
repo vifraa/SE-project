@@ -1,6 +1,9 @@
 package gyarados.splitbackend.group;
 
+import gyarados.splitbackend.chat.ChatMessage;
+
 import gyarados.splitbackend.user.User;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +11,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -37,7 +43,21 @@ public class GroupController {
     }
 
 
+    /**
+     * Endpoint for getting a group by id.
+     * @param id The group to find.
+     * @return The found group.
+     */
+    @GetMapping("/{id}/message_after_date/{date}")
+    public List<ChatMessage> getMessagesAfterDate(@PathVariable String id,@PathVariable String date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE LLL dd HH:mm:ss Z yyyy");
+        LocalDateTime dateTime = LocalDateTime.parse(date, formatter);
+        return groupService.getMessagesBefore(id, dateTime);
+    }
+
+
     @GetMapping("/{id}/review")
     public List<User> allPrevious(@PathVariable String id) { return groupService.findAllPrevious(id);}
+
 
 }
