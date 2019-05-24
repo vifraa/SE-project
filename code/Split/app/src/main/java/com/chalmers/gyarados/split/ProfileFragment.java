@@ -102,12 +102,9 @@ public class ProfileFragment extends Fragment {
         name.setText(user.getName());
         //age.setText("22");
 
-        List<Review> userReviews = user.getReviews();
+        List<Review> userReviews = new ArrayList<>(user.getReviews());
         Collections.reverse(userReviews);
-        if(userReviews==null){
-            userReviews=new ArrayList<>();
-
-        }
+        
         double avgRatingNumber = calculateAverageReview(userReviews);
 
         if(avgRatingNumber!=-1){

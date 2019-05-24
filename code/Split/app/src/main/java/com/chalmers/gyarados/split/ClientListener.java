@@ -27,4 +27,12 @@ interface ClientListener {
     void onConnectionClosedFirstConnect();
 
     void onConnectionClosed();
+
+    void onConnectionOpened();
+
+    void onReConnectingFailed();
+
+    void onReconnectingSuccess();
+
+    void onMessagesReceivedWhenDisconnected(List<Message> listWithMessages);
 }

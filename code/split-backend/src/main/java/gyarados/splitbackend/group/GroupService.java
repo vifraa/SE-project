@@ -11,7 +11,9 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -200,9 +202,15 @@ public class GroupService {
             if(groupDestLongitude!=null || groupDestLatitude!=null){
                 destinationDistance=calcDist(groupDestLatitude, groupDestLongitude, user.getDestinationLatitude(), user.getDestinationLongitude());
             }
-
+            int totalGroupMembers = 0;
+            for (User u: group.getUsers()) {
+            	totalGroupMembers += u.getNumberOfTravelers();
+            }
+            	
+            
+            
                 //Add Exception Handling
-            if(group.getUsers().size() + user.getNumberOfTravelers() < group.getMAX_GROUP_SIZE()
+            if(totalGroupMembers + user.getNumberOfTravelers() <= group.getMAX_GROUP_SIZE()
                     && group.getUsers().size() > 0
                     && destinationDistance <= 0.05 && destinationDistance >= 0) {
                 potentialGroups.add(group);
@@ -262,6 +270,15 @@ public class GroupService {
 
 
     /**
+     * getGroupChatMessages returns an list of a groups previous chat messages.
+     * @param id The id of the group.
+     * @return The list of messages.
+     */
+    public List<ChatMessage> getGroupChatMessages(String id){
+        return findById(id).getMessages();
+    }
+
+    /**
      * findAllPrevious returns a groups all previous users.
      * @param id The id of the group.
      * @return The list of previous users.
@@ -270,8 +287,6 @@ public class GroupService {
         Group group = findById(id);
         return group.getPreviousUsers();
     }
-
-
 }
 
 
