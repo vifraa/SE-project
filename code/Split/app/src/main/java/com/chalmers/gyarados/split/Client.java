@@ -6,6 +6,10 @@ import com.chalmers.gyarados.split.model.Group;
 import com.chalmers.gyarados.split.model.Message;
 import com.chalmers.gyarados.split.model.User;
 
+
+import java.util.Date;
+
+
 import io.reactivex.CompletableTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -43,10 +47,6 @@ public class Client {
     private static final String TAG = "ClientActivity";
 
     /**
-     * The group the server gives to me
-     */
-
-    /**
      * An object that helps us creating messages in json format
      */
     private JSONHelper jsonHelper;
@@ -70,7 +70,10 @@ public class Client {
      */
     private boolean firstConnect = true;
 
+
+
     private Disposable mRestPingDisposable;
+    private boolean reconnecting;
 
 
     public Client(String groupID, ClientListener clientListener) {
@@ -78,12 +81,14 @@ public class Client {
         this.clientListener = clientListener;
         compositeDisposable = new CompositeDisposable();
         jsonHelper=new JSONHelper();
+
     }
 
     public Client(ClientListener clientListener) {
         this.clientListener = clientListener;
         compositeDisposable = new CompositeDisposable();
         jsonHelper=new JSONHelper();
+
     }
 
     /**
@@ -93,9 +98,10 @@ public class Client {
     public void connectStomp(){
 
         String uri;
+
         //Which ip-adress we want to connect to
         if(Constants.develop){
-            uri= "ws://"+Constants.IP+":"+Constants.PORT+"/split";
+            uri= "ws://"+Constants.IP+":"+Constants.PORT+"/split/websocket";
         }else{
             uri = "ws://"+Constants.deployedURL+"/split/websocket";
         }
@@ -105,6 +111,7 @@ public class Client {
 
         //Needed to keep connection alive
         mStompClient.withClientHeartbeat(25000).withServerHeartbeat(25000);
+
 
 
         if(groupID!=null){
@@ -123,24 +130,21 @@ public class Client {
                         clientListener.updateMembersList(myGroup.getUsers());
                         groupID=myGroup.getId();
 
+                        //Lets subscribe on our group
                         subscribeOnGroup();
 
+                        //Lets tell the listener that the we are ready
                         clientListener.onOldMessagesReceived(myGroup.getMessages());
                         clientListener.onClientReady();
 
 
-                    }, throwable -> {
-                        clientListener.errorOnSubcribingOnTopic(throwable);
-
-                    });
+                    }, throwable -> clientListener.errorOnSubcribingOnTopic(throwable));
 
             compositeDisposable.add(dispTopic);
 
-            //We want to ask the server for a group number.
+            //We want to ask the server for a group.
             sendFindGroupMessage(createFindGroupMessage());
         }
-
-
 
         mStompClient.connect();
 
@@ -151,9 +155,16 @@ public class Client {
                     switch (lifecycleEvent.getType()) {
                         case OPENED:
                             Log.d(TAG,"Stomp connection opened");
+                            if(reconnecting){
+                                reconnecting=false;
+                                clientListener.onReconnectingSuccess();
+                            }
+
                             if(firstConnect){
                                 firstConnect=false;
                             }
+
+                            clientListener.onConnectionOpened();
                             break;
                         case ERROR:
                             Log.e(TAG, "Stomp connection error", lifecycleEvent.getException());
@@ -166,11 +177,7 @@ public class Client {
                             Log.d(TAG,"Stomp failed server heartbeat");
                             break;
                     }
-                }, throwable -> {
-                    errorOnLifeCycle(throwable);
-
-
-                });
+                }, this::errorOnLifeCycle);
 
         compositeDisposable.add(dispLifecycle);
 
@@ -201,6 +208,7 @@ public class Client {
         compositeDisposable.add(dispTopic);
     }
 
+
     /**
      * Called when a new message has been sent to the group
      * @param messageInJson the message in json
@@ -228,7 +236,7 @@ public class Client {
 
     /**
      * Called when the client recevies new info about the group
-     * @param groupInfoInJson
+     * @param groupInfoInJson information about a group in json
      */
     private void newGroupInfoReceived(String groupInfoInJson) {
         Group group = jsonHelper.convertJsonToGroup(groupInfoInJson);
@@ -331,10 +339,8 @@ public class Client {
                 .unsubscribeOn(Schedulers.newThread())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(myData -> {clientListener.userInfoReceived(myData);}, throwable -> {
-        Log.d(TAG, throwable.toString());
-
-    });
+                .subscribe(myData -> {clientListener.userInfoReceived(myData);}
+                , throwable -> Log.d(TAG, throwable.toString()));
     }
 
     /**
@@ -358,12 +364,28 @@ public class Client {
 
 
     private void closedEventLifeCycle() {
-        if(firstConnect){
-            clientListener.onConnectionClosedFirstConnect();
+        if(!mStompClient.isConnected()){
+            Log.d(TAG,"Not connected");
+            if(firstConnect){
+                clientListener.onConnectionClosedFirstConnect();
+            }else if(!reconnecting){
+                Log.d(TAG,"Not reconnecting before");
+                reconnecting=true;
+                clientListener.onConnectionClosed();
+            }else{
+                Log.d(TAG,"already reconnecting");
+                reconnecting=false;
+                clientListener.onReConnectingFailed();
+            }
         }else{
-            clientListener.onConnectionClosed();
+            Log.d(TAG,"Connected...");
         }
 
+    }
+
+    public void tryToReconnect(){
+        reconnecting=true;
+        reconnect();
     }
 
     private void errorOnLifeCycle(Throwable throwable) {
@@ -375,4 +397,28 @@ public class Client {
 
 
     }
+
+    private void reconnect() {
+        subscribeOnGroup();
+        mStompClient.connect();
+
+    }
+
+    public void askForMessages() {
+
+       mRestPingDisposable=RestClient.getInstance().getGroupRepository().getGroupChatMessage(groupID)
+                .unsubscribeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(listWithMessages ->
+                        {clientListener.onMessagesReceivedWhenDisconnected(listWithMessages);}
+                , throwable -> {
+                    Log.d(TAG, throwable.toString());
+
+                });
+    }
+
+
+
+
 }

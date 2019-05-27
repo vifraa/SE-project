@@ -2,6 +2,7 @@ package com.chalmers.gyarados.split.model;
 
 import com.chalmers.gyarados.split.MessageType;
 
+import java.util.Comparator;
 import java.util.Date;
 
 public class Message {
@@ -49,4 +50,5 @@ public class Message {
     public User getSender() {
         return sender;
     }
+
 }

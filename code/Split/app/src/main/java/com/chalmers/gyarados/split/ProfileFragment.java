@@ -20,6 +20,7 @@ import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -101,11 +102,9 @@ public class ProfileFragment extends Fragment {
         name.setText(user.getName());
         //age.setText("22");
 
-        List<Review> userReviews = user.getReviews();
-        if(userReviews==null){
-            userReviews=new ArrayList<>();
-
-        }
+        List<Review> userReviews = new ArrayList<>(user.getReviews());
+        Collections.reverse(userReviews);
+        
         double avgRatingNumber = calculateAverageReview(userReviews);
 
         if(avgRatingNumber!=-1){

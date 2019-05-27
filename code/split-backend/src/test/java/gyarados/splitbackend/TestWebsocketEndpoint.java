@@ -164,31 +164,35 @@ public class TestWebsocketEndpoint {
         user.setDestinationLongitude(57.70);
         user.setDestinationLatitude(11.85);
         stompSession.send(ASK_FOR_GROUP_NUMBER, user);
+        groupService.addUserToGroup("testgroup", user);
 
         User userTwo = new User();
         userTwo.setName("Molnd");
         userTwo.setUserID("user2");
+        userTwo.setNumberOfTravelers(3);
 
-        userTwo.setCurrentLongitude(57.98);
+        userTwo.setCurrentLongitude(57.68);
         userTwo.setCurrentLatitude(11.84);
         userTwo.setDestinationLongitude(57.70);
         userTwo.setDestinationLatitude(11.85);
         stompSession.send(ASK_FOR_GROUP_NUMBER, userTwo);
+
+        groupService.findMatchingGroup(userTwo);
 
 
         User userTwo3 = new User();
         userTwo3.setName("Appp");
         userTwo3.setUserID("user3");
 
-        userTwo3.setCurrentLongitude(55.98);
-        userTwo3.setCurrentLatitude(10.84);
-        userTwo3.setDestinationLongitude(56.70);
-        userTwo3.setDestinationLatitude(13.85);
+        userTwo3.setCurrentLongitude(57.68);
+        userTwo3.setCurrentLatitude(11.84);
+        userTwo3.setDestinationLongitude(57.70);
+        userTwo3.setDestinationLatitude(11.85);
         stompSession.send(ASK_FOR_GROUP_NUMBER, userTwo3);
-
-        groupService.findMatchingGroup(user);
-        groupService.findMatchingGroup(userTwo);
         groupService.findMatchingGroup(userTwo3);
+
+
+        System.out.println(groupService.findAll());
 
         System.out.println(groupService.findAll().size());
 
@@ -200,7 +204,7 @@ public class TestWebsocketEndpoint {
         //System.out.println(group.getUsers().size());
         //System.out.println(groupService.findAll().size());
 
-        //stompSession.disconnect();
+        stompSession.disconnect();
 
     }
 
