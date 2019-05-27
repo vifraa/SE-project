@@ -17,8 +17,7 @@ Individual reflections for each week are in the personal_reflection folder and t
 Other live documents can also be found in this folder. Such as BMC, project ideas, and mockups</br>
 </br>
 
-
-In the code document there are alternatives to either go into the backend service source (split-backend) or our frontend application (split) </br>
+In the code folder there are alternatives to either go into the backend service source (split-backend) or our frontend application (split) </br>
 </br>
 <strong>In split-backend folder:</strong></br>
 The tests can be found in src-> test->java->gyarados->splitbackend</br>
@@ -32,7 +31,16 @@ All additional layout components such as images, items, etc can be found in main
 
   
 <strong>Git Info:</strong></br>
-  
+The gitinspector info can be found under documents->gitinspectorsplit.html:</br>
+Alternatively the gitinspector info can be opened from the PNG version of gitinspector</br>
+From the first table we can see all the users inputs and deletions over the course of the entire project</br>
+The second table shows all the code which has survived and currently resides in our project</br>
+
+<strong>Explanation:</strong></br>
+The reason that there is a massive difference in the number of lines of code is because we have done pair programming which can be seen from our social contract and weekly reflections.</br>
+Usually within the group we worked on one computer so then one user has almost all the lines of code on gitinspector. Towards the end of the project we tried to even this our a bit by programming on the other persons computer</br>
+When we apply the groups we can see that the lines of code start to become fairly similar across all teams within our group</br>
+
 
 
 Trello Link:</br>
